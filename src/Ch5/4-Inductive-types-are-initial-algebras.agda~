@@ -1,0 +1,11 @@
+{-# OPTIONS --without-K --exact-split #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+
+module Ch5.4-Inductive-types-are-intial-algebras where
+
+-- Definition 5.4.1 (ℕ-algebra).
+
+ℕAlg : Σ C ꞉ 𝓤 ̇ , C × (C → C)

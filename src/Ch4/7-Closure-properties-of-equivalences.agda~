@@ -1,0 +1,26 @@
+{-# OPTIONS --without-K --exact-split #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+
+module Ch4.7-Closure-properties-of-equivalences where
+
+
+-- Theorem 7.4.1 (2-out-of-3 property).
+
+module 2-out-of-3 {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B → C) where
+
+  ∘-is-equiv : (isequiv f → isequiv g → isequiv (g ∘ f))
+  ∘-is-equiv = ?
+
+  fst-is-equiv : (isequiv g → isequiv (g ∘ f) → isequiv f)
+  fst-is-equiv = ?
+
+  snd-is-equiv : (isequiv f → isequiv (g ∘ f) → isequiv g)
+  snd-is-equiv = ?
+
+  disjunction : (isequiv f → isequiv g → isequiv (g ∘ f)) ∨ (isequiv f → isequiv (g ∘ f) → isequiv g) ∨ (isequiv g → isequiv (g ∘ f) → isequiv f)
+  2-out-of-3 f g = ? 
+
+

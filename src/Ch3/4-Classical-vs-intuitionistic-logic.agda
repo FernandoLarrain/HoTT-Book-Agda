@@ -1,0 +1,17 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+
+module Ch3.4-Classical-vs-intuitionistic-logic where
+
+
+-- Definition 3.4.3 (Decidability).
+
+is-decidable : 𝓤 ̇  → 𝓤 ̇
+is-decidable A = A + (¬ A)
+
+decidable-family : {A : 𝓤 ̇ } (B : A → 𝓥 ̇ ) → (𝓤 ⊔ 𝓥) ̇
+decidable-family {A = A} B = (a : A) → is-decidable (B a)
+
+decidable-equality : 𝓤 ̇  → 𝓤 ̇
+decidable-equality A = (x y : A) → is-decidable (x ≡ y)

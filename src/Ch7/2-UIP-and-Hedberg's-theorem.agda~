@@ -1,0 +1,16 @@
+{-# OPTIONS --without-K --exact-split #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.3-Bi-invertible-maps
+open import Ch4.6-Surjections-and-embeddings
+
+module Ch7.2-UIP-and-Hedberg's-theorem where
+
+-- Theorem 7.2.1 (Sets are precisely the types satisfying Axiom K).
+
+_satisfies-Axiom-K : (X : 𝓤 ̇) → 𝓤 ̇
+X satisfies-Axiom-K = 
+
+--isSet-iff-Axiom-K : (X : 𝓤 ̇) → (isSet X →  

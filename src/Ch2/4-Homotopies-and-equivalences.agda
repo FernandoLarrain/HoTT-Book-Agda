@@ -1,0 +1,329 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+open import Ch2.1-Types-are-higher-groupoids
+open import Ch2.2-Functions-are-functors
+open import Ch2.3-Type-families-are-fibrations
+
+module Ch2.4-Homotopies-and-equivalences where
+
+
+-- Definition 2.4.1 (Homotopy).
+
+_∼_ : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } → Π P → Π P → 𝓤 ⊔ 𝓥 ̇
+f ∼ g = ∀ x → f x ≡ g x
+
+infix 0 _∼_
+
+
+-- Lemma 2.4.2 (Homotopy is an equivalence relation).
+
+hrefl : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } (f : Π P) → f ∼ f
+hrefl f x = refl (f x)
+
+hsym : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {f g : Π P} → f ∼ g → g ∼ f
+hsym H x = H x ⁻¹
+
+htrans : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {f g h : Π P} → f ∼ g → g ∼ h → f ∼ h
+htrans F G x = F x ∙ G x
+
+
+-- Lemma 2.4.3 (Naturality of homotopies).
+
+hnat : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {f g : A → B} {x y : A} (H : f ∼ g) (p : x ≡ y) → H x ∙ ap g p ≡ ap f p ∙ H y
+hnat {f = f} {g} H (refl x) =
+  H x ∙ ap g (refl x)
+    ≡⟨ ru _ ⁻¹ ⟩
+  H x
+    ≡⟨ lu _ ⟩
+  ap f (refl x) ∙ H x
+  ∎
+
+hnat' : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {f g : A → B} {x y : A} (H : f ∼ g) (p : x ≡ y) → H x ⁻¹ ∙ ap f p ∙ H y ≡ ap g p
+hnat' H (refl x) = ap (_∙ H x) (ru _ ⁻¹) ∙ linv _
+
+hnat'' : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {f g : A → B} {x y : A} (H : f ∼ g) (p : x ≡ y) → ap f p ⁻¹ ∙ H x ∙ ap g p  ≡ H y
+hnat'' H (refl x) = ru _ ⁻¹ ∙ lu _ ⁻¹
+
+
+-- Corollary 2.4.4.
+
+hnat-id : {A : 𝓤 ̇ } {f : A → A} (H : f ∼ id) (x : A) → H (f x) ≡ ap f (H x)
+hnat-id {f = f} H x =
+  H (f x)
+    ≡⟨ ru _ ∙ ap (H (f x) ∙_) (rinv (H x) ⁻¹) ⟩ 
+  H (f x) ∙ (H x ∙ (H x ⁻¹))
+    ≡⟨ ∙-assoc _ _ _ ⟩ 
+  H (f x) ∙ H x ∙ H x ⁻¹
+    ≡⟨ ap (_∙ (H x ⁻¹)) (ap (H (f x) ∙_) (ap-id (H x) ⁻¹) ∙ hnat H (H x)) ⟩
+  ap f (H x) ∙ H x ∙ H x ⁻¹
+    ≡⟨ ∙-assoc _ _ _ ⁻¹ ⟩ 
+  ap f (H x) ∙ (H x ∙ (H x ⁻¹))
+    ≡⟨ (ru _ ∙ ap (ap f (H x) ∙_) (rinv (H x) ⁻¹)) ⁻¹ ⟩
+   ap f (H x)
+  ∎
+  
+
+-- Definition 2.4.6 (Quasi-inverse).
+
+qinv : {A : 𝓤 ̇ } {B : 𝓥 ̇ } (f : A → B) → 𝓤 ⊔ 𝓥 ̇
+qinv {A = A} {B = B} f = Σ g ꞉ (B → A) , (f ∘ g ∼ id) × (g ∘ f ∼ id)
+
+qinv₁ : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {f : A → B} → qinv f → B → A
+qinv₁ (g , α , β) = g 
+
+qinv₂ : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {f : A → B} → (q : qinv f) → (f ∘ qinv₁ q ∼ id)
+qinv₂ (g , α , β) = α 
+
+qinv₃ : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {f : A → B} → (q : qinv f) → (qinv₁ q ∘ f ∼ id)
+qinv₃ (g , α , β) = β 
+
+
+-- Example 2.4.7 (Identity has a quasi-inverse).
+
+qinv-𝑖𝑑 : (A : 𝓤 ̇ ) → qinv (𝑖𝑑 A)
+qinv-𝑖𝑑 A = 𝑖𝑑 A , refl , refl
+
+
+-- Example 2.4.8 (Pre- and post-concatenation are quasi-invertible).
+
+qinv-pre-∙ : {A : 𝓤 ̇ } {x y : A} (z : A) (p : x ≡ y) → qinv (λ (q : y ≡ z) → p ∙ q)
+qinv-pre-∙ {x = x} {y = y} z p =
+  (p ⁻¹ ∙_) ,
+  (λ x₁ → ∙-assoc _ _ _ ∙ (ap (_∙ x₁) (rinv p) ∙ lu _ ⁻¹)) ,
+  λ x₁ → ∙-assoc _ _ _ ∙ (ap (_∙ x₁) (linv p) ∙ lu _ ⁻¹)
+
+qinv-post-∙ : {A : 𝓤 ̇ } {x y : A} (z : A) (p : x ≡ y)  → qinv (λ (q : z ≡ x) → q ∙ p)
+qinv-post-∙ {x = x} {y = y} z p =
+  (_∙ p ⁻¹) ,
+  (λ x₁ → ∙-assoc _ _ _ ⁻¹ ∙ (ap (x₁ ∙_) (linv p) ∙ ru _ ⁻¹)) ,
+  λ x₁ → ∙-assoc _ _ _ ⁻¹ ∙ (ap (x₁ ∙_) (rinv p) ∙ ru _ ⁻¹)
+
+
+-- _⁻¹ is its own quasi-inverse
+
+qinv-⁻¹ : {A : 𝓤 ̇} (x y : A) → qinv (_⁻¹ {x = x} {y})
+qinv-⁻¹ x y =
+  _⁻¹ ,
+  ⁻¹-invol ,
+  ⁻¹-invol
+
+
+-- _∙ₗ_ has qinv (for each left argument)
+
+∙ₗ-inv : {A : 𝓤 ̇} {a b c : A} (q : a ≡ b) (r s : b ≡ c) → q ∙ r ≡ q ∙ s → r ≡ s
+∙ₗ-inv (refl b) r s β' = lu r ∙ β' ∙ lu s ⁻¹ 
+
+∙ₗ-inv-is-linv : {A : 𝓤 ̇} {a b c : A} (q : a ≡ b) (r s : b ≡ c) → ∙ₗ-inv q r s ∘ (q ∙ₗ_) ∼ id
+∙ₗ-inv-is-linv {A = A} {.x} {.x} {.x} (refl .x) (refl x) .(refl x) (refl .(refl x)) = refl _
+  
+∙ₗ-inv-is-rinv : {A : 𝓤 ̇} {a b c : A} (q : a ≡ b) (r s : b ≡ c) → (q ∙ₗ_) ∘ ∙ₗ-inv q r s  ∼ id
+∙ₗ-inv-is-rinv (refl x) r (refl .x) β rewrite ru (lu r ∙ β) ⁻¹ | ru (lu r ⁻¹ ∙ (lu r ∙ β)) ⁻¹ | ∙-assoc (lu r ⁻¹) (lu r) β | linv (lu r) | lu r ⁻¹ | lu β ⁻¹ = refl _
+
+qinv-∙ₗ : {A : 𝓤 ̇} {a b c : A} (q : a ≡ b) (r s : b ≡ c) → qinv (q ∙ₗ_)
+qinv-∙ₗ q r s = ∙ₗ-inv q r s , ∙ₗ-inv-is-rinv q r s , ∙ₗ-inv-is-linv q r s
+
+
+-- _∙ᵣ_ has qinv (for each right argument)
+
+∙ᵣ-inv : {A : 𝓤 ̇} {a b c : A} (p q : a ≡ b) (r : b ≡ c) → p ∙ r ≡ q ∙ r → p ≡ q
+∙ᵣ-inv p q (refl b) α' = ru p ∙ α' ∙ ru q ⁻¹
+
+∙ᵣ-inv-is-linv : {A : 𝓤 ̇} {a b c : A} (p q : a ≡ b) (r : b ≡ c) → ∙ᵣ-inv p q r ∘ (_∙ᵣ r) ∼ id
+∙ᵣ-inv-is-linv {A = A} {.x} {.x} {.x} (refl x) .(refl x) (refl .x) (refl .(refl x)) = refl _
+  
+∙ᵣ-inv-is-rinv : {A : 𝓤 ̇} {a b c : A} (p q : a ≡ b) (r : b ≡ c) → (_∙ᵣ r) ∘ ∙ᵣ-inv p q r  ∼ id
+∙ᵣ-inv-is-rinv p (refl .x) (refl x) α' rewrite ru (ru p ∙ α') ⁻¹ | ru (ru p ⁻¹ ∙ (ru p ∙ α')) ⁻¹ | ∙-assoc (ru p ⁻¹) (ru p) α' | ap (_∙ α') (linv (ru p)) | lu α' ⁻¹ = refl _
+
+qinv-∙ᵣ : {A : 𝓤 ̇} {a b c : A} (p q : a ≡ b) (r : b ≡ c) → qinv (_∙ᵣ r)
+qinv-∙ᵣ p q r = ∙ᵣ-inv p q r , ∙ᵣ-inv-is-rinv p q r , ∙ᵣ-inv-is-linv p q r
+
+
+-- Example 2.4.9
+
+qinv-transport : {A : 𝓤 ̇} (P : A → 𝓥 ̇) {x y : A} (p : x ≡ y) → qinv (transport P p)
+qinv-transport P p =
+  (transport P (p ⁻¹)) ,
+  (λ v → transport-∙ P (p ⁻¹) p v ∙ ap (λ w → transport P w v) (linv p)) ,
+  λ u → transport-∙ P p (p ⁻¹) u ∙ ap (λ w → transport P w u) (rinv p)
+
+
+-- -- I. Old definition of equivalence (used up to Ch4.5)
+
+-- -- Equation 2.4.10 (Is equivalence).
+
+-- isequiv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
+-- isequiv {𝓤} {𝓥} {A} {B} f = (Σ g ꞉ (B → A) , (f ∘ g ∼ id)) × (Σ h ꞉ (B → A) , (h ∘ f ∼ id))
+
+-- isequiv₁ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → isequiv f → B → A
+-- isequiv₁ ((g , α) , (h , β)) = g
+
+-- isequiv₂ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → (e : isequiv f) → (f ∘ isequiv₁ e ∼ id)
+-- isequiv₂ ((g , α) , (h , β)) = α
+
+-- isequiv₃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → isequiv f → B → A
+-- isequiv₃ ((g , α) , (h , β)) = h
+
+-- isequiv₄ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → (e : isequiv f) → (isequiv₃ e ∘ f ∼ id)
+-- isequiv₄ ((g , α) , (h , β)) = β
+
+
+-- -- Page 78, (i) From qinv to isequiv
+
+-- qinv-to-isequiv : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → qinv f → isequiv f
+-- qinv-to-isequiv (g , α , β) = (g , α) , (g , β)
+
+
+-- -- Page 78, (ii) From isequiv to qinv
+
+-- isequiv-to-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → isequiv f → qinv f
+-- isequiv-to-qinv {𝓤} {𝓥} {A} {B} {f} ((g , α) , (h , β)) =
+--   g ,
+--   α ,
+--   λ x → hsym β (g (f x)) ∙ (ap h (α (f x)) ∙ β x)  
+
+
+-- -- Equation 2.4.11 (Equivalence).
+
+-- _≃_ : 𝓤 ̇ → 𝓥 ̇ → 𝓤 ⊔ 𝓥 ̇
+-- A ≃ B = Σ f ꞉ (A → B) , isequiv f
+
+-- infix 10 _≃_
+
+
+-- -- Lemma 2.4.12 (≃ is an equivalence relation).
+
+-- ≃-refl : (A : 𝓤 ̇) → A ≃ A
+-- ≃-refl A = 𝑖𝑑 A , qinv-to-isequiv (qinv-𝑖𝑑 A)
+
+-- ≃-sym : {A : 𝓤 ̇} {B : 𝓥 ̇} → (A ≃ B) → (B ≃ A)
+-- ≃-sym {𝓤} {𝓥} {A} {B} (f , e) = qinv₁ q , qinv-to-isequiv (f , (qinv₃ q) , (qinv₂ q))
+--   where
+--   q = isequiv-to-qinv e
+
+-- _●_ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} → (A ≃ B) → (B ≃ C) → (A ≃ C)
+-- f , (g , α) , (h , β) ● f' , (g' , α') , (h' , β') =
+--   f' ∘ f ,
+--   (g ∘ g' , λ c → ap f' (α _) ∙ α' _) ,
+--   (h ∘ h' , λ a → ap h (β' _) ∙ β _)
+
+-- infixl 30 _●_
+
+
+-- -- Equational reasoning with _≃_
+
+-- _≃⟨_⟩_ : (X : 𝓤 ̇) {Y : 𝓥 ̇} {Z : 𝓦 ̇} → X ≃ Y → Y ≃ Z → X ≃ Z
+-- _ ≃⟨ d ⟩ e = d ● e
+
+-- infixr 0 _≃⟨_⟩_
+
+-- _■ : (X : 𝓤 ̇ ) → X ≃ X
+-- _■ = ≃-refl
+
+-- infix 1 _■ 
+
+
+-- II. New defintion of equivalence (used in Ch4.5 onwards). 
+
+-- Definition (Is equivalence). (Def. 4.2.1) 
+
+isequiv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
+isequiv {A = A} {B} f = Σ g ꞉ (B → A) , Σ η ꞉ g ∘ f ∼ id , Σ ε ꞉ f ∘ g ∼ id , ((x : A) → ap f (η x) ≡ ε (f x))
+
+isequiv₁ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → isequiv f → B → A
+isequiv₁ (g , η , ε , τ) = g
+
+isequiv₂ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → (h : isequiv f) → isequiv₁ h ∘ f ∼ id
+isequiv₂ (g , η , ε , τ) = η
+
+isequiv₃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → (h : isequiv f) → f ∘ isequiv₁ h ∼ id
+isequiv₃ (g , η , ε , τ) = ε
+
+isequiv₄ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → (h : isequiv f) → (x : A) → ap f (isequiv₂ h x) ≡ isequiv₃ h (f x)
+isequiv₄ (g , η , ε , τ) = τ
+
+
+-- From qinv to isequiv. (Thm. 4.2.3)
+
+qinv-to-isequiv : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {f : A → B} → qinv f → isequiv f
+qinv-to-isequiv {A = A} {f = f} (g , ε , η) =
+  g ,
+  η ,
+  (λ b → ε (f (g b)) ⁻¹ ∙ ap f (η (g b)) ∙ ε b) ,
+  τ
+  where
+  τ : (x : A) → ap f (η x) ≡ ε (f (g (f x))) ⁻¹ ∙ ap f (η (g (f x))) ∙ ε (f x)
+  τ x rewrite
+    hnat-id η x |
+    ap-∘ (g ∘ f) f (η x) |
+    ap-∘ f (f ∘ g) (η x) ⁻¹ |
+    hnat' ε (ap f (η x)) |
+    ap-id (ap f (η x)) 
+    = refl _
+
+-- Definition of τ without rewrite:
+-- λ x → (
+--     ap (λ - → ε (f (g (f x))) ⁻¹ ∙ ap f - ∙ ε (f x)) (hnat-id η x) ∙
+--     ap (λ - → ε (f (g (f x))) ⁻¹ ∙ - ∙ ε (f x)) (ap-∘ (g ∘ f) _ (η x) ∙ (ap-∘ f (f ∘ g) (η x) ⁻¹)) ∙
+--     hnat' ε (ap f (η x)) ∙
+--     ap-id _
+--     ) ⁻¹
+
+-- From isequiv to qinv. (Thm. 4.2.3)
+
+isequiv-to-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → isequiv f → qinv f
+isequiv-to-qinv (g , η , ε , τ) = (g , ε , η)
+
+
+-- Equation 2.4.11 (Equivalence).
+
+_≃_ : 𝓤 ̇ → 𝓥 ̇ → 𝓤 ⊔ 𝓥 ̇
+A ≃ B = Σ f ꞉ (A → B) , isequiv f
+
+infix 10 _≃_
+
+
+-- Lemma 2.4.12 (≃ is an equivalence relation).
+
+≃-refl : (A : 𝓤 ̇) → A ≃ A
+≃-refl A = 𝑖𝑑 A , qinv-to-isequiv (qinv-𝑖𝑑 A)
+
+≃-sym : {A : 𝓤 ̇} {B : 𝓥 ̇} → (A ≃ B) → (B ≃ A)
+≃-sym {𝓤} {𝓥} {A} {B} (f , e) = qinv₁ q , qinv-to-isequiv (f , (qinv₃ q) , (qinv₂ q))
+  where
+  q = isequiv-to-qinv e
+
+_●_ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} → (A ≃ B) → (B ≃ C) → (A ≃ C)
+_●_ (f , e) (f' , e') = (f' ∘ f) , qinv-to-isequiv (
+  g ∘ g' ,
+  (λ b → ap f' (α _) ∙ α' _) ,
+  λ a → ap g (β' _) ∙ β _
+  )
+  where
+  q : qinv f
+  q = isequiv-to-qinv e
+  g = qinv₁ q
+  α = qinv₂ q
+  β = qinv₃ q
+  q' : qinv f'
+  q' = isequiv-to-qinv e'
+  g' = qinv₁ q'
+  α' = qinv₂ q'
+  β' = qinv₃ q'
+
+infixl 30 _●_
+
+
+-- Equational reasoning with _≃_.
+
+_≃⟨_⟩_ : (X : 𝓤 ̇) {Y : 𝓥 ̇} {Z : 𝓦 ̇} → X ≃ Y → Y ≃ Z → X ≃ Z
+_ ≃⟨ d ⟩ e = d ● e
+
+infixr 0 _≃⟨_⟩_
+
+_■ : (X : 𝓤 ̇) → X ≃ X
+_■ = ≃-refl
+
+infix 1 _■ 
+
+

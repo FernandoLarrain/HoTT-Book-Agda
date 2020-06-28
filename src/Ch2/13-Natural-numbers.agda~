@@ -1,0 +1,81 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+module Ch2.13-Natural-numbers where
+
+open import Ch1.Type-theory
+open import Ch2.1-Types-are-higher-groupoids
+open import Ch2.2-Functions-are-functors
+open import Ch2.3-Type-families-are-fibrations
+open import Ch2.4-Homotopies-and-equivalences
+open import Ch2.8-The-unit-type
+open import Ch2.11-Identity-type
+
+
+-- Theorem 2.13.1 (Path-space of ℕ).
+
+-- (i) Setting up encode-decode
+
+code-ℕ : ℕ → ℕ → 𝓤₀ ̇
+code-ℕ 0 0 = 𝟙
+code-ℕ (succ m) 0 = 𝟘
+code-ℕ 0 (succ n) = 𝟘
+code-ℕ (succ m) (succ n) = code-ℕ m n
+
+rcode : (n : ℕ) → code-ℕ n n
+rcode 0 = ⋆
+rcode (succ n) = rcode n
+
+encode-ℕ : (m n : ℕ) → m ≡ n → code-ℕ m n
+encode-ℕ m n p = transport (code-ℕ m) p (rcode m)
+
+decode-ℕ : (m n : ℕ) → (code-ℕ m n) → m ≡ n
+decode-ℕ 0 0 = 𝟙-recursion (0 ≡ 0) (refl 0)
+decode-ℕ (succ m) 0 = !𝟘 _
+decode-ℕ 0 (succ n) = !𝟘 _
+decode-ℕ (succ m) (succ n) = (ap succ) ∘ (decode-ℕ m n)
+
+-- (ii) Characterization of path space of ℕ
+
+path-space-ℕ' : (m n : ℕ) → (encode-ℕ m n ∘ decode-ℕ m n) ∼ id
+path-space-ℕ' zero zero c = 𝟙-is-Prop _ _
+path-space-ℕ' (succ m) zero = 𝟘-induction _
+path-space-ℕ' zero (succ n) = 𝟘-induction _
+path-space-ℕ' (succ m) (succ n) c =
+ transport (code-ℕ (succ m)) (ap succ (decode-ℕ m n c)) (rcode m) ≡⟨ ( transport-∘ (code-ℕ (succ m)) succ (decode-ℕ m n c) (rcode m) ) ⁻¹ ⟩ (
+ transport ((code-ℕ (succ m)) ∘ succ) (decode-ℕ m n c) (rcode m) ≡⟨ refl _ ⟩ (
+ encode-ℕ m n (decode-ℕ m n c) ≡⟨ path-space-ℕ' m n c ⟩ (
+ c ∎)))
+
+path-space-ℕ'' : (m n : ℕ) → (decode-ℕ m n ∘ encode-ℕ m n) ∼ id
+path-space-ℕ'' zero .0 (refl .0) = refl _
+path-space-ℕ'' (succ m) .(succ m) (refl .(succ m)) = ap (ap succ) (path-space-ℕ'' m m (refl m))
+
+path-space-ℕ : (m n : ℕ) → (m ≡ n) ≃ code-ℕ m n
+path-space-ℕ m n = encode-ℕ m n , qinv-to-isequiv ((decode-ℕ m n) , ((path-space-ℕ' m n) , (path-space-ℕ'' m n)))
+
+
+-- Corollaries
+
+succ-is-not-0 : (n : ℕ) → ¬ (succ n ≡ 0)
+succ-is-not-0 n = encode-ℕ (succ n) 0
+
+succ-is-injective : (m n : ℕ) → succ m ≡ succ n → m ≡ n
+succ-is-injective m n = decode-ℕ m n ∘ encode-ℕ (succ m) (succ n)
+
+
+-- Remarks (used to prove that ℕ is a set in 1-Sets-and-n-types)
+
+code-ℕ-is-𝟘-or-𝟙 : (m n : ℕ) → ((code-ℕ m n ≡ 𝟘) + (code-ℕ m n ≡ 𝟙))
+code-ℕ-is-𝟘-or-𝟙 zero zero = inr (refl _)
+code-ℕ-is-𝟘-or-𝟙 zero (succ n) = inl (refl _)
+code-ℕ-is-𝟘-or-𝟙 (succ m) zero = inl (refl _)
+code-ℕ-is-𝟘-or-𝟙 (succ m) (succ n) = +-recursion inl inr (code-ℕ-is-𝟘-or-𝟙 m n)
+
+code-ℕ-is-Prop : (m n : ℕ) (x y : code-ℕ m n) → x ≡ y
+code-ℕ-is-Prop m n = +-recursion
+ (λ p → transport P (p ⁻¹) (𝟘-induction (λ x → (y : 𝟘) → x ≡ y)))
+ (λ p → transport P (p ⁻¹) (𝟙-is-Prop))
+ (code-ℕ-is-𝟘-or-𝟙 m n)
+ where
+ P : 𝓤₀ ̇  → 𝓤₀ ̇
+ P = λ t → (x y : t) → x ≡ y

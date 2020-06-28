@@ -1,0 +1,23 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.3-Universes-and-families
+
+module Ch1.9-The-natural-numbers where
+
+data ℕ : 𝓤₀ ̇  where
+  zero : ℕ
+  succ : ℕ → ℕ
+
+{-# BUILTIN NATURAL ℕ #-}
+
+ℕ-induction : (A : ℕ → 𝓤 ̇ ) → A 0 → ((n : ℕ) → A n → A (succ n)) → (n : ℕ) → A n
+ℕ-induction A a₀ f = h where
+  h : (n : ℕ) → A n
+  h 0 = a₀
+  h (succ n) = f n (h n)
+
+ℕ-recursion : (B : 𝓤 ̇ ) → B → (ℕ → B → B) → ℕ → B
+ℕ-recursion B = ℕ-induction (λ _ → B)
+
+ℕ-iteration : (B : 𝓤 ̇ ) → B → (B → B) → ℕ → B
+ℕ-iteration B b f = ℕ-recursion B b (λ _ x → f x)

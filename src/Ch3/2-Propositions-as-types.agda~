@@ -1,0 +1,73 @@
+{-# OPTIONS --without-K --exact-split #-}
+
+module Ch3.2-Propositions-as-types where
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+
+
+-- Theorem 3.2.2 (DNE is incompatible with univalence).
+
+-- (i) Some auxiliary lemmas:
+  
+dne-𝟚-is-prop : (u v : ¬ (¬ 𝟚)) → u ≡ v
+dne-𝟚-is-prop u v = funext _ _ (λ x → !𝟘 _ (u x))
+
+𝟚-is-nonempty : ¬ (is-empty 𝟚)
+𝟚-is-nonempty x = x ₀
+  
+-- (ii) The theorem:
+  
+not-dne : ¬ ((A : 𝓤₀ ̇ ) → ¬ (¬ A) → A)
+not-dne f = e-has-no-fixed-pt (f 𝟚 𝟚-is-nonempty) (e-has-fixed-pt 𝟚-is-nonempty)
+
+  where
+  
+  -- (a) Define automorphism of 𝟚 with no fixed point
+
+  e : 𝟚 → 𝟚
+  e ₀ = ₁
+  e ₁ = ₀
+  
+  e' : 𝟚 ≃ 𝟚
+  e' =
+    e ,
+    qinv-to-isequiv (e ,
+      𝟚-induction (λ - → e (e -) ≡ -) (refl _) (refl _) ,
+      𝟚-induction (λ - → e (e -) ≡ -) (refl _) (refl _))
+
+  e-has-no-fixed-pt : (x : 𝟚) → ¬ (e x ≡ x)
+  e-has-no-fixed-pt ₀ c = ₀-is-not-₁ (c ⁻¹)
+  e-has-no-fixed-pt ₁ c = ₀-is-not-₁ c
+
+  -- (b) Show that, by univalence, the automorphism must have a fixed point
+  
+  p : 𝟚 ≡ 𝟚 
+  p = ua 𝟚 𝟚 e'
+    
+  e-has-fixed-pt : (u : ¬ (¬ 𝟚)) → e (f 𝟚 u) ≡ f 𝟚 u
+  e-has-fixed-pt u =
+    e (f 𝟚 u)
+      ≡⟨ (idtoeqv-β 𝟚 𝟚 e' (f 𝟚 u)) ⁻¹ ⟩
+    pr₁ (idtoeqv 𝟚 𝟚 p) (f 𝟚 u)
+      ≡⟨ ap (λ - → pr₁ (idtoeqv 𝟚 𝟚 p) (f 𝟚 -)) (dne-𝟚-is-prop _ _) ⟩
+    pr₁ (idtoeqv 𝟚 𝟚 p) (f 𝟚 (transport (λ - → ¬ (¬ - )) (p ⁻¹) u))
+      ≡⟨ refl _ ⟩
+    transport (λ - → -) p (f 𝟚 (transport (λ - → ¬ (¬ - )) (p ⁻¹) u))
+      ≡⟨ (transport-fun' 𝟚 𝟚 p (f 𝟚) u) ⁻¹ ⟩
+    transport (λ - → (¬ (¬ -) → -)) p (f 𝟚) u
+      ≡⟨ happly _ _ (apd f p) u ⟩ 
+    f 𝟚 u ∎
+
+
+-- Corollary 3.2.7 (LEM is incompatible with univalence).
+
+not-lem : ¬ ((A : 𝓤₀ ̇ ) → A + (¬ A))
+not-lem g = not-dne (λ A → +-recursion (λ a f → a) (λ w f → !𝟘 _ (f w)) (g A))
+
+
+-- Remark 3.2.6 ("Triple negation law" is compatible with univalence).
+
+tnl : (A : 𝓤 ̇ ) → ¬ (¬ (¬ A)) → ¬ A
+tnl A f = λ a → f (λ g → g a)
+
