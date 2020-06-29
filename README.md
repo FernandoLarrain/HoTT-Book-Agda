@@ -1,6 +1,6 @@
 # HoTT-Book-Agda
 
-## The Library
+## The library
 
 The structure of the library follows closely that of the book. The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else) and `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types). The following files are ordered lexicographically, first, by dependence, and second, by numbering.
 
@@ -94,7 +94,7 @@ Agda has some features that are inconsitent with HoTT. To avoid them,
 4. The `--safe` option was used until the first postulates were made (around the end of `Ch2`).
 
 
-## The Axioms
+## The axioms
 
 1. `Ch2.9` postulates function extensionality, which is later proved from univalence in `Ch4.9` and using the interval in `Ch6.3`.
 
