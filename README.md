@@ -107,4 +107,4 @@ Agda has some features that are inconsitent with HoTT. To avoid them,
 
 ## The notion of equivalence
 
-The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences from then on. Accordingly, up to that point, the code works with both definitions, and from then on, only with the second.
+The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences from then on. Accordingly, up to that point, the code works with both definitions, and from then on, only with the second. The default is the new definition. To use the old one, change `open new-equiv public` to `open old-equiv public` in `Ch2.4`.
