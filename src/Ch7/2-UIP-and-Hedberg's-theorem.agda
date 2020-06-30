@@ -67,3 +67,11 @@ decidable-equality-implies-isSet : (X : 𝓤 ̇) → decidable-equality X → is
 decidable-equality-implies-isSet X de = dne-≡-to-isSet X λ x y → lem-to-dne _ (de x y)
 
 
+-- Theorem 7.2.6 (ℕ has decidable equality and, therefore, is a set).
+
+ℕ-has-decidable-equality : decidable-equality ℕ
+ℕ-has-decidable-equality zero zero = inl (refl 0)
+ℕ-has-decidable-equality zero (succ m) = inr λ p → succ-is-not-0 m (p ⁻¹)
+ℕ-has-decidable-equality (succ n) zero = inr (succ-is-not-0 n)
+ℕ-has-decidable-equality (succ n) (succ m) = +-recursion (λ p → inl (ap succ p)) (λ f → inr λ p → f (succ-is-injective n m p)) (ℕ-has-decidable-equality n m)
+
