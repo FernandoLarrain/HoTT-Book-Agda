@@ -79,8 +79,8 @@ The file `Equivalences` imports `Ch4`.
 
 #### Chapter 7 (src\Ch7)
 
-1. `Ch7.1-Definition-of-n-types`
-2. `UIP-and-Hedberg's-theorem`
+1. `1-Definition-of-n-types`
+2. `2-UIP-and-Hedberg's-theorem`
 
 
 ## Potential inconsistencies
