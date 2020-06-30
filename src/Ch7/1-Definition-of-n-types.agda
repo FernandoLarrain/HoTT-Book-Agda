@@ -3,8 +3,7 @@
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
-open import Ch4.2-Half-adjoint-equivalences
-open import Ch4.6-Surjections-and-embeddings
+open import Ch4.Equivalences
 
 module Ch7.1-Definition-of-n-types where
 
@@ -14,7 +13,7 @@ module Ch7.1-Definition-of-n-types where
 data Tlevel : 𝓤₀ ̇ where
   ⟨-2⟩ : Tlevel
   S : Tlevel → Tlevel
-  
+
 
 -- Tlevel is equivalent to ℕ
 
@@ -148,3 +147,53 @@ Tlevel-Type-if-of-next-Tlevel ⟨-2⟩ (X , p) (X' , p') = ≃-preserves-Tlevel 
   is-Prop = (pr₂ (Prop-iff-Contr-≡ (X ≃ X')) (embedding-pulls-back-Tlevel (S ⟨-2⟩) (S-is-not-⟨-2⟩ _) (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (cumulativity-of-Tlevels ⟨-2⟩ _ p'))))
 
 Tlevel-Type-if-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S n) (X ≃ X') _ (≃-sym (irrelevance-of-Tdata (S n) _ _)) (embedding-pulls-back-Tlevel (S n) (S-is-not-⟨-2⟩ n) (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S n) X X' p'))
+
+
+-- Translation to old terminology (isContr, isProp, isSet)
+
+⟨-1⟩ : Tlevel
+⟨-1⟩ = S ⟨-2⟩
+
+⟨0⟩ : Tlevel
+⟨0⟩ = S ⟨-1⟩
+
+isContr-≃-is-⟨-2⟩-type : (A : 𝓤 ̇) → isContr A ≃ is ⟨-2⟩ type A
+isContr-≃-is-⟨-2⟩-type A = idtoeqv _ _ (refl _)
+
+isProp-≃-is-⟨-1⟩-type : (A : 𝓤 ̇) → isProp A ≃ is ⟨-1⟩ type A
+isProp-≃-is-⟨-1⟩-type A = biimplication-to-≃ _ _ (isProp-is-Prop _) (Tlevel-is-property ⟨-1⟩ A ) (pr₁ (Prop-iff-Contr-≡ _)) (pr₂ (Prop-iff-Contr-≡ _))
+
+isSet-≃-is-⟨0⟩-type : (A : 𝓤 ̇) → isSet A ≃ is ⟨0⟩ type A
+isSet-≃-is-⟨0⟩-type A = biimplication-to-≃ _ _ (isSet-is-Prop _) (Tlevel-is-property ⟨0⟩ _) (λ A-is-Set x y → pr₁ (isProp-≃-is-⟨-1⟩-type _) (A-is-Set x y)) λ A-is-⟨0⟩-type x y → pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type _)) (A-is-⟨0⟩-type x y)
+
+≃-preserves-Contr : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isContr A → isContr B
+≃-preserves-Contr = ≃-preserves-Tlevel ⟨-2⟩ 
+
+≃-preserves-Props : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isProp A → isProp B
+≃-preserves-Props A B e = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type B)) ∘ ≃-preserves-Tlevel ⟨-1⟩ A B e ∘ pr₁ (isProp-≃-is-⟨-1⟩-type A) 
+
+≃-preserves-Set : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isSet A → isSet B
+≃-preserves-Set A B e = pr₁ (≃-sym (isSet-≃-is-⟨0⟩-type B)) ∘ ≃-preserves-Tlevel ⟨0⟩ A B e ∘ pr₁ (isSet-≃-is-⟨0⟩-type A)
+
+
+-- Lemma 3.3.3 continued (logically equivalent propositions are equivalent).
+
+-- (i) Equivalence to a proposition is a proposition
+
+≃-to-Prop-is-Prop : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp Q → isProp (P ≃ Q)
+≃-to-Prop-is-Prop P Q Q-is-Prop = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type _)) (Σ-preserves-Tlevel _ _ _ (pr₁ (isProp-≃-is-⟨-1⟩-type _) (→-preserves-Props _ _ Q-is-Prop)) (λ f → pr₁ (isProp-≃-is-⟨-1⟩-type _) (ishae-is-Prop f) ))
+
+-- (ii) ≃-sym is its own quasi-inverse
+
+qinv-≃-sym : (A : 𝓤 ̇) (B : 𝓥 ̇) → qinv (≃-sym {A = A} {B})
+qinv-≃-sym A B = ≃-sym , (λ e → Σ-over-predicate _ _ ishae-is-Prop _ _ (refl _)) , λ e → Σ-over-predicate _ _ ishae-is-Prop _ _ (refl _)
+
+-- (iii) (i) symmetrized
+
+≃-to-Prop-is-Prop' : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp P → isProp (P ≃ Q)
+≃-to-Prop-is-Prop' P Q P-is-Prop = ≃-preserves-Props (Q ≃ P) _ (≃-sym , qinv-to-isequiv (qinv-≃-sym _ _)) (≃-to-Prop-is-Prop _ _ P-is-Prop) where
+
+-- (iv) The lemma
+
+biimplication-of-Props-is-≃ : (P : 𝓤 ̇) (Q : 𝓥 ̇) → isProp P → isProp Q → (P → Q) × (Q → P) ≃ (P ≃ Q)
+biimplication-of-Props-is-≃ P Q P-is-Prop Q-is-Prop = biimplication-to-≃ _ _ (×-preserves-Props _ _ (→-preserves-Props _ _ Q-is-Prop) (→-preserves-Props _ _ P-is-Prop)) (≃-to-Prop-is-Prop _ _ Q-is-Prop) (Σ-induction (biimplication-to-≃ _ _ P-is-Prop Q-is-Prop)) (≃-to-biimplication _ _)

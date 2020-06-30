@@ -29,6 +29,7 @@ open import Ch2.10-Universes-and-univalence public
 open import Ch2.11-Identity-type public
 open import Ch2.12-Coproducts public
 open import Ch2.13-Natural-numbers public
+open import Ch2.14-Equality-of-structures public
 open import Ch2.15-Universal-properties public
 open import Ch2.Exercises public
 

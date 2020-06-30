@@ -24,6 +24,11 @@ isProp P = (x y : P) → x ≡ y
 biimplication-to-≃ : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp P → isProp Q → (P → Q) → (Q → P) → P ≃ Q
 biimplication-to-≃ P Q p q f g = f , qinv-to-isequiv (g , ((λ x → q _ _) , (λ x → p _ _)))
 
+≃-to-biimplication : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → (P ≃ Q) → (P → Q) × (Q → P)
+≃-to-biimplication P Q e = pr₁ e , pr₁ (≃-sym e)
+
+{- Note: the actual equivalence is proved in Ch7.1 -}
+
 
 -- Lemma 3.3.2 (Inhabited propositions are 𝟙).
 

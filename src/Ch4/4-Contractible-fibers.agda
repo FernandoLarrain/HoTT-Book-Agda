@@ -42,8 +42,22 @@ isContrMap-≃-ishae f = biimplication-to-≃ _ _ (isContrMap-is-Prop _) (ishae-
 isContrMap-≃-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f ≃ biinv f
 isContrMap-≃-biinv f = (isContrMap-≃-ishae f) ● (≃-sym (biinv-≃-ishae f))
 
+isContrMap-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → biinv f
+isContrMap-to-biinv f = pr₁ (isContrMap-≃-biinv f)
+
+biinv-to-isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f → isContrMap f
+biinv-to-isContrMap f = pr₁ (≃-sym (isContrMap-≃-biinv f))
+
 
 -- Corollary 4.4.6 (Can assume inhabited codomain).
 
-inhabited-codom-assum : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → (B → isContrMap f) → isContrMap f
-inhabited-codom-assum f e y = e y y
+module inhabited-codom-assum {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) where
+
+  Contr : (B → isContrMap f) → isContrMap f
+  Contr e y = e y y
+
+  Hae : (B → ishae f) → ishae f
+  Hae e = isContrMap-to-ishae f (Contr (λ y → ishae-to-isContrMap f (e y)))
+
+  Biinv : (B → biinv f) → biinv f
+  Biinv e = isContrMap-to-biinv f (Contr (λ y → biinv-to-isContrMap f (e y)))

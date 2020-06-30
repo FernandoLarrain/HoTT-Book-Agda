@@ -63,6 +63,8 @@ The file `Sets-and-logic` imports `Ch3`.
 5. `6-Surjections-and-embeddings`
 6. `7-Closure-properties-of-equivalences`
 
+The file `Equivalences` imports `Ch4`.
+
 ### Chapter 5 (src\Ch5)
 
 1. `1-Introduction-to-inductive-types`

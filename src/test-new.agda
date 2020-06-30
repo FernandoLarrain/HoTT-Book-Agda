@@ -29,6 +29,7 @@ open import Ch2.10-Universes-and-univalence public
 open import Ch2.11-Identity-type public
 open import Ch2.12-Coproducts public
 open import Ch2.13-Natural-numbers public
+open import Ch2.14-Equality-of-structures public
 open import Ch2.15-Universal-properties public
 open import Ch2.Exercises public
 
@@ -53,6 +54,12 @@ open import Ch4.3-Bi-invertible-maps public
 open import Ch4.4-Contractible-fibers public
 open import Ch4.6-Surjections-and-embeddings public
 open import Ch4.7-Closure-properties-of-equivalences public
+
+-- Chapter 5
+
+open import Ch5.1-Introduction-to-inductive-types public
+open import Ch5.3-W-types public
+open import Ch5.4-Inductive-types-are-initial-algebras public
 
 -- Chapter 6
 

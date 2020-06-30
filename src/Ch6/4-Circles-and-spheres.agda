@@ -151,3 +151,6 @@ module _ {B : 𝓤 ̇} (b : B) (s : refl b ≡ refl b) where
 
   surf-β' : ap² 𝕊²-rec surf ≡ s
   surf-β' =  ru _ ∙ lu _ ∙ ru _ ∙ lu _ ∙ ru _ ∙ ∙ᵣ-inv _ _ _ (ap (λ - → refl (refl (𝕊²-rec base²)) ∙ (refl (refl (𝕊²-rec base²)) ∙ (ap² 𝕊²-rec surf ∙ refl (refl (𝕊²-rec base²))) ∙ refl (refl (𝕊²-rec base²))) ∙ refl (refl (𝕊²-rec base²)) ∙ (- ∙ ru (transport² (λ a → B) surf (𝕊²-rec base²)))) (lu (transport²const B surf (𝕊²-rec base²) ⁻¹)) ∙ (apd²-const B 𝕊²-rec surf ⁻¹ ∙ surf-β (λ x → B) b (s ∙ (transport²const B surf b ⁻¹ ∙ ru _))))
+
+
+-- TO DO: Improve readability of previous proof!

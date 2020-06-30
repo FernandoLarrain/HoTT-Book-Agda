@@ -74,8 +74,9 @@ Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) = Σ-o
   homotopy-≡ : transport (λ X → X → X) carrier-≡ is ≡ js
   homotopy-≡ = funext _ _ λ y → transport-fun' {X = 𝓤 ̇} {id} {id} UI UJ carrier-≡ is y ∙ (idtoeqv-β _ _ carrier-≃ (is (transport id (carrier-≡ ⁻¹) y)) ∙ (ap (Uf ∘ is) (happly _ _ (ap (transport id) (type-sym _ _ carrier-≃) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym carrier-≃))) y) ∙ (α (Ug y) ∙ ap js (happly _ _ (pr₁ (dpr-≡ q')) y))))
   
-  
--- Problem: why is Agda unable to infer codomain of composite? There seems to be a problem with the third component of the algebra (the homotopy).
+-- TO DO
+
+-- 1. Why is Agda unable to infer codomain of composite? There seems to be a problem with the third component of the algebra (the homotopy). E.g.
 
 postulate
   C D : ℕAlg 𝓤
@@ -83,4 +84,4 @@ postulate
   f : ℕHom (C {𝓤}) (D {𝓤})
   p : _∘ℕ_ {E = C} g f ≡ ℕAlg-id (C {𝓤})  
 
--- Problem: the proof seems to rely on some sort of SIP, because it deduces that I = J from the existence of an "equivalence homomorphism". See Ch2.14. Perhaps this is not necessary but it would be useful to work out the properties of equivalence homomorphisms in general: we should get an equivalence from the underlying functions, 
+-- 2. The proof seems to rely on some sort of SIP, because it deduces that I = J from the existence of an "equivalence homomorphism". See Ch2.14. Perhaps this is not necessary but it would be useful to work out the properties of equivalence homomorphisms in general.

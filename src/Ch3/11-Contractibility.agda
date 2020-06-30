@@ -51,6 +51,11 @@ isContr-iff-is-𝟙 A = sufficiency , necessity where
   sufficiency = pr₁ (is-inhabited-Prop-iff-is-𝟙 A) ∘ pr₁ (isContr-iff-is-inhabited-Prop A)
   necessity =  pr₂ (isContr-iff-is-inhabited-Prop A) ∘ pr₂ (is-inhabited-Prop-iff-is-𝟙 A)
 
+-- Related result: every map between contractible types is an equivalence.
+
+map-between-Contrs-is-equiv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContr A → isContr B → isequiv f
+map-between-Contrs-is-equiv f (a , i) (b , j) = qinv-to-isequiv ((λ y → a) , (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop _) (b , j)) (f a)) , i)
+
 
 -- Lemma 3.11.4 (isContr is a proposition).
 
