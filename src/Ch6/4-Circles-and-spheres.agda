@@ -10,8 +10,8 @@ module Ch6.4-Circles-and-spheres where
 
 -- Lemma 6.4.1 (The circle is non-trivial).
 
-𝕊¹-is-non-trivial : ¬ (loop ≡ refl base¹)
-𝕊¹-is-non-trivial s = 𝓤₀-is-not-set λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
+𝕊¹-is-non-trivial : ¬ (loop₁ ≡ refl base₁)
+𝕊¹-is-non-trivial s = 𝓤₀-is-not-set λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
 
 
 -- Lemma 6.4.2 TO DO
@@ -92,7 +92,7 @@ module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {x y : A} {p q : x ≡ y} (f : (x : A
   apd²' (refl p) = refl (apd f p) 
 
 
--- Lemma (apd² and apd²' reduce to ap² when family is constant).
+-- Lemma (apd² and apd²' "reduce" to ap² when family is constant).
 
 apd²-const : {A : 𝓤 ̇} (B : 𝓥 ̇) {x y : A} {p q : x ≡ y} (f : A → B) (r : p ≡ q) → apd² f r ≡ apd-const B f p ∙ (transportconst B p (f x) ∙ₗ (ap² f r ∙ apd-const' B f q)) ∙ ∙-assoc _ _ _ ∙ (transport²const B r (f x) ⁻¹ ∙ᵣ apd f q)
 apd²-const B {x} {.x} {.(refl x)} {.(refl x)} f (refl (refl x)) = refl _
@@ -100,7 +100,7 @@ apd²-const B {x} {.x} {.(refl x)} {.(refl x)} f (refl (refl x)) = refl _
 
 {- Note: There's a slight inconsistency in the book. Let f = 𝕊²-ind. Then, 
   
-  apd² f surf : adp f (refl base²) ≡ apd f (refl base²) [ P ⇊ surf ] , 
+  apd² f surf : adp f (refl base₂) ≡ apd f (refl base₂) [ P ⇊ surf ] , 
 
 while 
   
@@ -119,10 +119,10 @@ postulate
 
   -- (ii) Constructors
   
-  base² : 𝕊²
-  surf : refl base² ≡ refl base²
+  base₂ : 𝕊²
+  surf : refl base₂ ≡ refl base₂
 
-module _ (P : 𝕊² → 𝓤 ̇) (b : P base²) (s : refl b ≡ refl b [ P ⇊ surf ]) where
+module _ (P : 𝕊² → 𝓤 ̇) (b : P base₂) (s : refl b ≡ refl b [ P ⇊ surf ]) where
 
   postulate
 
@@ -132,25 +132,23 @@ module _ (P : 𝕊² → 𝓤 ̇) (b : P base²) (s : refl b ≡ refl b [ P ⇊ 
   
     -- (iv) Computation rules
 
-    base²-β : 𝕊²-ind base² ↦ b
+    base₂-β : 𝕊²-ind base₂ ↦ b
 
-    {-# REWRITE base²-β #-}
+    {-# REWRITE base₂-β #-}
 
     surf-β : apd² 𝕊²-ind surf ≡ s
 
-
--- Recursion principle for 𝕊²
-
 module _ {B : 𝓤 ̇} (b : B) (s : refl b ≡ refl b) where
 
+  -- (v) Recursion principle
+  
   𝕊²-rec : 𝕊² → B
   𝕊²-rec = 𝕊²-ind (λ x → B) b (s ∙ (transport²const B surf b ⁻¹ ∙ ru _))
 
-  base²-β' : 𝕊²-rec base² ≡ b
-  base²-β' = refl _
+  -- (vi) Computation rules
+  
+  base₂-β' : 𝕊²-rec base₂ ≡ b
+  base₂-β' = refl _
 
   surf-β' : ap² 𝕊²-rec surf ≡ s
-  surf-β' =  ru _ ∙ lu _ ∙ ru _ ∙ lu _ ∙ ru _ ∙ ∙ᵣ-inv _ _ _ (ap (λ - → refl (refl (𝕊²-rec base²)) ∙ (refl (refl (𝕊²-rec base²)) ∙ (ap² 𝕊²-rec surf ∙ refl (refl (𝕊²-rec base²))) ∙ refl (refl (𝕊²-rec base²))) ∙ refl (refl (𝕊²-rec base²)) ∙ (- ∙ ru (transport² (λ a → B) surf (𝕊²-rec base²)))) (lu (transport²const B surf (𝕊²-rec base²) ⁻¹)) ∙ (apd²-const B 𝕊²-rec surf ⁻¹ ∙ surf-β (λ x → B) b (s ∙ (transport²const B surf b ⁻¹ ∙ ru _))))
-
-
--- TO DO: Improve readability of previous proof!
+  surf-β' =  ru _ ∙ lu _ ∙ ru _ ∙ lu _ ∙ ru _ ∙ ∙ᵣ-inv _ _ _ (ap (λ - → refl (refl (𝕊²-rec base₂)) ∙ (refl (refl (𝕊²-rec base₂)) ∙ (ap² 𝕊²-rec surf ∙ refl (refl (𝕊²-rec base₂))) ∙ refl (refl (𝕊²-rec base₂))) ∙ refl (refl (𝕊²-rec base₂)) ∙ (- ∙ ru (transport² (λ a → B) surf (𝕊²-rec base₂)))) (lu (transport²const B surf (𝕊²-rec base₂) ⁻¹)) ∙ (apd²-const B 𝕊²-rec surf ⁻¹ ∙ surf-β (λ x → B) b (s ∙ (transport²const B surf b ⁻¹ ∙ ru _))))

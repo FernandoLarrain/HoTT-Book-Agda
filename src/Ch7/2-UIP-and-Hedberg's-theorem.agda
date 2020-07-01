@@ -75,3 +75,4 @@ decidable-equality-implies-isSet X de = dne-≡-to-isSet X λ x y → lem-to-dne
 ℕ-has-decidable-equality (succ n) zero = inr (succ-is-not-0 n)
 ℕ-has-decidable-equality (succ n) (succ m) = +-recursion (λ p → inl (ap succ p)) (λ f → inr λ p → f (succ-is-injective n m p)) (ℕ-has-decidable-equality n m)
 
+

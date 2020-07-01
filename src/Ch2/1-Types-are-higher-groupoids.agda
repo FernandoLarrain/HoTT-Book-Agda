@@ -83,5 +83,27 @@ hz-agreement {𝓤} {A} {x} {x} {x} {refl x} {refl x} {refl x} {refl x} (refl (r
 {- For the proof of theorem, see next section, after Lemma 2.2.1 (Action on paths). The book proves Eckmann-Hilton before defining action on paths, but it is not clear how to do so without doing a path induction or using one of the asymmetric definitions of _∙_. -}
 
 
+-- Definition 2.1.7 (pointed type).
+
+_⊙ : (𝓤 : Universe) → 𝓤 ⁺ ̇
+𝓤 ⊙ = Σ A ꞉ 𝓤 ̇ , A
+
+
+-- Definition (pointed map).
+
+_⊙→_ : (A : 𝓤 ⊙) (B : 𝓥 ⊙) → 𝓤 ⊔ 𝓥 ̇
+(A , a) ⊙→ (B , b) = Σ f ꞉ (A → B) , f a ≡ b 
+
+
+-- Definition 2.1.8 (n-fold iterated loop space).
+
+Ω : ℕ → 𝓤 ⊙ → 𝓤 ⊙
+Ω zero (A , a) = A , a
+Ω (succ n) (A , a) = Ω n ((a ≡ a) , refl a)
+
+Ω' : ℕ → 𝓤 ⊙ → 𝓤 ⊙
+Ω' zero A = A
+Ω' (succ n) A = ((pr₂ (Ω' n A) ≡ pr₂ (Ω' n A)) , refl (pr₂ (Ω' n A)))
+
 
 

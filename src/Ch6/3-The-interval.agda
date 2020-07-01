@@ -42,13 +42,14 @@ module _ (P : I → 𝓤 ̇) (b₀ : P i0) (b₁ : P i1) (s : b₀ ≡ b₁ [ P 
     
     seg-β : apd I-ind seg ≡ s
 
-
--- Recursion principle for I
-
 module _ {B : 𝓤 ̇} (b₀ b₁ : B) (s : b₀ ≡ b₁) where
 
+  -- (v) Recursion principle
+  
   I-rec : I → B
   I-rec = I-ind (λ i → B) b₀ b₁ (transportconst B seg b₀ ∙ s)
+
+  -- (vi) Computation rules
 
   i0-β' : I-rec i0 ≡ b₀
   i0-β' = refl _

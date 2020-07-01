@@ -14,6 +14,18 @@ module Ch2.Exercises where
 
 -- Exercise 2.4 (n-dimensional paths in a type).
 
+Bndry : ℕ → 𝓤 ̇ → 𝓤 ̇
+
+Path : (n : ℕ) {A : 𝓤 ̇} → Bndry n A → 𝓤 ̇
+
+Bndry {𝓤} zero A = Lift 𝓤 𝟙
+Bndry (succ n) A = Σ b ꞉ Bndry n A , Path n b × Path n b
+
+Path zero {A} b = A -- Maybe substitute ∂ for b?
+Path (succ n) (b , lhs , rhs) = lhs ≡ rhs
+
+{- Old definitions:
+ 
 Path : ℕ → 𝓤 ̇ → 𝓤 ̇
 Path zero A = A
 Path (succ n) A = Σ w ꞉ (Path n A × Path n A)  , pr₁ w ≡ pr₂ w
@@ -30,20 +42,65 @@ path n A ((a , b) , p) = p
 boundary : (n : ℕ) (A : 𝓤 ̇) → Path (succ n) A → Path n A × Path n A
 boundary n A ((a , b) , p) = a , b
 
-module test-Path (A : 𝓤 ̇) (x y : A) (p q : x ≡ y) (r : p ≡ q) where
-
-  _ : type-of x ≡ Path 0 A
-  _ = refl _
-
-  _ : type-of {X = Path 1 A} ((x , y) , p) ≡ Path 1 A
-  _ = refl _
-
-  _ : type-of {X = Path 2 A} ((((x , y) , p) , ((x , y) , q)) , dpair-≡ (refl _ , r)) ≡ Path 2 A
-  _ = refl _
+-}
 
 module higher-paths where
 
-  -- Action on n-paths.
+  -- Action of a function on n-paths.
+
+  ap'Codom : (n : ℕ) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {b : Bndry n A} (p : Path n b) → 𝓥 ̇
+  
+  ap' : (n : ℕ) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {b : Bndry n A} (p : Path n b) → ap'Codom n f p
+  
+  ap'Codom zero {A} {B} f a = B
+  ap'Codom (succ n) f (refl x) = ap' n f x ≡ ap' n f x
+  
+  ap' zero f a = f a
+  ap' (succ n) f (refl _) = refl (ap' n f _)
+
+  -- Dependent n-paths.
+
+  BndryOver : (n : ℕ) {A : 𝓤 ̇} → (A → 𝓥 ̇) → Bndry n A → 𝓥 ̇
+
+  PathOver' : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) {b : Bndry n A} (p : Path n b) (b' : BndryOver n P b) → 𝓥 ̇
+
+  BndryOver {𝓤} {𝓥} zero P b = Lift 𝓥 𝟙
+  BndryOver (succ n) P (b , lhs , rhs) = Σ b' ꞉ BndryOver n P b , PathOver' n P lhs b' × PathOver' n P rhs b'
+  
+  PathOver' zero P a b' = P a
+  PathOver' (succ n) P (refl _) (b' , lhs' , rhs') = lhs' ≡ rhs'
+
+  -- Action of a dependent function on n-paths.
+
+  apd'Codom : (n : ℕ) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (f : Π P) {b : Bndry n A} (p : Path n b) → 𝓥 ̇ 
+
+  apd' : (n : ℕ) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (f : Π P) {b : Bndry n A} (p : Path n b) → apd'Codom n f p
+
+  apd'Codom zero {A} {P} f a = P a
+  apd'Codom (succ n) f (refl x) = apd' n f x ≡ apd' n f x 
+
+  apd' zero f a = f a
+  apd' (succ n) f (refl _) = refl _
+  
+  -- Transport along n-paths. (Note: transport' is indexed by the dimension of the output.)
+
+  left-basept : {n : ℕ} {A : 𝓤 ̇} → Bndry (succ n) A → A
+  left-basept {n = zero} (b , lhs , rhs) = lhs
+  left-basept {n = succ n} (b , lhs , rhs) = left-basept b
+
+  transport'Codom : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) (b : Bndry (succ n) A) → Path (succ n) b → P (left-basept b) → 𝓥 ̇
+
+  transport' : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) (b : Bndry (succ n) A) (p : Path (succ n) b) (u : P (left-basept b)) → transport'Codom n P b p u   
+
+  transport'Codom zero P (x , a , .a) (refl .a) u = P a
+  transport'Codom (succ n) P (b , lhs , .lhs) (refl .lhs) u = transport' n P b lhs u ≡ transport' n P b lhs u
+
+  transport' zero P (x , a , .a) (refl .a) = id
+  transport' (succ n) P (b , lhs , .lhs) (refl .lhs) u = refl _
+
+  {- Old definitions:
+
+  -- Action of a function on n-paths.
 
   ApCodomain : (n : ℕ) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (z : Path n A) → 𝓥 ̇
   Ap : (n : ℕ) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (z : Path n A) → ApCodomain n f z
@@ -52,25 +109,6 @@ module higher-paths where
   Ap zero f a = f a
   Ap (succ n) f ((a , .a) , refl .a) = refl (Ap n f a)
 
-  module test-Ap (A : 𝓤 ̇) (B : 𝓥 ̇) (f : A → B) (x : A) where
-
-    _ : ApCodomain 0 f x ≡ B
-    _ = refl _
-
-    _ : Ap 0 f x ≡ f x
-    _ = refl _
-
-    _ : ApCodomain 1 f ((x , x) , refl x) ≡ (f x ≡ f x)
-    _ = refl _ 
-
-    _ : Ap 1 f ((x , x) , refl x) ≡ refl (f x) 
-    _ = refl _
-
-    _ : ApCodomain 2 f ((((x , x) , refl x) , ((x , x) , refl x)) , refl ((x , x) , refl x)) ≡ (ap f (refl x) ≡ ap f (refl x))
-    _ = refl _
-
-    - : Ap 2 f ((((x , x) , refl x) , ((x , x) , refl x)) , refl ((x , x) , refl x)) ≡ refl (ap f (refl x))
-    - = refl _  
 
   -- Transport along n-dimensional paths.
 
@@ -103,6 +141,10 @@ module higher-paths where
   ApdCodomain (succ n) {P = P} f ((x , .x) , refl .x) = Apd n f x ≡ Apd n f x 
   Apd zero f a = f a
   Apd (succ n) f ((x , .x) , refl .x) = refl (Apd n f x)
+
+  -}
+
+  -- TO DO: check definitions, prove that they coincide with the definitions in the book, see if they are related to one another (e.g. dependent case over constant family, transport and dependent paths) and apply to loop spaces and n-spheres (exercise 6.4).
 
 
 -- Exercise 2.10 (Dependent pairing is associative).

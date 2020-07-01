@@ -42,10 +42,10 @@ postulate
 
   -- (ii) Constructors
   
-  base¹ : 𝕊¹ -- point constructor
-  loop : base¹ ≡ base¹ -- path constructor
+  base₁ : 𝕊¹ -- point constructor
+  loop₁ : base₁ ≡ base₁ -- path constructor
 
-module _ (P : 𝕊¹ → 𝓤 ̇) (b : P base¹) (l : b ≡ b [ P ↓ loop ]) where
+module _ (P : 𝕊¹ → 𝓤 ̇) (b : P base₁) (l : b ≡ b [ P ↓ loop₁ ]) where
 
   postulate
 
@@ -55,37 +55,41 @@ module _ (P : 𝕊¹ → 𝓤 ̇) (b : P base¹) (l : b ≡ b [ P ↓ loop ]) wh
   
     -- (iv) Computation rules
 
-    base¹-β : 𝕊¹-ind base¹ ↦ b
+    base₁-β : 𝕊¹-ind base₁ ↦ b
 
-    {-# REWRITE base¹-β #-}
+    {-# REWRITE base₁-β #-}
 
-    loop-β : apd 𝕊¹-ind loop ≡ l
+    loop₁-β : apd 𝕊¹-ind loop₁ ≡ l
 
 
 -- Lemma 6.2.5 (Recursion principle for 𝕊¹).
 
 module _ {A : 𝓤 ̇} (a : A) (p : a ≡ a) where
 
-  𝕊¹-rec : 𝕊¹ → A
-  𝕊¹-rec = 𝕊¹-ind (λ x → A)  a (transportconst A loop a ∙ p)
+  -- (v) Recursion principle
   
-  base¹-β' : 𝕊¹-rec base¹ ≡ a
-  base¹-β' = refl _
+  𝕊¹-rec : 𝕊¹ → A
+  𝕊¹-rec = 𝕊¹-ind (λ x → A)  a (transportconst A loop₁ a ∙ p)
 
-  loop-β' : ap 𝕊¹-rec loop ≡ p
-  loop-β' = ∙ₗ-inv _ (ap 𝕊¹-rec loop) p (apd-const A 𝕊¹-rec loop ⁻¹ ∙ loop-β (λ x → A) a (transportconst A loop a ∙ p))
+  -- (vi) Computation rules
+
+  base₁-β' : 𝕊¹-rec base₁ ≡ a
+  base₁-β' = refl _
+
+  loop₁-β' : ap 𝕊¹-rec loop₁ ≡ p
+  loop₁-β' = ∙ₗ-inv _ (ap 𝕊¹-rec loop₁) p (apd-const A 𝕊¹-rec loop₁ ⁻¹ ∙ loop₁-β (λ x → A) a (transportconst A loop₁ a ∙ p))
   
 
 -- Lemma 6.2.8 (Uniqueness principle for 𝕊¹)
 
-𝕊¹-η' : {A : 𝓤 ̇} (f g : 𝕊¹ → A) (p : f base¹ ≡ g base¹) (q : ap f loop ≡ ap g loop [ (λ - → - ≡ -) ↓ p ]) → f ∼ g
+𝕊¹-η' : {A : 𝓤 ̇} (f g : 𝕊¹ → A) (p : f base₁ ≡ g base₁) (q : ap f loop₁ ≡ ap g loop₁ [ (λ - → - ≡ -) ↓ p ]) → f ∼ g
 𝕊¹-η' {A = A} f g p q = 𝕊¹-ind (λ x → f x ≡ g x) p (
-  transport-funval-≡ f g loop p ∙
-  ap (λ - → ap f loop ⁻¹ ∙ p ∙ -) (q ⁻¹ ∙  transport-loop p (ap f loop)) ∙
+  transport-funval-≡ f g loop₁ p ∙
+  ap (λ - → ap f loop₁ ⁻¹ ∙ p ∙ -) (q ⁻¹ ∙  transport-loop p (ap f loop₁)) ∙
   ∙-assoc _ _ _ ⁻¹ ∙
-  ap (ap f loop ⁻¹ ∙_) (∙-assoc _ _ _) ∙
-  ap (λ - → ap f loop ⁻¹ ∙ (- ∙ p)) (∙-assoc _ _ _) ∙
-  ap (λ - → ap f loop ⁻¹ ∙ (- ∙ p)) (ap (_∙ ap f loop) (rinv _) ∙ (lu _ ⁻¹)) ∙    ∙-assoc _ _ _ ∙
+  ap (ap f loop₁ ⁻¹ ∙_) (∙-assoc _ _ _) ∙
+  ap (λ - → ap f loop₁ ⁻¹ ∙ (- ∙ p)) (∙-assoc _ _ _) ∙
+  ap (λ - → ap f loop₁ ⁻¹ ∙ (- ∙ p)) (ap (_∙ ap f loop₁) (rinv _) ∙ (lu _ ⁻¹)) ∙    ∙-assoc _ _ _ ∙
   ap (_∙ p) (linv _) ∙
   lu _ ⁻¹
   )
@@ -95,11 +99,11 @@ module _ {A : 𝓤 ̇} (a : A) (p : a ≡ a) where
 
 UMP-𝕊¹ : (A : 𝓤 ̇) → (𝕊¹ → A) ≃ (Σ x ꞉ A , x ≡ x)
 UMP-𝕊¹ A =
-  (λ f → (f base¹ , ap f loop)) ,
+  (λ f → (f base₁ , ap f loop₁)) ,
   (qinv-to-isequiv (
     Σ-induction (𝕊¹-rec {A = A}) ,
-    Σ-induction (λ a l → dpair-≡ (refl _ , loop-β' a l)) ,
-    λ f → funext _ _ (𝕊¹-η' _ _ (refl _) (loop-β' (f base¹) (ap f loop))) 
+    Σ-induction (λ a l → dpair-≡ (refl _ , loop₁-β' a l)) ,
+    λ f → funext _ _ (𝕊¹-η' _ _ (refl _) (loop₁-β' (f base₁) (ap f loop₁))) 
     )
   )
 

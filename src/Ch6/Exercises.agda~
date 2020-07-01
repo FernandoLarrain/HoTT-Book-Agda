@@ -1,0 +1,24 @@
+{-# OPTIONS --without-K --exact-split --rewriting #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch6.2-Induction-pples-and-dependent-paths
+
+module Ch6.Exercises where
+
+
+-- Exercise 6.4 (n-spheres).
+
+-- Define dependent n-loops, the action of dependent functions on dependent n-loops and write down the induction principle for the n-spheres.
+
+postulate
+
+  -- (i) Type formation rule
+
+  Sphere : ℕ → 𝓤₀ ̇
+
+  -- (ii) Constructors
+
+  base : ℕ → Sphere n
+  
