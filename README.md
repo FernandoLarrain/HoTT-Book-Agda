@@ -91,9 +91,11 @@ Agda has some features that are inconsitent with HoTT. To avoid them,
 
 2. every file should begin with `{-# OPTIONS --without-K #-}`
 
-3. The following files use the `rewrite` construct: `Ch2.4`, `Ch4.2` and `Ch7.1`.
+Also,
 
-4. The `--safe` option was used until the first postulates were made (around the end of `Ch2`).
+1. The following files use the `rewrite` construct: `Ch2.4`, `Ch4.2` and `Ch7.1` (is it consistent with HoTT?).
+
+2. The `--safe` option was used until the first postulates were made (around the end of `Ch2`).
 
 
 ## The axioms
