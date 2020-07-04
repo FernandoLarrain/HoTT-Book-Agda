@@ -3,6 +3,7 @@
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
 open import Ch6.2-Induction-pples-and-dependent-paths
 
 module Ch6.4-Circles-and-spheres where
@@ -110,11 +111,23 @@ module PathOver'-2-is-PathOver² where
   open higher-paths
   open PathOver'-1-is-PathOver
 
-  BndryOver²-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 2 X) → BndryOver 2 P b ≡ -Σ (P (lhs (pr₁ b)) × P (rhs (pr₁ b))) λ { (u , v) → PathOver P (lhs b) u v × PathOver P (rhs b) u v }
-  BndryOver²-agreement P ((b , x , y) , p , q) = ?
+  -- Change use of pattern matching? At least record...
+
+  BndryOver²-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 2 X) → BndryOver 2 P b ≃ -Σ (P (lhs (pr₁ b)) × P (rhs (pr₁ b))) λ { (u , v) → PathOver P (lhs b) u v × PathOver P (rhs b) u v }
+  BndryOver²-agreement {𝓤} {𝓥} P (b , p , q) =
+    (Σ b' ꞉ BndryOver 1 P b , PathOver' 1 P p b' × PathOver' 1 P q b')
+      ≃⟨ {!!}) ⟩
+    {!!}
+      ≃⟨ {!!} ⟩
+    {!!} 
+      ≃⟨ {!!} ⟩
+    {!!} 
+
+-- Use equivalences?
+   
+-- TO DO: show below that apd' 2 is apd².
 
 -}
-
 -- Lemma 6.4.6 (Dependent action on 2-paths).
 
 module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {x y : A} {p q : x ≡ y} (f : (x : A) → P x) where

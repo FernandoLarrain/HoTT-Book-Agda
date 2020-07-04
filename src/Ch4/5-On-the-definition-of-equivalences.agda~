@@ -1,0 +1,10 @@
+{-# OPTIONS --without-K --exact-split #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.2-Half-adjoint-equivalences
+open import Ch4.3-Bi-invertible-maps
+open import Ch4.4-Contractible-fibers
+
+module Ch4.5-On-the-definition-of-equivalences where

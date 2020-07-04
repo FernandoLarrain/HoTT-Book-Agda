@@ -221,27 +221,3 @@ ishae-is-Prop {A = A} {B} f = suffices λ h → retract-of-Contr-is-Contr (≃-t
     (Σ λ (g : B → A) → Σ λ (ε : f ∘ g ∼ id) → rcoh f (g , ε))
       ≃⟨ Σ-preserves-family-≃ (λ g → Σ-swap _ _ _) ⟩
     ishae f ■
-
-
--- With the notion of half-adjoint equivalence we can generalize a couple of results from Ch2.Exercises:
-
-Π-preserves-base-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : B → 𝓦 ̇) (e : Σ f ꞉ (A → B) , ishae f) → Σ ϕ ꞉ (Π (P ∘ (pr₁ e)) → Π P) , ishae ϕ
-Π-preserves-base-≃' P (f , g , η , ε , τ) =
-  (λ h b → transport P (ε b) (h (g b))) ,
-  (qinv-to-ishae (
-    (λ k a → k (f a)) ,
-    (λ k → funext _ _ (λ b → apd k (ε b))) ,
-    λ h → funext _ _ (λ a → ap (λ - → transport P - (h (g (f a)))) (τ a ⁻¹)∙ (transport-∘ P f (η a) (h (g (f a))) ⁻¹ ∙ apd h (η a)))
-    )
-  )
-
-Σ-preserves-base-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : B → 𝓦 ̇) (e : Σ f ꞉ (A → B) , ishae f) → Σ ϕ ꞉ (Σ (P ∘ (pr₁ e)) → Σ P) , ishae ϕ 
-Σ-preserves-base-≃' P (f , g , η , ε , τ) =
-  Σ-induction (λ a y → (f a) , y) ,
-  (qinv-to-ishae (
-    Σ-induction (λ b y → (g b) , (transport P (ε b ⁻¹) y)) ,
-    Σ-induction (λ b y → dpair-≡ (ε b , (transport-∙ P (ε b ⁻¹) (ε b) y ∙ ap (λ - → transport P - y) (linv (ε b))))) ,
-    Σ-induction (λ a y → dpair-≡ (η a , (transport-∘ P f (η a) _ ∙ (transport-∙ P (ε (f a) ⁻¹) (ap f (η a)) y ∙ ap (λ - → transport P - y) ((ε (f a) ⁻¹ ∙ₗ τ a) ∙ linv (ε (f a)))))))
-    )
-  )
-

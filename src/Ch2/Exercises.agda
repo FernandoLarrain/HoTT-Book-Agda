@@ -5,6 +5,7 @@ open import Ch2.1-Types-are-higher-groupoids
 open import Ch2.2-Functions-are-functors
 open import Ch2.3-Type-families-are-fibrations 
 open import Ch2.4-Homotopies-and-equivalences
+open import Ch2.6-Cartesian-product-types
 open import Ch2.7-Σ-types
 open import Ch2.9-Π-types-and-funext
 open import Ch2.10-Universes-and-univalence
@@ -246,9 +247,9 @@ boundary n A ((a , b) , p) = a , b
 
 -- Exercise 2.17 (Type constructors preserve equivalences)
 
--- (i) Π preserves equivalences
+-- (i) → preserves equivalences
 
--- The proof following lemma does not require tools beyond Ch2, but the book does not use (nor prove) it until Ch4.
+-- The proof of the following lemma does not require tools beyond Ch2, but the book does not use (nor prove) it until Ch4.
 
 -- Lemma 4.2.8
 
@@ -266,18 +267,23 @@ post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
 
 -- → preserves equivalence of domains
 
-→-preserves-base-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) → A ≃ B → (A → C) ≃ (B → C)
-→-preserves-base-≃ C (f , i) = ≃-sym (_∘ f , qinv-to-isequiv (pre-∘-by-qinv-is-qinv C f (isequiv-to-qinv i)))
+→-preserves-dom-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) → A ≃ B → (A → C) ≃ (B → C)
+→-preserves-dom-≃ C (f , i) = ≃-sym (_∘ f , qinv-to-isequiv (pre-∘-by-qinv-is-qinv C f (isequiv-to-qinv i)))
 
--- Π preserves equivalence of domains
+→-preserves-codom-≃ : (A : 𝓤 ̇) {B : 𝓥 ̇} {C : 𝓦 ̇} → B ≃ C → (A → B) ≃ (A → C)
+→-preserves-codom-≃ A (f , i) = f ∘_ , qinv-to-isequiv (post-∘-by-qinv-is-qinv A f (isequiv-to-qinv i))
+
+-- (ii) Π preserves equivalences
+
+-- Π preserves equivalences of base types
 
 Π-preserves-base-≡ : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Π (transport (λ - → - → 𝓥 ̇) p P) ≡ Π P
 Π-preserves-base-≡ P (refl A) = refl _ 
 
 {- A more general version of the next result can be found in Ch4.2 -}
 
-Π-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
-Π-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua _ _ e in idtoeqv _ _ (
+Π-preserves-base-≃' : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
+Π-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua _ _ e in idtoeqv _ _ (
   Π (P ∘ pr₁ e)
     ≡⟨ ap Π (transport-along-ua-is-pre-∘ e P ⁻¹) ⟩
   Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
@@ -285,7 +291,7 @@ post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
   Π P ∎
   )
 
--- Π preserves equivalence of codomains
+-- Π preserves fiberwise equivalences
 
 Π-preserves-family-≃ : {A : 𝓤 ̇} {P : A → 𝓦 ̇} {Q : A → 𝓣 ̇} → ((a : A) → P a ≃ Q a) → Π P ≃ Π Q
 Π-preserves-family-≃ ϕ =
@@ -303,21 +309,28 @@ post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
   α = (λ a → qinv₂ (q a))
   β = (λ a → qinv₃ (q a))
 
--- (ii) Σ preserves equivalences
+-- (iii) Σ preserves equivalences
+
+-- Σ preserves equivalences of base types
 
 Σ-preserves-base-≡ : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Σ (transport (λ - → - → 𝓥 ̇) p P) ≡ Σ P
 Σ-preserves-base-≡ P (refl A) = refl _
 
-{- A more general version of the next result can be found in Ch4.2 -}
+{- A more general version of the next result can be found in Ch4.5 -}
 
-Σ-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
-Σ-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua A B e in idtoeqv _ _
+Σ-preserves-base-≃' : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
+Σ-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua A B e in idtoeqv _ _
   (Σ (P ∘ pr₁ e)
     ≡⟨ ap Σ (transport-along-ua-is-pre-∘ e P ⁻¹) ⟩
   Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
     ≡⟨ Σ-preserves-base-≡ P (p ⁻¹) ⟩
   Σ P ∎
   )
+
+-- Σ preserves fiberwise equivalences
+
+Σ-preserves-family-≡ : {A : 𝓤 ̇} {P Q : A → 𝓥 ̇} → (P ≡ Q) → Σ P ≡ Σ Q
+Σ-preserves-family-≡ (refl P) = refl _
 
 Σ-preserves-family-≃ : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 𝓦 ̇} → ((a : A) → P a ≃ Q a) → Σ P ≃ Σ Q
 Σ-preserves-family-≃ f =
@@ -328,6 +341,34 @@ post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
     Σ-induction (λ a p → dpair-≡ ((refl a) , ((qinv₃ (isequiv-to-qinv (pr₂ (f a))) p))))
     )
   )
+
+-- (iv) × preserves equivalences
+
+×-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓥 ̇} {D : 𝓦 ̇} → A ≃ C → B ≃ D → A × B ≃ C × D
+×-preserves-≃ (f , i) (g , j) = (λ { (a , b) → (f a , g b) }) , qinv-to-isequiv ((λ { (c , d) → (finv c , ginv d) }) , (λ { (c , d) → pair-≡ (α c , γ d) }) , (λ { (a , b) → pair-≡ (β a , δ b) }) )
+  where
+  qf = isequiv-to-qinv i
+  finv = qinv₁ qf
+  α = qinv₂ qf
+  β = qinv₃ qf
+  qg = isequiv-to-qinv j
+  ginv = qinv₁ qg
+  γ = qinv₂ qg
+  δ = qinv₃ qg
+
+-- (v) + preserves equivalences
+
++-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓥 ̇} {D : 𝓦 ̇} → A ≃ C → B ≃ D → A + B ≃ C + D
++-preserves-≃ (f , i) (g , j) = +-recursion (inl ∘ f) (inr ∘ g) , qinv-to-isequiv (+-recursion (inl ∘ finv) (inr ∘ ginv) , +-induction _ (λ c → ap inl (α c)) (λ d → ap inr (γ d)) , +-induction _ (λ a → ap inl (β a)) (λ b → ap inr (δ b)))
+  where
+  qf = isequiv-to-qinv i
+  finv = qinv₁ qf
+  α = qinv₂ qf
+  β = qinv₃ qf
+  qg = isequiv-to-qinv j
+  ginv = qinv₁ qg
+  γ = qinv₂ qg
+  δ = qinv₃ qg
 
 
 module whiskering-and-hz-composition where
