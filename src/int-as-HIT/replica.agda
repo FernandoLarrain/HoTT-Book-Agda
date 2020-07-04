@@ -20,8 +20,14 @@ data ℤω : 𝓤₀ ̇ where
 
 -- The following function is useful for expressing the induction principle of ℤₕ:
 
-fiberwise-apd : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {f : A → A} (g : (x : A) → P x → P (f x)) {x y : A} (p : x ≡ y) {u : P x} {v : P y} → u ≡ v [ P ↓ p ] → g x u ≡ g y v [ P ↓ ap f p ]
-fiberwise-apd g (refl x) h = ap (g x) h -- Can we avoid path-induction?
+ap-over : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 𝓦 ̇} (f : (x : A) → P x → Q x) {x y : A} (p : x ≡ y) {u : P x} {v : P y} → u ≡ v [ P ↓ p ] → f x u ≡ f y v [ Q ↓ p ]
+ap-over f (refl x) h = ap (f x) h
+
+ap-over' : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 𝓦 ̇} (f : (x : A) → P x → Q x) {x y : A} (p : x ≡ y) {u : P x} {v : P y} → u ≡ v [ P ↓ p ] → f x u ≡ f y v [ Q ↓ p ]
+ap-over' {P = P} {Q} f {x} {y} p {u} h = transport-fun-family P Q f _ _ p u ∙ ap (f y) h
+
+ap-over-agreement : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 𝓦 ̇} (f : (x : A) → P x → Q x) {x y : A} (p : x ≡ y) {u : P x} {v : P y} (h : u ≡ v [ P ↓ p ]) → ap-over f p h ≡ ap-over f p h
+ap-over-agreement f (refl x) (refl u) = refl _
 
 postulate
 
@@ -101,7 +107,7 @@ module _
 
   (ρ : (z : ℤₕ) (u : P z) → next (predₕ z) (previous z u) ≡ u [ P ↓ retₕ z ])
 
-  (τ : ( z : ℤₕ) (u : P z) → fiberwise-apd next (secₕ z) (σ z u) ≡ ρ (succₕ z) (next z u) [ P ⇊ cohₕ z ])
+  (τ : ( z : ℤₕ) (u : P z) → transport-∘ P succₕ (secₕ z) _ ⁻¹ ∙  ap-over next (secₕ z) (σ z u) ≡ ρ (succₕ z) (next z u) [ P ⇊ cohₕ z ])
 
   where
 
@@ -129,7 +135,9 @@ module _
 
     retₕ-β' : (z : ℤₕ) → apd ℤₕ-ind (retₕ z) ≡ ρ z (ℤₕ-ind z)
 
---    cohₕ-β' : (z : ℤₕ) → apd² ℤₕ-ind (cohₕ z) ≡ {!!} ∙ τ z (ℤₕ-ind z) ∙ (transport² P (cohₕ z) _ ∙ₗ {!!})
+--    cohₕ-β' : (z : ℤₕ) → apd² ℤₕ-ind (cohₕ z) ≡ {!!} ∙ τ z (ℤₕ-ind z) ∙ (transport² P (cohₕ z) _ ∙ₗ {!!}) -- dependent 1-paths can be directly equated because dependent 0-paths are just applications of the dependent function, but dependent 2-paths can in general only be equated via a dependent 1-path, so this rule should be a PathOver rather than a regular path. We might also want to use ``hubs and spokes'' instead.
+
+-- shouldn't computation rules for dependent functions be phrased in terms of dependent paths?
     
 
 -- Theorem: ℤω ≃ ℤₕ

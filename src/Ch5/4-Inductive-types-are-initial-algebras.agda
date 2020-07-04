@@ -69,10 +69,10 @@ Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) = Σ-o
   carrier-≃ = Uf , (qinv-to-isequiv (Ug , happly _ _ (pr₁ (dpr-≡ q')) , happly _ _ (pr₁ (dpr-≡ p'))))
   carrier-≡ : UI ≡ UJ
   carrier-≡ = ua UI UJ (carrier-≃)
-  point-≡ : transport id carrier-≡ i₀ ≡ j₀
+  point-≡ : coe carrier-≡ i₀ ≡ j₀
   point-≡ = idtoeqv-β _ _ carrier-≃ i₀ ∙ p
   homotopy-≡ : transport (λ X → X → X) carrier-≡ is ≡ js
-  homotopy-≡ = funext _ _ λ y → transport-fun' {X = 𝓤 ̇} {id} {id} UI UJ carrier-≡ is y ∙ (idtoeqv-β _ _ carrier-≃ (is (transport id (carrier-≡ ⁻¹) y)) ∙ (ap (Uf ∘ is) (happly _ _ (ap (transport id) (type-sym _ _ carrier-≃) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym carrier-≃))) y) ∙ (α (Ug y) ∙ ap js (happly _ _ (pr₁ (dpr-≡ q')) y))))
+  homotopy-≡ = funext _ _ λ y → transport-fun' {X = 𝓤 ̇} {id} {id} UI UJ carrier-≡ is y ∙ (idtoeqv-β _ _ carrier-≃ (is (coe (carrier-≡ ⁻¹) y)) ∙ (ap (Uf ∘ is) (happly _ _ (ap coe (type-sym _ _ carrier-≃) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym carrier-≃))) y) ∙ (α (Ug y) ∙ ap js (happly _ _ (pr₁ (dpr-≡ q')) y))))
   
 -- TO DO
 

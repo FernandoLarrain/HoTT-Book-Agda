@@ -81,7 +81,7 @@ is-1-type A = (x y : A) (p q : x ≡ y) (r s : p ≡ q) → r ≡ s
 -- Lemma 3.1.8. See Lemma 3.3.4.
 
 
--- Example 3.1.9 (Not all types are stes).
+-- Example 3.1.9 (Not all types are sets).
 
 𝓤₀-is-not-set : isSet (𝓤₀ ̇ )→ 𝟘
 𝓤₀-is-not-set g = ₀-is-not-₁ (transport (λ (- : 𝟚 → 𝟚) → ₀ ≡ - ₀) (ap pr₁ q) (refl ₀))

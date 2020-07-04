@@ -76,3 +76,9 @@ decidable-equality-implies-isSet X de = dne-≡-to-isSet X λ x y → lem-to-dne
 ℕ-has-decidable-equality (succ n) (succ m) = +-recursion (λ p → inl (ap succ p)) (λ f → inr λ p → f (succ-is-injective n m p)) (ℕ-has-decidable-equality n m)
 
 
+-- Before continuing, show that in 7.2.2, biimplication is actually an equivalence (x ≡ y → R x y is Prop bc → preserves props (R is mere rel); isequiv is Prop, and Σ types preserve Tlevel.
+{-
+x ≡ y → R x y is Prop (R is mere rel and → preserves props)
+(isequiv f) is a Prop for all f
+So x ≡ y ≃ R x y is a Prop (Σ preserves Tlevel)
+-}

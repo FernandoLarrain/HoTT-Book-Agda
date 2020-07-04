@@ -13,10 +13,13 @@ module Ch2.10-Universes-and-univalence where
 
 -- Lemma 2.10.1 (from identity to equivalence)
 
+coe : {A B : 𝓤 ̇} → A ≡ B → A → B
+coe = transport id
+
 idtoeqv : (A B : 𝓤 ̇) → (A ≡ B) → (A ≃ B)
 idtoeqv {𝓤} A B p =
-  transport (𝑖𝑑 (𝓤 ̇ )) p ,
-  qinv-to-isequiv (ℍ A (λ B p → qinv (transport (𝑖𝑑 (𝓤 ̇)) p)) (qinv-𝑖𝑑 A) B p)
+  coe p ,
+  qinv-to-isequiv (ℍ A (λ B p → qinv (coe p)) (qinv-𝑖𝑑 A) B p)
 
 
 -- Axiom 2.10.3 (Univalence)
@@ -45,7 +48,7 @@ ua {𝓤} A B = qinv₁ (isequiv-to-qinv (univ 𝓤 A B))
 
 -- Computation rules for univalence
 
-idtoeqv-β : (A B : 𝓤 ̇) → (f : A ≃ B) → pr₁ (idtoeqv A B (ua A B f)) ∼ pr₁ f
+idtoeqv-β : (A B : 𝓤 ̇) → (f : A ≃ B) → coe (ua A B f) ∼ pr₁ f
 idtoeqv-β {𝓤} A B f = happly _ (pr₁ f) (pr₁ (dpr-≡ (α f)))
   where
   α : (idtoeqv A B ∘ ua A B) ∼ id
@@ -82,13 +85,21 @@ type-trans A B C e f = lemma _ _ _ (ua A B e) (ua B C f) ∙ (ap (λ - →  ua A
   lemma .B B .B (refl .B) (refl .B) = type-refl B
 
 
--- Lemma 2.10.5.
+-- Lemma 2.10.5 (transport in a type family is coercion along the action on paths of the type family).
 
-transport-is-idtoeqv : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {x y : A} (p : x ≡ y) (u : B x) → transport B p u ≡ pr₁ (idtoeqv _ _ (ap B p)) u
-transport-is-idtoeqv (refl x) u = refl _
+transport-is-coe-of-ap : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {x y : A} (p : x ≡ y) (u : B x) → transport B p u ≡ coe (ap B p) u
+transport-is-coe-of-ap (refl x) u = refl _
 
-transport-is-idtoeqv' : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {x y : A} (p : x ≡ y) (u : B x) → transport B p u ≡ transport id (ap B p) u
-transport-is-idtoeqv' (refl x) u = refl _
 
-transport-is-idtoeqv'' : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {x y : A} (p : x ≡ y) (u : B x) → transport id (ap B p) u ≡ pr₁ (idtoeqv _ _ (ap B p)) u
-transport-is-idtoeqv'' p u = refl _ 
+-- Transport of functions along ua
+
+transport-along-ua-is-pre-∘ : {A B : 𝓤 ̇} {C : 𝓥 ̇} (e : A ≃ B) (f : B → C) → transport (λ - → - → C) (ua A B e ⁻¹) f ≡ f ∘ (pr₁ e)
+transport-along-ua-is-pre-∘ {𝓤} {𝓥} {A} {B} {C} e f = let p = ua A B e in
+  funext _ _ (λ x → transport-fun' {A = id} {B = λ x → C} _ _ (p ⁻¹) f x ∙ transportconst C (p ⁻¹) _ ∙ ap f (ap (λ - → coe - x) (⁻¹-invol p) ∙ idtoeqv-β _ _ e x))
+
+transport-along-ua-is-post-∘ : {A : 𝓤 ̇} {B C : 𝓥 ̇} (e : B ≃ C) (f : A → B) → transport (λ - → A → -) (ua B C e) f ≡ (pr₁ e) ∘ f
+transport-along-ua-is-post-∘ {𝓤} {𝓥} {A} {B} {C} e f = let p = ua B C e in
+  funext _ _ (λ x → transport-fun' {A = λ x → A} {B = id} _ _ p f x ∙ idtoeqv-β _ _ e _ ∙ ap (pr₁ e ∘ f) (transportconst A (p ⁻¹) x))
+
+
+

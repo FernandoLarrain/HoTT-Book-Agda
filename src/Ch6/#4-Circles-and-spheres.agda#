@@ -113,6 +113,8 @@ module PathOver'-2-is-PathOver² where
   BndryOver²-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 2 X) → BndryOver 2 P b ≡ -Σ (P (lhs (pr₁ b)) × P (rhs (pr₁ b))) λ { (u , v) → PathOver P (lhs b) u v × PathOver P (rhs b) u v }
   BndryOver²-agreement P ((b , x , y) , p , q) = ?
 
+TO DO: show below that apd' 2 is apd².
+
 -}
 
 -- Lemma 6.4.6 (Dependent action on 2-paths).

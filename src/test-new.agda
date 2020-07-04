@@ -66,6 +66,7 @@ open import Ch5.4-Inductive-types-are-initial-algebras public
 open import Ch6.2-Induction-pples-and-dependent-paths public
 open import Ch6.3-The-interval public public
 open import Ch6.4-Circles-and-spheres public
+open import Ch6.Exercises public
 
 -- Chapter 7
 

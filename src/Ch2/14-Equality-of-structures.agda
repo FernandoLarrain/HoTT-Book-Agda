@@ -81,11 +81,11 @@ module Lifting-equivalences (A B : 𝓤 ̇) (e : A ≃ B) (m : A → A → A) (a
   sgrp-str-characterization = transport-dpair {A = 𝓤 ̇} {P = λ X → X → X → X} {Q = Assoc} p m a
 
   m'-characterization : m' ≡ (λ b₁ b₂ → f (m (f⁻¹ b₁) (f⁻¹ b₂)))
-  m'-characterization = funext _ _ λ b₁ → transport-fun' {X = 𝓤 ̇} {A = id} {B = λ X → X → X} _ _ p m b₁ ∙ funext _ _ λ b₂ → transport-fun' {X = 𝓤 ̇} {A = id} {B = id} _ _ p _ _ ∙ (happly _ _ aux _ ∙ ap f ( ap (m (transport id (ua A B e ⁻¹) b₁)) (happly _ _ aux⁻¹ _) ∙ ap (λ - → m - (f⁻¹ b₂)) (happly _ _ aux⁻¹ _) )) where
-    aux : transport id (ua A B e) ≡ f
+  m'-characterization = funext _ _ λ b₁ → transport-fun' {X = 𝓤 ̇} {A = id} {B = λ X → X → X} _ _ p m b₁ ∙ funext _ _ λ b₂ → transport-fun' {X = 𝓤 ̇} {A = id} {B = id} _ _ p _ _ ∙ (happly _ _ aux _ ∙ ap f ( ap (m (coe (ua A B e ⁻¹) b₁)) (happly _ _ aux⁻¹ _) ∙ ap (λ - → m - (f⁻¹ b₂)) (happly _ _ aux⁻¹ _) )) where
+    aux : coe (ua A B e) ≡ f
     aux = funext _ _ (idtoeqv-β A B e)
-    aux⁻¹ : transport id (ua A B e ⁻¹) ≡ f⁻¹
-    aux⁻¹ = ap (transport id) (type-sym _ _ e) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym e))
+    aux⁻¹ : coe (ua A B e ⁻¹) ≡ f⁻¹
+    aux⁻¹ = ap coe (type-sym _ _ e) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym e))
 
   associativity-eqn : Assoc (B , m')
   associativity-eqn b₁ b₂ b₃ = happly _ _ (happly _ _ m'-characterization b₁) (m' b₂ b₃) ∙

@@ -24,6 +24,126 @@ Bndry (succ n) A = Σ b ꞉ Bndry n A , Path n b × Path n b
 Path zero {A} b = A -- Maybe substitute ∂ for b?
 Path (succ n) (b , lhs , rhs) = lhs ≡ rhs
 
+lhs : {n : ℕ} {A : 𝓤 ̇} (b : Bndry (succ n) A) → Path n (pr₁ b)
+lhs b = pr₁ (pr₂ b)
+
+rhs : {n : ℕ} {A : 𝓤 ̇} (b : Bndry (succ n) A) → Path n (pr₁ b)
+rhs b = pr₂ (pr₂ b)
+
+module higher-paths where
+
+  -- Action of a function on n-paths.
+
+  ap'Codom : (n : ℕ) {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → (b : Bndry n A) → Path n b → 𝓥 ̇
+  
+  ap' : (n : ℕ) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {b : Bndry n A} (p : Path n b) → ap'Codom n f b p
+  
+  ap'Codom zero {A} {B} f b x = B
+  ap'Codom (succ n) f (b , x , .x) (refl .x) = ap' n f x ≡ ap' n f x
+  
+  ap' zero f a = f a
+  ap' (succ n) f (refl _) = refl (ap' n f _)
+
+  -- ap' 1 is ap
+
+  module _ (A : 𝓤 ̇) (B : 𝓥 ̇) (f : A → B) where 
+
+    private
+  
+      type-agreement : (b : Bndry 1 A) (p : Path 1 b) → ap'Codom 1 f b p ≡ type-of (ap f p)
+      type-agreement (b , x , .x) (refl .x) = refl _
+
+      term-agreement : (b : Bndry 1 A) (p : Path 1 b) → coe (type-agreement b p) (ap' 1 f p) ≡ ap f p 
+      term-agreement (b , x , .x) (refl .x) = refl _
+
+  -- Dependent n-paths.
+
+  BndryOver : (n : ℕ) {A : 𝓤 ̇} → (A → 𝓥 ̇) → Bndry n A → 𝓥 ̇
+
+  PathOver' : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) {b : Bndry n A} → Path n b → BndryOver n P b → 𝓥 ̇
+
+  BndryOver {𝓤} {𝓥} zero P b = Lift 𝓥 𝟙
+  BndryOver (succ n) P (b , lhs , rhs) = Σ b' ꞉ BndryOver n P b , PathOver' n P lhs b' × PathOver' n P rhs b'
+  
+  PathOver' zero P x b' = P x
+  PathOver' (succ n) P (refl _) (b' , lhs' , rhs') = lhs' ≡ rhs'
+
+
+  -- Action of a dependent function on n-paths.
+
+  apd'Codom : (n : ℕ) {A : 𝓤 ̇} {P : A → 𝓥 ̇} → Π P → (b : Bndry n A) → Path n b → 𝓥 ̇ 
+
+  apd' : (n : ℕ) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (f : Π P) {b : Bndry n A} (p : Path n b) → apd'Codom n f b p
+
+  apd'Codom zero {A} {P} f b x = P x
+  apd'Codom (succ n) f (b , x , .x) (refl .x) = apd' n f x ≡ apd' n f x 
+
+  apd' zero f x = f x
+  apd' (succ n) f (refl _) = refl (apd' n f _)
+
+  -- apd' 1 is apd
+
+  module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} (f : Π P) where
+
+    private
+
+      type-agreement : (b : Bndry 1 A) (p : Path 1 b) → apd'Codom 1 f b p ≡ type-of (apd f p) 
+      type-agreement (b , x , .x) (refl .x) = refl _
+
+      term-agreement : (b : Bndry 1 A) (p : Path 1 b) → coe (type-agreement b p) (apd' 1 f p) ≡ apd f p
+      term-agreement (b , x , .x) (refl .x) = refl _
+  
+  -- Transport along n-paths. (Note: transport' is indexed by the dimension of the output.)
+
+  left-basept : {n : ℕ} {A : 𝓤 ̇} → Bndry (succ n) A → A
+  left-basept {n = zero} (b , lhs , rhs) = lhs
+  left-basept {n = succ n} (b , lhs , rhs) = left-basept b
+
+  transport'Codom : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) (b : Bndry (succ n) A) → Path (succ n) b → P (left-basept b) → 𝓥 ̇
+
+  transport' : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) {b : Bndry (succ n) A} (p : Path (succ n) b) (u : P (left-basept b)) → transport'Codom n P b p u   
+
+  transport'Codom zero P (b , x , .x) (refl .x) u = P x
+  transport'Codom (succ n) P (b , x , .x) (refl .x) u = transport' n P x u ≡ transport' n P x u
+
+  transport' zero P (refl x) = id
+  transport' (succ n) P (refl x) u = refl _
+
+  -- transport' 0 is transport
+
+  module _ {A : 𝓤 ̇} (P : A → 𝓥 ̇) where
+
+    private
+
+      type-agreement : (b : Bndry 1 A) (p : Path 1 b) (u : P (left-basept b)) → transport'Codom 0 P b p u ≡ type-of (transport P p u)
+      type-agreement (b , x , .x) (refl .x) u = refl _
+
+      term-agreement : (b : Bndry 1 A) (p : Path 1 b) (u : P (left-basept b)) → coe (type-agreement b p u) (transport' 0 P p u) ≡ transport P p u 
+      term-agreement (b , x , .x) (refl .x) u = refl _
+
+  {- Work in progress
+
+  -- transport' in a constant family does nothing
+
+  refl-iteration-bndry : (n : ℕ) {A : 𝓤 ̇} → A → Bndry n A
+  refl-iteration :  (n : ℕ) {A : 𝓤 ̇} (a : A) → Path n (refl-iteration-bndry n a)
+  refl-iteration-bndry zero a = lift ⋆
+  refl-iteration-bndry (succ n) a = (refl-iteration-bndry n a) , ((refl-iteration n a) , (refl-iteration n a))
+  
+  refl-iteration zero a = a
+  refl-iteration (succ n) a = refl _
+
+  transport'Codom-const : (n : ℕ) {A : 𝓤 ̇} (B : 𝓥 ̇) {b : Bndry (succ n) A} (p : Path (succ n) b) (u : B) → transport'Codom n (λ x → B) b p u ≡ Path n (refl-iteration-bndry n u)
+
+  transport'-const : (n : ℕ) {A : 𝓤 ̇} (B : 𝓥 ̇) {b : Bndry (succ n) A} (p : Path (succ n) b) (u : B) → coe (transport'Codom-const n B p u) (transport' n (λ x → B) p u) ≡ refl-iteration n u
+
+  transport'Codom-const zero B (refl _) u = refl _
+  transport'Codom-const (succ n) B {(fst , fst₁ , .fst₁) , refl .fst₁ , .(refl fst₁)} (refl .(refl fst₁)) u = {!transport'-const n B (refl fst₁) u!}
+  
+  transport'-const = {!!}
+  
+  -}
+
 {- Old definitions:
  
 Path : ℕ → 𝓤 ̇ → 𝓤 ̇
@@ -41,64 +161,6 @@ path n A ((a , b) , p) = p
 
 boundary : (n : ℕ) (A : 𝓤 ̇) → Path (succ n) A → Path n A × Path n A
 boundary n A ((a , b) , p) = a , b
-
--}
-
-module higher-paths where
-
-  -- Action of a function on n-paths.
-
-  ap'Codom : (n : ℕ) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {b : Bndry n A} (p : Path n b) → 𝓥 ̇
-  
-  ap' : (n : ℕ) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {b : Bndry n A} (p : Path n b) → ap'Codom n f p
-  
-  ap'Codom zero {A} {B} f a = B
-  ap'Codom (succ n) f (refl x) = ap' n f x ≡ ap' n f x
-  
-  ap' zero f a = f a
-  ap' (succ n) f (refl _) = refl (ap' n f _)
-
-  -- Dependent n-paths.
-
-  BndryOver : (n : ℕ) {A : 𝓤 ̇} → (A → 𝓥 ̇) → Bndry n A → 𝓥 ̇
-
-  PathOver' : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) {b : Bndry n A} (p : Path n b) (b' : BndryOver n P b) → 𝓥 ̇
-
-  BndryOver {𝓤} {𝓥} zero P b = Lift 𝓥 𝟙
-  BndryOver (succ n) P (b , lhs , rhs) = Σ b' ꞉ BndryOver n P b , PathOver' n P lhs b' × PathOver' n P rhs b'
-  
-  PathOver' zero P a b' = P a
-  PathOver' (succ n) P (refl _) (b' , lhs' , rhs') = lhs' ≡ rhs'
-
-  -- Action of a dependent function on n-paths.
-
-  apd'Codom : (n : ℕ) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (f : Π P) {b : Bndry n A} (p : Path n b) → 𝓥 ̇ 
-
-  apd' : (n : ℕ) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (f : Π P) {b : Bndry n A} (p : Path n b) → apd'Codom n f p
-
-  apd'Codom zero {A} {P} f a = P a
-  apd'Codom (succ n) f (refl x) = apd' n f x ≡ apd' n f x 
-
-  apd' zero f a = f a
-  apd' (succ n) f (refl _) = refl _
-  
-  -- Transport along n-paths. (Note: transport' is indexed by the dimension of the output.)
-
-  left-basept : {n : ℕ} {A : 𝓤 ̇} → Bndry (succ n) A → A
-  left-basept {n = zero} (b , lhs , rhs) = lhs
-  left-basept {n = succ n} (b , lhs , rhs) = left-basept b
-
-  transport'Codom : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) (b : Bndry (succ n) A) → Path (succ n) b → P (left-basept b) → 𝓥 ̇
-
-  transport' : (n : ℕ) {A : 𝓤 ̇} (P : A → 𝓥 ̇) (b : Bndry (succ n) A) (p : Path (succ n) b) (u : P (left-basept b)) → transport'Codom n P b p u   
-
-  transport'Codom zero P (x , a , .a) (refl .a) u = P a
-  transport'Codom (succ n) P (b , lhs , .lhs) (refl .lhs) u = transport' n P b lhs u ≡ transport' n P b lhs u
-
-  transport' zero P (x , a , .a) (refl .a) = id
-  transport' (succ n) P (b , lhs , .lhs) (refl .lhs) u = refl _
-
-  {- Old definitions:
 
   -- Action of a function on n-paths.
 
@@ -184,19 +246,46 @@ module higher-paths where
 
 -- Exercise 2.17 (Type constructors preserve equivalences)
 
--- (i) Σ preserves equivalences
-  
-Σ-preserves-family-≃ : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 𝓦 ̇} → ((a : A) → P a ≃ Q a) → Σ P ≃ Σ Q
-Σ-preserves-family-≃ f =
-  Σ-induction (λ a p → a , (pr₁ (f a) p)) ,
-  (qinv-to-isequiv (
-    Σ-induction (λ a q → a , (qinv₁ (isequiv-to-qinv (pr₂ (f a))) q)) ,
-    Σ-induction (λ a q → dpair-≡ (refl a , (qinv₂ (isequiv-to-qinv (pr₂ (f a))) q))) ,
-    Σ-induction (λ a p → dpair-≡ ((refl a) , ((qinv₃ (isequiv-to-qinv (pr₂ (f a))) p))))
-    )
+-- (i) Π preserves equivalences
+
+-- The proof following lemma does not require tools beyond Ch2, but the book does not use (nor prove) it until Ch4.
+
+-- Lemma 4.2.8
+
+pre-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : B → C) → h ∘ f)
+pre-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
+  (λ h → h ∘ g) ,
+  (λ h → funext (h ∘ g ∘ f) h λ a → ap h (α a)) ,
+  λ h → funext (h ∘ f ∘ g) h (λ b → ap h (β b))
+
+post-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : C → A) → f ∘ h)
+post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
+  (λ h → g ∘ h) ,
+  (λ h → funext (f ∘ (g ∘ h)) h λ c → β (h c)) ,
+  λ h → funext (g ∘ (f ∘ h)) h (λ c → α (h c))
+
+-- → preserves equivalence of domains
+
+→-preserves-base-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) → A ≃ B → (A → C) ≃ (B → C)
+→-preserves-base-≃ C (f , i) = ≃-sym (_∘ f , qinv-to-isequiv (pre-∘-by-qinv-is-qinv C f (isequiv-to-qinv i)))
+
+-- Π preserves equivalence of domains
+
+Π-preserves-base-≡ : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Π (transport (λ - → - → 𝓥 ̇) p P) ≡ Π P
+Π-preserves-base-≡ P (refl A) = refl _ 
+
+{- A more general version of the next result can be found in Ch4.2 -}
+
+Π-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
+Π-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua _ _ e in idtoeqv _ _ (
+  Π (P ∘ pr₁ e)
+    ≡⟨ ap Π (transport-along-ua-is-pre-∘ e P ⁻¹) ⟩
+  Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
+    ≡⟨ Π-preserves-base-≡ P (p ⁻¹) ⟩
+  Π P ∎
   )
 
--- (ii) Π preserves equivalences
+-- Π preserves equivalence of codomains
 
 Π-preserves-family-≃ : {A : 𝓤 ̇} {P : A → 𝓦 ̇} {Q : A → 𝓣 ̇} → ((a : A) → P a ≃ Q a) → Π P ≃ Π Q
 Π-preserves-family-≃ ϕ =
@@ -213,6 +302,32 @@ module higher-paths where
   G = (λ a → qinv₁ (q a))
   α = (λ a → qinv₂ (q a))
   β = (λ a → qinv₃ (q a))
+
+-- (ii) Σ preserves equivalences
+
+Σ-preserves-base-≡ : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Σ (transport (λ - → - → 𝓥 ̇) p P) ≡ Σ P
+Σ-preserves-base-≡ P (refl A) = refl _
+
+{- A more general version of the next result can be found in Ch4.2 -}
+
+Σ-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
+Σ-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua A B e in idtoeqv _ _
+  (Σ (P ∘ pr₁ e)
+    ≡⟨ ap Σ (transport-along-ua-is-pre-∘ e P ⁻¹) ⟩
+  Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
+    ≡⟨ Σ-preserves-base-≡ P (p ⁻¹) ⟩
+  Σ P ∎
+  )
+
+Σ-preserves-family-≃ : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 𝓦 ̇} → ((a : A) → P a ≃ Q a) → Σ P ≃ Σ Q
+Σ-preserves-family-≃ f =
+  Σ-induction (λ a p → a , (pr₁ (f a) p)) ,
+  (qinv-to-isequiv (
+    Σ-induction (λ a q → a , (qinv₁ (isequiv-to-qinv (pr₂ (f a))) q)) ,
+    Σ-induction (λ a q → dpair-≡ (refl a , (qinv₂ (isequiv-to-qinv (pr₂ (f a))) q))) ,
+    Σ-induction (λ a p → dpair-≡ ((refl a) , ((qinv₃ (isequiv-to-qinv (pr₂ (f a))) p))))
+    )
+  )
 
 
 module whiskering-and-hz-composition where

@@ -54,6 +54,6 @@ transport-∘ P f (refl x) u = refl u
 
 -- Lemma 2.3.11 (Transport: family of functions).
 
-transport-fun-family : {A : 𝓤 ̇ } (P Q : A → 𝓥 ̇ ) (f : (x : A) → P x → Q x) (x y : A) (p : x ≡ y) (u : P x) → transport Q p (f x u) ≡ f y (transport P p u)
+transport-fun-family : {A : 𝓤 ̇ } (P : A → 𝓥 ̇) (Q : A → 𝓦 ̇) (f : (x : A) → P x → Q x) (x y : A) (p : x ≡ y) (u : P x) → transport Q p (f x u) ≡ f y (transport P p u)
 transport-fun-family P Q f x .x (refl .x) u = refl (f x u)
 
