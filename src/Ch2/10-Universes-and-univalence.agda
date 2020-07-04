@@ -72,8 +72,8 @@ idtoeqv-η {𝓤} A B = qinv₃ (isequiv-to-qinv (univ 𝓤 A B))
 type-refl : (A : 𝓤 ̇) → refl A ≡ ua A A (≃-refl A)
 type-refl A = (idtoeqv-η _ _ (refl A)) ⁻¹ ∙ ap (ua A A) (refl _)
 
-type-sym : (A B : 𝓤 ̇) (f : A ≃ B) → ua A B f ⁻¹ ≡ ua B A (≃-sym f)
-type-sym {𝓤} A B f = lemma _ _ (ua A B f) ∙ ap (ua B A ∘ ≃-sym) (idtoeqv-β' A B f)
+type-sym : {A B : 𝓤 ̇} (f : A ≃ B) → ua A B f ⁻¹ ≡ ua B A (≃-sym f)
+type-sym {𝓤} {A} {B} f = lemma _ _ (ua A B f) ∙ ap (ua B A ∘ ≃-sym) (idtoeqv-β' A B f)
   where
   lemma : (A B : 𝓤 ̇) (p : A ≡ B) → p ⁻¹ ≡ ua B A (≃-sym (idtoeqv A B p))
   lemma A .A (refl .A) = type-refl A
@@ -93,13 +93,22 @@ transport-is-coe-of-ap (refl x) u = refl _
 
 -- Transport of functions along ua
 
-transport-along-ua-is-pre-∘ : {A B : 𝓤 ̇} {C : 𝓥 ̇} (e : A ≃ B) (f : B → C) → transport (λ - → - → C) (ua A B e ⁻¹) f ≡ f ∘ (pr₁ e)
+transport-along-ua-is-pre-∘ : {A B : 𝓤 ̇} {C : 𝓥 ̇} (e : A ≃ B) (f : B → C) → transport (λ - → - → C) (ua A B e ⁻¹) f ≡ f ∘ pr₁ e
 transport-along-ua-is-pre-∘ {𝓤} {𝓥} {A} {B} {C} e f = let p = ua A B e in
   funext _ _ (λ x → transport-fun' {A = id} {B = λ x → C} _ _ (p ⁻¹) f x ∙ transportconst C (p ⁻¹) _ ∙ ap f (ap (λ - → coe - x) (⁻¹-invol p) ∙ idtoeqv-β _ _ e x))
 
-transport-along-ua-is-post-∘ : {A : 𝓤 ̇} {B C : 𝓥 ̇} (e : B ≃ C) (f : A → B) → transport (λ - → A → -) (ua B C e) f ≡ (pr₁ e) ∘ f
+transport-along-ua-is-pre-∘' : {A B : 𝓤 ̇} {C : 𝓥 ̇} (e : A ≃ B) (f : A → C) → transport (λ - → - → C) (ua A B e) f ≡ f ∘ pr₁ (≃-sym e)
+transport-along-ua-is-pre-∘' {𝓤} {𝓥} {A} {B} {C} e f = let p = ua A B e in
+  funext _ _ (λ x → transport-fun' {A = id} {B = λ x → C} _ _ p f x ∙ transportconst C p _ ∙ ap f (ap (λ - → coe - x) (type-sym e) ∙ idtoeqv-β _ _ (≃-sym e) x))
+
+transport-along-ua-is-post-∘ : {A : 𝓤 ̇} {B C : 𝓥 ̇} (e : B ≃ C) (f : A → B) → transport (λ - → A → -) (ua B C e) f ≡ pr₁ e ∘ f
 transport-along-ua-is-post-∘ {𝓤} {𝓥} {A} {B} {C} e f = let p = ua B C e in
   funext _ _ (λ x → transport-fun' {A = λ x → A} {B = id} _ _ p f x ∙ idtoeqv-β _ _ e _ ∙ ap (pr₁ e ∘ f) (transportconst A (p ⁻¹) x))
+
+transport-along-ua-is-post-∘' : {A : 𝓤 ̇} {B C : 𝓥 ̇} (e : B ≃ C) (f : A → C) → transport (λ - → A → -) (ua B C e ⁻¹) f ≡ pr₁ (≃-sym e) ∘ f
+transport-along-ua-is-post-∘' {𝓤} {𝓥} {A} {B} {C} e f = let p = ua B C e in
+  funext _ _ (λ x → transport-fun' {A = λ x → A} {B = id} _ _ (p ⁻¹) f x ∙ (ap (λ - → coe - (f (transport (λ x → A) ((p ⁻¹) ⁻¹) x))) (type-sym e) ∙ idtoeqv-β _ _ (≃-sym e) _ ∙ ap (pr₁ (≃-sym e) ∘ f) (transportconst A ((p ⁻¹) ⁻¹) x)))
+
 
 
 

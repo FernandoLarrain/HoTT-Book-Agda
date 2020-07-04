@@ -85,7 +85,7 @@ module Lifting-equivalences (A B : 𝓤 ̇) (e : A ≃ B) (m : A → A → A) (a
     aux : coe (ua A B e) ≡ f
     aux = funext _ _ (idtoeqv-β A B e)
     aux⁻¹ : coe (ua A B e ⁻¹) ≡ f⁻¹
-    aux⁻¹ = ap coe (type-sym _ _ e) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym e))
+    aux⁻¹ = ap coe (type-sym e) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym e))
 
   associativity-eqn : Assoc (B , m')
   associativity-eqn b₁ b₂ b₃ = happly _ _ (happly _ _ m'-characterization b₁) (m' b₂ b₃) ∙

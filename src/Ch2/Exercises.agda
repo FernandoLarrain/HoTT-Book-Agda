@@ -270,26 +270,46 @@ post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
 →-preserves-dom-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) → A ≃ B → (A → C) ≃ (B → C)
 →-preserves-dom-≃ C (f , i) = ≃-sym (_∘ f , qinv-to-isequiv (pre-∘-by-qinv-is-qinv C f (isequiv-to-qinv i)))
 
+-- → preserves equivalence of codomains
+
 →-preserves-codom-≃ : (A : 𝓤 ̇) {B : 𝓥 ̇} {C : 𝓦 ̇} → B ≃ C → (A → B) ≃ (A → C)
 →-preserves-codom-≃ A (f , i) = f ∘_ , qinv-to-isequiv (post-∘-by-qinv-is-qinv A f (isequiv-to-qinv i))
 
+-- Putting everything together:
+
+→-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓥 ̇} {D : 𝓦 ̇} → A ≃ C → B ≃ D → (A → B) ≃ (C → D)
+→-preserves-≃ e₁ e₂ = →-preserves-dom-≃ _ e₁ ● →-preserves-codom-≃ _ e₂
+
 -- (ii) Π preserves equivalences
 
--- Π preserves equivalences of base types
+private {- A more general version of the next result can be found in Ch4.2 -}
 
-Π-preserves-base-≡ : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Π (transport (λ - → - → 𝓥 ̇) p P) ≡ Π P
-Π-preserves-base-≡ P (refl A) = refl _ 
+  -- Π preserves equivalences of base types
 
-{- A more general version of the next result can be found in Ch4.2 -}
+  Π-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Π P
+  Π-preserves-base-≡ P (refl A) = refl _ 
 
-Π-preserves-base-≃' : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
-Π-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua _ _ e in idtoeqv _ _ (
-  Π (P ∘ pr₁ e)
-    ≡⟨ ap Π (transport-along-ua-is-pre-∘ e P ⁻¹) ⟩
-  Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
-    ≡⟨ Π-preserves-base-≡ P (p ⁻¹) ⟩
-  Π P ∎
-  )
+  Π-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
+  Π-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua _ _ e in idtoeqv _ _ (
+    Π (P ∘ pr₁ e)
+      ≡⟨ ap Π (transport-along-ua-is-pre-∘ e P ⁻¹) ⟩
+    Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
+      ≡⟨ Π-preserves-base-≡ P p ⟩
+    Π P ∎
+    )
+
+  Π-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Π P ≡ Π (transport (λ - → - → 𝓥 ̇) p P)
+  Π-preserves-base-≡' P (refl A) = refl _ 
+
+  Π-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) → (e : A ≃ B) → Π P ≃ Π (P ∘ (pr₁ (≃-sym e)))
+  Π-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua _ _ e in idtoeqv _ _ (
+    Π P
+      ≡⟨ Π-preserves-base-≡' P p ⟩
+    Π (transport (λ - → - → 𝓥 ̇) p P) 
+      ≡⟨ ap Π (transport-along-ua-is-pre-∘' e P) ⟩
+    Π (P ∘ (pr₁ (≃-sym e)))  ∎
+    )
+
 
 -- Π preserves fiberwise equivalences
 
@@ -311,21 +331,33 @@ post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
 
 -- (iii) Σ preserves equivalences
 
--- Σ preserves equivalences of base types
+private {- A more general version of the next result can be found in Ch4.2 -}
 
-Σ-preserves-base-≡ : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Σ (transport (λ - → - → 𝓥 ̇) p P) ≡ Σ P
-Σ-preserves-base-≡ P (refl A) = refl _
+  -- Σ preserves equivalences of base types
 
-{- A more general version of the next result can be found in Ch4.5 -}
+  Σ-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Σ P
+  Σ-preserves-base-≡ P (refl A) = refl _
 
-Σ-preserves-base-≃' : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
-Σ-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua A B e in idtoeqv _ _
-  (Σ (P ∘ pr₁ e)
-    ≡⟨ ap Σ (transport-along-ua-is-pre-∘ e P ⁻¹) ⟩
-  Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
-    ≡⟨ Σ-preserves-base-≡ P (p ⁻¹) ⟩
-  Σ P ∎
-  )
+  Σ-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
+  Σ-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua A B e in idtoeqv _ _
+    (Σ (P ∘ pr₁ e)
+      ≡⟨ ap Σ (transport-along-ua-is-pre-∘ e P ⁻¹) ⟩
+    Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
+      ≡⟨ Σ-preserves-base-≡ P p ⟩
+    Σ P ∎
+    )
+
+  Σ-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Σ P ≡ Σ (transport (λ - → - → 𝓥 ̇) p P)
+  Σ-preserves-base-≡' P (refl A) = refl _
+
+  Σ-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (e : A ≃ B) → Σ P ≃ Σ (P ∘ pr₁ (≃-sym e))
+  Σ-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua A B e in idtoeqv _ _
+    (Σ P
+      ≡⟨ Σ-preserves-base-≡' P p ⟩
+    Σ (transport (λ - → - → 𝓥 ̇) p P)
+      ≡⟨ ap Σ (transport-along-ua-is-pre-∘' e P) ⟩
+    Σ (P ∘ pr₁ (≃-sym e)) ∎
+    )
 
 -- Σ preserves fiberwise equivalences
 
@@ -345,7 +377,7 @@ post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
 -- (iv) × preserves equivalences
 
 ×-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓥 ̇} {D : 𝓦 ̇} → A ≃ C → B ≃ D → A × B ≃ C × D
-×-preserves-≃ (f , i) (g , j) = (λ { (a , b) → (f a , g b) }) , qinv-to-isequiv ((λ { (c , d) → (finv c , ginv d) }) , (λ { (c , d) → pair-≡ (α c , γ d) }) , (λ { (a , b) → pair-≡ (β a , δ b) }) )
+×-preserves-≃ (f , i) (g , j) = (Σ-induction λ a b → (f a , g b)) , qinv-to-isequiv ((Σ-induction λ c d → (finv c , ginv d)) , (Σ-induction λ c d → pair-≡ (α c , γ d)) , (Σ-induction λ a b → pair-≡ (β a , δ b)))
   where
   qf = isequiv-to-qinv i
   finv = qinv₁ qf
