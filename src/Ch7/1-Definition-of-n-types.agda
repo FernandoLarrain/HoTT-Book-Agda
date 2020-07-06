@@ -14,30 +14,37 @@ data Tlevel : 𝓤₀ ̇ where
   ⟨-2⟩ : Tlevel
   S : Tlevel → Tlevel
 
+⟨-1⟩ : Tlevel
+⟨-1⟩ = S ⟨-2⟩
+
+⟨0⟩ : Tlevel
+⟨0⟩ = S ⟨-1⟩
 
 -- Tlevel is equivalent to ℕ
 
-to-ℕ : Tlevel → ℕ
-to-ℕ ⟨-2⟩ = zero
-to-ℕ (S n) = succ (to-ℕ n)
+module Tlevel-≃-ℕ where
 
-from-ℕ : ℕ → Tlevel
-from-ℕ zero = ⟨-2⟩
-from-ℕ (succ m) = S (from-ℕ m)
+  to-ℕ : Tlevel → ℕ
+  to-ℕ ⟨-2⟩ = zero
+  to-ℕ (S n) = succ (to-ℕ n)
 
-to-ℕ-from-ℕ-is-id : from-ℕ ∘ to-ℕ ∼ 𝑖𝑑 _
-to-ℕ-from-ℕ-is-id ⟨-2⟩ = refl _
-to-ℕ-from-ℕ-is-id (S n) = ap S (to-ℕ-from-ℕ-is-id n)
+  from-ℕ : ℕ → Tlevel
+  from-ℕ zero = ⟨-2⟩
+  from-ℕ (succ m) = S (from-ℕ m)
 
-from-ℕ-to-ℕ-is-id : to-ℕ ∘ from-ℕ ∼ 𝑖𝑑 _
-from-ℕ-to-ℕ-is-id zero = refl _
-from-ℕ-to-ℕ-is-id (succ m) = ap succ (from-ℕ-to-ℕ-is-id m)
+  to-ℕ-from-ℕ-is-id : from-ℕ ∘ to-ℕ ∼ 𝑖𝑑 _
+  to-ℕ-from-ℕ-is-id ⟨-2⟩ = refl _
+  to-ℕ-from-ℕ-is-id (S n) = ap S (to-ℕ-from-ℕ-is-id n)
 
-Tlevel-≃-ℕ : Tlevel ≃ ℕ
-Tlevel-≃-ℕ = to-ℕ , (qinv-to-isequiv (from-ℕ , (from-ℕ-to-ℕ-is-id , to-ℕ-from-ℕ-is-id)))
+  from-ℕ-to-ℕ-is-id : to-ℕ ∘ from-ℕ ∼ 𝑖𝑑 _
+  from-ℕ-to-ℕ-is-id zero = refl _
+  from-ℕ-to-ℕ-is-id (succ m) = ap succ (from-ℕ-to-ℕ-is-id m)
 
-S-is-not-⟨-2⟩ : (n : Tlevel) → ¬ (S n ≡ ⟨-2⟩)
-S-is-not-⟨-2⟩ n p = succ-is-not-0 (to-ℕ n) (ap to-ℕ p)
+  equivalence : Tlevel ≃ ℕ
+  equivalence = to-ℕ , (qinv-to-isequiv (from-ℕ , (from-ℕ-to-ℕ-is-id , to-ℕ-from-ℕ-is-id)))
+
+  S-is-not-⟨-2⟩ : (n : Tlevel) → ¬ (S n ≡ ⟨-2⟩)
+  S-is-not-⟨-2⟩ n p = succ-is-not-0 (to-ℕ n) (ap to-ℕ p)
 
 
 -- Definition 7.1.1 (Is-n-type).
@@ -67,9 +74,12 @@ retractions-preserve-Tlevel (S n) Y X (p , s , ε) X-is-Sn-type y y' = retractio
 
 -- Theorem 7.1.6 (Embeddings pull back higher truncation levels).
 
-embedding-pulls-back-Tlevel : (n : Tlevel) → ¬ (n ≡ ⟨-2⟩) → (X : 𝓤 ̇) (Y : 𝓥 ̇) (f : X → Y) → is-embedding f → is n type Y → is n type X
-embedding-pulls-back-Tlevel ⟨-2⟩ not⟨-2⟩ = 𝟘-recursion _ (not⟨-2⟩ (refl _)) 
-embedding-pulls-back-Tlevel (S n) not⟨-2⟩ X Y f emb Y-is-Sn-type x x' = ≃-preserves-Tlevel n (f x ≡ f x') _ (≃-sym (ap f , emb x x'))  (Y-is-Sn-type (f x) (f x'))
+embedding-pulls-back-Tlevel' : (n : Tlevel) → ¬ (n ≡ ⟨-2⟩) → (X : 𝓤 ̇) (Y : 𝓥 ̇) (f : X → Y) → is-embedding f → is n type Y → is n type X
+embedding-pulls-back-Tlevel' ⟨-2⟩ not⟨-2⟩ = 𝟘-recursion _ (not⟨-2⟩ (refl _)) 
+embedding-pulls-back-Tlevel' (S n) not⟨-2⟩ X Y f emb Y-is-Sn-type x x' = ≃-preserves-Tlevel n (f x ≡ f x') _ (≃-sym (ap f , emb x x'))  (Y-is-Sn-type (f x) (f x'))
+
+embedding-pulls-back-Tlevel : (n : Tlevel) → (X : 𝓤 ̇) (Y : 𝓥 ̇) (f : X → Y) → is-embedding f → is S n type Y → is S n type X
+embedding-pulls-back-Tlevel n X Y f emb Y-is-Sn-type x x' = ≃-preserves-Tlevel n (f x ≡ f x') (x ≡ x') (≃-sym (ap f , emb x x')) (Y-is-Sn-type (f x) (f x'))
 
 
 -- Theorem 7.1.7 (n-types are (n + 1)-types).
@@ -144,18 +154,12 @@ Tlevel-Type-if-of-next-Tlevel ⟨-2⟩ (X , p) (X' , p') = ≃-preserves-Tlevel 
   is-inhabited : X ≃ X'
   is-inhabited = pr₁ (isContr-iff-is-𝟙 X) p ● ≃-sym (pr₁ (isContr-iff-is-𝟙 X') p')
   is-Prop : isProp (X ≃ X')
-  is-Prop = (pr₂ (Prop-iff-Contr-≡ (X ≃ X')) (embedding-pulls-back-Tlevel (S ⟨-2⟩) (S-is-not-⟨-2⟩ _) (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (cumulativity-of-Tlevels ⟨-2⟩ _ p'))))
+  is-Prop = (pr₂ (Prop-iff-Contr-≡ (X ≃ X')) (embedding-pulls-back-Tlevel ⟨-2⟩ (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (cumulativity-of-Tlevels ⟨-2⟩ _ p'))))
 
-Tlevel-Type-if-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S n) (X ≃ X') _ (≃-sym (irrelevance-of-Tdata (S n) _ _)) (embedding-pulls-back-Tlevel (S n) (S-is-not-⟨-2⟩ n) (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S n) X X' p'))
+Tlevel-Type-if-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S n) (X ≃ X') _ (≃-sym (irrelevance-of-Tdata (S n) _ _)) (embedding-pulls-back-Tlevel n (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S n) X X' p'))
 
 
 -- Translation to old terminology (isContr, isProp, isSet)
-
-⟨-1⟩ : Tlevel
-⟨-1⟩ = S ⟨-2⟩
-
-⟨0⟩ : Tlevel
-⟨0⟩ = S ⟨-1⟩
 
 isContr-≃-is-⟨-2⟩-type : (A : 𝓤 ̇) → isContr A ≃ is ⟨-2⟩ type A
 isContr-≃-is-⟨-2⟩-type A = idtoeqv _ _ (refl _)
@@ -168,6 +172,9 @@ isSet-≃-is-⟨0⟩-type A = biimplication-to-≃ _ _ (isSet-is-Prop _) (Tlevel
 
 ≃-preserves-Contr : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isContr A → isContr B
 ≃-preserves-Contr = ≃-preserves-Tlevel ⟨-2⟩ 
+
+retractions-preserve-Props : (A : 𝓤 ̇) (B : 𝓥 ̇) → B ◁ A → isProp A → isProp B
+retractions-preserve-Props A B ρ = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type B)) ∘ retractions-preserve-Tlevel ⟨-1⟩ B A ρ ∘ pr₁ (isProp-≃-is-⟨-1⟩-type A) 
 
 ≃-preserves-Props : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isProp A → isProp B
 ≃-preserves-Props A B e = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type B)) ∘ ≃-preserves-Tlevel ⟨-1⟩ A B e ∘ pr₁ (isProp-≃-is-⟨-1⟩-type A) 
@@ -185,8 +192,8 @@ isSet-≃-is-⟨0⟩-type A = biimplication-to-≃ _ _ (isSet-is-Prop _) (Tlevel
 
 -- (ii) ≃-sym is its own quasi-inverse
 
-qinv-≃-sym : (A : 𝓤 ̇) (B : 𝓥 ̇) → qinv (≃-sym {A = A} {B})
-qinv-≃-sym A B = ≃-sym , (λ e → Σ-over-predicate _ _ ishae-is-Prop _ _ (refl _)) , λ e → Σ-over-predicate _ _ ishae-is-Prop _ _ (refl _)
+qinv-≃-sym : (A : 𝓤 ̇) (B : 𝓥 ̇) → qinv (≃-sym {𝓤} {𝓥} {A} {B})
+qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate _ _ ishae-is-Prop _ _ (refl _)) , (λ e → Σ-over-predicate _ _ ishae-is-Prop _ _ (refl _))
 
 -- (iii) (i) symmetrized
 
@@ -197,3 +204,10 @@ qinv-≃-sym A B = ≃-sym , (λ e → Σ-over-predicate _ _ ishae-is-Prop _ _ (
 
 biimplication-of-Props-is-≃ : (P : 𝓤 ̇) (Q : 𝓥 ̇) → isProp P → isProp Q → (P → Q) × (Q → P) ≃ (P ≃ Q)
 biimplication-of-Props-is-≃ P Q P-is-Prop Q-is-Prop = biimplication-to-≃ _ _ (×-preserves-Props _ _ (→-preserves-Props _ _ Q-is-Prop) (→-preserves-Props _ _ P-is-Prop)) (≃-to-Prop-is-Prop _ _ Q-is-Prop) (Σ-induction (biimplication-to-≃ _ _ P-is-Prop Q-is-Prop)) (≃-to-biimplication _ _)
+
+-- (v) Corollary : retraction of proposition gives equivalence
+
+retraction-of-Prop-to-≃ : {X : 𝓤 ̇} {Y : 𝓥 ̇} → isProp X → Y ◁ X → X ≃ Y
+retraction-of-Prop-to-≃ {𝓤} {𝓥} {X} {Y} X-is-Prop (r , s , α) = biimplication-to-≃ _ _ X-is-Prop (retractions-preserve-Props X Y (r , s , α) X-is-Prop) r s 
+
+
