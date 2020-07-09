@@ -26,7 +26,7 @@ isSet-≃-Axiom-K X = retraction-of-Prop-to-≃ (isSet-is-Prop _) (sufficiency ,
 Axiom-K-is-Prop : (X : 𝓤 ̇) → isProp (Axiom-K X)
 Axiom-K-is-Prop X = ≃-preserves-Props _ _ (isSet-≃-Axiom-K X) (isSet-is-Prop X)
 
-Axiom-K-≃-Contr-Ω : (X : 𝓤 ̇) → Axiom-K X ≃ ((x : X) → isContr (pr₁ (Ω 1 (X , x))))
+Axiom-K-≃-Contr-Ω : (X : 𝓤 ̇) → Axiom-K X ≃ ((x : X) → isContr (x ≡ x))
 Axiom-K-≃-Contr-Ω X = biimplication-to-≃ _ _ (Axiom-K-is-Prop _) (Π-preserves-Props _ λ x → isContr-is-Prop _) (λ k x → refl x , λ p → k x p ⁻¹) (λ c x p → (pr₂ (c x) p) ⁻¹ ∙ pr₂ (c x) (refl x))
     
 
@@ -87,7 +87,7 @@ decidable-equality-implies-isSet X de = dne-≡-to-isSet X λ x y → lem-to-dne
 
 -- Theorem 7.2.7 (characterization of truncation level in terms of loop spaces).
 
-Tlevel-in-terms-of-Ω : (n : Tlevel) (X : 𝓤 ̇) → is S (S n) type X ≃ ((x : X) → is S n type (pr₁ (Ω 1 (X , x))))
+Tlevel-in-terms-of-Ω : (n : Tlevel) (X : 𝓤 ̇) → is S (S n) type X ≃ ((x : X) → is S n type (x ≡ x))
 
 -- (i) Lemma 7.2.8 (can assume type is inhabited to show it is S n type.)
 
@@ -97,34 +97,50 @@ inhabited-type-assum n X f x x' = f x x x'
 -- (ii) Proof of thm:
 
 Tlevel-in-terms-of-Ω n X = biimplication-to-≃ _ _ (Tlevel-is-property _ _) (Π-preserves-Props _ (λ x → Tlevel-is-property _ _)) sufficiency necessity where
-  sufficiency : is S (S n) type X → ((x : X) → is S n type (pr₁ (Ω 1 (X , x))))
+  sufficiency : is S (S n) type X → ((x : X) → is S n type (x ≡ x))
   sufficiency f x = f x x
-  necessity : ((x : X) → is S n type (pr₁ (Ω 1 (X , x)))) → is S (S n) type X
+  necessity : ((x : X) → is S n type (x ≡ x)) → is S (S n) type X
   necessity f x x' = inhabited-type-assum _ _ (𝕁 X (λ x x' p → is S n type (x ≡ x')) f _ _)
 
 
 -- Theorem 7.2.9 (generalized Axiom K).
 
--- module generalized-Axiom-K where
+module generalized-Axiom-K where
 
---   ⌊_⌋ : Tlevel → ℕ
---   ⌊ ⟨-2⟩ ⌋ = 0
---   ⌊ S ⟨-2⟩ ⌋ = 0
---   ⌊ S (S ⟨-2⟩) ⌋ = 0
---   ⌊ S (S (S n)) ⌋ = succ ⌊ S (S n) ⌋
+  ⌊_⌋ : Tlevel → ℕ
+  ⌊ ⟨-2⟩ ⌋ = 0
+  ⌊ S ⟨-2⟩ ⌋ = 0
+  ⌊ S (S ⟨-2⟩) ⌋ = 0
+  ⌊ S (S (S n)) ⌋ = succ ⌊ S (S n) ⌋
+
+  lemma : {A : 𝓤 ̇} {B : 𝓥 ̇} → A → isProp B → (∀ (a : A) → B) ≃ B
+  lemma a₀ B-is-Prop = (λ f → f a₀) , (qinv-to-isequiv (
+    (λ b a → b) ,
+    (λ b → refl b) ,
+    (λ f → funext _ _ (λ a → B-is-Prop _ _))
+    ))
+
   
---   equivalence : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A ≃ ((a : A) → isContr (pr₁ (Ω ⌊ S (S n) ⌋ (A , a))))
---   equivalence ⟨-2⟩ A = ≃-sym (isProp-≃-is-⟨-1⟩-type A) ● isProp-≃-inhabited→isContr A
---   equivalence (S ⟨-2⟩) A = ≃-sym (isSet-≃-is-⟨0⟩-type A) ● (isSet-≃-Axiom-K A ● Axiom-K-≃-Contr-Ω A) 
---   equivalence (S (S n)) A =
---     is S (S (S n)) type A
---       ≃⟨ Tlevel-in-terms-of-Ω _ _ ⟩ 
---     ((x : A) → is S (S n) type (pr₁ (Ω 1 (A , x))))
---       ≃⟨ Π-preserves-family-≃ (λ x → equivalence (S n) (x ≡ x)) ⟩ 
---     ((x : A) (p : x ≡ x) → isContr (pr₁ (Ω ⌊ S (S (S n)) ⌋ ((x ≡ x) , p))))
---       ≃⟨ {!!} ⟩ 
---     {!!}
---       ≃⟨ {!!} ⟩ 
---     {!!}
--- -- Tlevel-in-terms-of-Ω _ _
---  -- ((a : A) → isContr (pr₁ (Ω ⌊ S (S (S (S n))) ⌋ (A , a))))
+  equivalence : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A ≃ ((a : A) → isContr (pr₁ (Ω^ ⌊ S (S n) ⌋ (A , a))))
+  equivalence ⟨-2⟩ A = ≃-sym (isProp-≃-is-⟨-1⟩-type A) ● isProp-≃-inhabited→isContr A
+  equivalence (S ⟨-2⟩) A = ≃-sym (isSet-≃-is-⟨0⟩-type A) ● (isSet-≃-Axiom-K A ● Axiom-K-≃-Contr-Ω A) 
+  equivalence (S (S n)) A =
+    is S (S (S n)) type A
+      ≃⟨ Tlevel-in-terms-of-Ω _ _ ⟩ 
+    ((a : A) → is S (S n) type (a ≡ a))
+      ≃⟨ Π-preserves-family-≃ (λ a → equivalence (S n) (a ≡ a)) ⟩ 
+    ((a : A) (p : a ≡ a) → isContr (pr₁ (Ω^ ⌊ S (S (S n)) ⌋ ((a ≡ a) , p))))
+      ≃⟨ Π-preserves-family-≃ (λ a → Π-preserves-family-≃ λ p → idtoeqv _ _ (ap (λ - → isContr (pr₁ (Ω^ ⌊ (S (S n)) ⌋ -))) (identity a p))) ⟩
+    (((a : A) (p : a ≡ a) → isContr (pr₁ (Ω^ ⌊ S (S n) ⌋ ((refl a ≡ refl a) , refl (refl a))))))
+      ≃⟨ (Π-preserves-family-≃ λ a → lemma (refl a) (isContr-is-Prop _)) ⟩
+    ((a : A) → isContr (pr₁ (Ω^ ⌊ S (S n) ⌋ ((refl a ≡ refl a) , refl (refl a))))) ■
+    where
+      identity : (a : A) (p : a ≡ a) → Ω ((a ≡ a) , p) ≡ Ω^ 2 (A , a)
+      identity a p = dpair-≡ (
+        ua (p ≡ p) (refl a ≡ refl a) (
+          (ap (λ r → r ∙ p ⁻¹) {p} {p}) , ap-of-equiv-is-equiv (a ≡ a) (a ≡ a) (λ r → r ∙ p ⁻¹) (qinv-to-isequiv (qinv-post-∙ a (p ⁻¹))) p p  ●
+          (_∙ rinv p) , qinv-to-isequiv (qinv-post-∙ _ (rinv p)) ●
+          (rinv p ⁻¹ ∙_) , qinv-to-isequiv (qinv-pre-∙ _ (rinv p ⁻¹))
+        ) ,
+        (idtoeqv-β (p ≡ p) (refl a ≡ refl a) _ (refl p) ∙ (ap (rinv p ⁻¹ ∙_) (lu (rinv p)) ⁻¹ ∙ linv (rinv p)))
+        )

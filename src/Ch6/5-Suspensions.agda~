@@ -1,0 +1,19 @@
+{-# OPTIONS --without-K --exact-split --rewriting #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+open import Ch6.2-Induction-pples-and-dependent-paths
+
+module Ch6.5-Suspensions where
+
+
+-- Definition (suspension of a type).
+
+data Susp : (A : 𝓤 ̇) where
+  north : Susp A
+  south : Susp A
+  merid : A → north ≡ south
+
+

@@ -226,6 +226,9 @@ boundary n A ((a , b) , p) = a , b
 
 -- Related results: swapping independent arguments / components.
 
+×-swap : (A : 𝓤 ̇) (B : 𝓥 ̇) → A × B ≃ B × A
+×-swap A B = (Σ-induction λ a b → b , a) , (qinv-to-isequiv ((Σ-induction λ b a → a , b) , (λ x → refl _) , (λ x → refl _)))
+
 Σ-swap : (A : 𝓤 ̇) (B : 𝓥 ̇) (C : A → B → 𝓦 ̇) → (Σ λ a → Σ λ b → C a b) ≃ (Σ λ b → Σ λ a → C a b)
 Σ-swap A B C =
   (Σ-induction (λ a → Σ-induction λ b c → b , a , c)) ,

@@ -89,21 +89,24 @@ _⊙ : (𝓤 : Universe) → 𝓤 ⁺ ̇
 𝓤 ⊙ = Σ A ꞉ 𝓤 ̇ , A
 
 
--- Definition (pointed map).
+-- Definition (based map).
 
-_⊙→_ : (A : 𝓤 ⊙) (B : 𝓥 ⊙) → 𝓤 ⊔ 𝓥 ̇
-(A , a) ⊙→ (B , b) = Σ f ꞉ (A → B) , f a ≡ b 
+Map⊙ : (A : 𝓤 ⊙) (B : 𝓥 ⊙) → 𝓤 ⊔ 𝓥 ̇
+Map⊙ (A , a) (B , b) = Σ f ꞉ (A → B) , f a ≡ b 
 
 
 -- Definition 2.1.8 (n-fold iterated loop space).
 
-Ω : ℕ → 𝓤 ⊙ → 𝓤 ⊙
-Ω zero (A , a) = A , a
-Ω (succ n) (A , a) = Ω n ((a ≡ a) , refl a)
+Ω : 𝓤 ⊙ → 𝓤 ⊙
+Ω (A , a) = ((a ≡ a) , refl a)
 
-Ω' : ℕ → 𝓤 ⊙ → 𝓤 ⊙
-Ω' zero A = A
-Ω' (succ n) A = ((pr₂ (Ω' n A) ≡ pr₂ (Ω' n A)) , refl (pr₂ (Ω' n A)))
+Ω^ : ℕ → 𝓤 ⊙ → 𝓤 ⊙
+Ω^ zero (A , a) = A , a
+Ω^ (succ n) (A , a) = Ω^ n ( Ω (A , a)) -- inner loop
+
+Ω'^ : ℕ → 𝓤 ⊙ → 𝓤 ⊙
+Ω'^ zero (A , a) = (A , a)
+Ω'^ (succ n) (A , a) = Ω (Ω^ n (A , a)) -- outer loop
 
 
 

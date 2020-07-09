@@ -32,6 +32,12 @@ universe-of {𝓤} X = 𝓤
 type-of : {𝓤 : Universe} {X : 𝓤 ̇ } → X → 𝓤 ̇
 type-of {𝓤} {X} x = X
 
+of-type : {𝓤 : Universe} (A : 𝓤 ̇) (u : A) → A
+of-type A u = u
+
+syntax of-type A u = [ u :> A ]
+
+
 infix  1 _̇
 
 

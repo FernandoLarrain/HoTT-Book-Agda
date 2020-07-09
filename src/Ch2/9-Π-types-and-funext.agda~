@@ -79,22 +79,22 @@ fun-trans f .f .f (refl .f) (refl .f) = fun-refl f
 
 -- (i) Commutative square version
 
-transport-fun : {X : 𝓤 ̇ } {A B : X → 𝓥 ̇ } (x₁ x₂ : X) (p : x₁ ≡ x₂) (f : A x₁ → B x₁) → transport (λ - → A - → B -) p f ∘ transport A p ∼ transport B p ∘ f
+transport-fun : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : X → 𝓦 ̇} (x₁ x₂ : X) (p : x₁ ≡ x₂) (f : A x₁ → B x₁) → transport (λ - → A - → B -) p f ∘ transport A p ∼ transport B p ∘ f
 transport-fun x₁ .x₁ (refl .x₁) f a = refl (f a)
 
 -- (ii) Book version
 
-transport-fun' : {X : 𝓤 ̇ } {A B : X → 𝓥 ̇ } (x₁ x₂ : X) (p : x₁ ≡ x₂) (f : A x₁ → B x₁) → transport (λ - → A - → B -) p f ∼ transport B p ∘ f ∘ transport A (p ⁻¹)
+transport-fun' : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : X → 𝓦 ̇} (x₁ x₂ : X) (p : x₁ ≡ x₂) (f : A x₁ → B x₁) → transport (λ - → A - → B -) p f ∼ transport B p ∘ f ∘ transport A (p ⁻¹)
 transport-fun' x₁ .x₁ (refl .x₁) f a = refl (f a)
 
 
 -- Equation 2.9.5 (Transport of dependent functions).
 
-transport-dfun : {X : 𝓤 ̇ } {A : X → 𝓥 ̇ } {B : (x : X) → A x → 𝓥 ̇ } (x₁ x₂ : X) (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₁) → transport (λ - → (a : A -) → B - a) p f (transport A p a) ≡ transport (λ - → (λ z → B (pr₁ z) (pr₂ z)) -) (dpair-≡ (p , refl (transport A p a))) (f a)
+transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇ } {B : (x : X) → A x → 𝓥 ̇ } (x₁ x₂ : X) (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₁) → transport (λ - → (a : A -) → B - a) p f (transport A p a) ≡ transport (λ - → (λ z → B (pr₁ z) (pr₂ z)) -) (dpair-≡ (p , refl (transport A p a))) (f a)
 transport-dfun x₁ .x₁ (refl .x₁) f a = refl (f a)
 
 
--- Lemma 2.9.6 (Function extensionality with respect to dependent paths).
+-- Lemma 2.9.6 (Function extensionality with respect to dependent paths; equality of parameterized functions).
 
 module dfunext {X : 𝓤 ̇} (A B : X → 𝓥 ̇) where
 
@@ -124,5 +124,3 @@ module dfunext {X : 𝓤 ̇} (A B : X → 𝓥 ̇) where
 
 
 -- Lemma 2.9.7 [TO DO]
-
-

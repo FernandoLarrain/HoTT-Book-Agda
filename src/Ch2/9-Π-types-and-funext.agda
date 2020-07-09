@@ -94,7 +94,7 @@ transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇ } {B : (x : X) → A x → �
 transport-dfun x₁ .x₁ (refl .x₁) f a = refl (f a)
 
 
--- Lemma 2.9.6 (Function extensionality with respect to dependent paths).
+-- Lemma 2.9.6 (Function extensionality with respect to dependent paths; equality of parameterized functions).
 
 module dfunext {X : 𝓤 ̇} (A B : X → 𝓥 ̇) where
 
@@ -124,5 +124,3 @@ module dfunext {X : 𝓤 ̇} (A B : X → 𝓥 ̇) where
 
 
 -- Lemma 2.9.7 [TO DO]
-
-
