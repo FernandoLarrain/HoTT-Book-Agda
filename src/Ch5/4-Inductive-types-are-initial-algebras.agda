@@ -6,9 +6,10 @@ open import Ch3.Sets-and-logic
 
 module Ch5.4-Inductive-types-are-initial-algebras where
 
+
 -- Definition 5.4.1 (ℕ-algebra).
 
-ℕAlg : (𝓤 : Universe) → 𝓤 ⁺ ̇    
+ℕAlg : (𝓤 : Universe) → 𝓤 ⁺ ̇ 
 ℕAlg 𝓤 = Σ C ꞉ 𝓤 ̇ , C × (C → C)
 
 
@@ -18,14 +19,38 @@ module Ch5.4-Inductive-types-are-initial-algebras where
 ℕHom (C , c₀ , cs) (D , d₀ , ds) = Σ h ꞉ (C → D) , (h c₀ ≡ d₀) × (h ∘ cs ∼ ds ∘ h)
 
 _∘ℕ_ : {C D E : ℕAlg 𝓤} → ℕHom D E → ℕHom C D → ℕHom C E
-_∘ℕ_ {C = C , c₀ , cs} {D , d₀ , ds} {E , e₀ , es} (g , q , β) (f , p , α) = (g ∘ f) , (ap g p ∙ q) , λ x → ap g (α x) ∙ β (f x)
+_∘ℕ_ {𝓤} {C , c₀ , cs} {D , d₀ , ds} {E , e₀ , es} (g , q , β) (f , p , α) = (g ∘ f) , (ap g p ∙ q) , λ x → ap g (α x) ∙ β (f x)
+
+ℕAlg-id : (C : ℕAlg 𝓤) → ℕHom C C
+ℕAlg-id (C , c₀ , cs) = id , (refl c₀) , hrefl cs
+
+
+{- For some reason, using records instead of Σ, the problem in the module below does not arise -}
+
+-- record ℕHom' (C : ℕAlg 𝓤) (D : ℕAlg 𝓤) : 𝓤 ̇ where
+--   field
+--     f : pr₁ C → pr₁ D
+--     p : f (pr₁ (pr₂ C)) ≡ pr₁ (pr₂ (D)) 
+--     α : f ∘ pr₂ (pr₂ C) ∼ pr₂ (pr₂ D) ∘ f 
+
+-- _∘ℕ_ : {C D E : ℕAlg 𝓤} → ℕHom D E → ℕHom C D → ℕHom C E
+-- _∘ℕ_ {𝓤} {C , c₀ , cs} {D , d₀ , ds} {E , e₀ , es} record { f = g ; p = q ; α = β } record { f = f ; p = p ; α = α } = record { f = g ∘ f ; p =  ap g p ∙ q ; α = λ x → ap g (α x) ∙ β (f x) } 
+
+-- ℕAlg-id : (C : ℕAlg 𝓤) → ℕHom C C
+-- ℕAlg-id (C , c₀ , cs) = record { f = id ; p = refl c₀ ; α = hrefl cs }
+
 
 infixl 70 _∘ℕ_
 
-ℕAlg-id : (C : ℕAlg 𝓤) → ℕHom C C
-ℕAlg-id (C , c₀ , cs) = id , (refl _) , (refl ∘ cs)
 
- 
+module _ (C D : ℕAlg 𝓤₀) (f : ℕHom C D) (g : ℕHom D C) where
+  
+  path : g ∘ℕ f ≡ ℕAlg-id C -- only works with records 
+  path = {!!}
+  path' : _∘ℕ_ {E = C} g f ≡ ℕAlg-id C -- works with Σ 
+  path' = {!!}
+  
+
 -- Definition 5.4.3 (homotopy-initial ℕ-algebra).
 
 isHinit-ℕ : ℕAlg 𝓤 → 𝓤 ⁺ ̇
@@ -73,15 +98,19 @@ Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) = Σ-o
   point-≡ = idtoeqv-β _ _ carrier-≃ i₀ ∙ p
   homotopy-≡ : transport (λ X → X → X) carrier-≡ is ≡ js
   homotopy-≡ = funext _ _ λ y → transport-fun' {X = 𝓤 ̇} {id} {id} UI UJ carrier-≡ is y ∙ (idtoeqv-β _ _ carrier-≃ (is (coe (carrier-≡ ⁻¹) y)) ∙ (ap (Uf ∘ is) (happly _ _ (ap coe (type-sym carrier-≃) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym carrier-≃))) y) ∙ (α (Ug y) ∙ ap js (happly _ _ (pr₁ (dpr-≡ q')) y))))
-  
+
+
 -- TO DO
 
--- 1. Why is Agda unable to infer codomain of composite? There seems to be a problem with the third component of the algebra (the homotopy). E.g.
+-- 1. (Same problem as above) Why is Agda unable to infer codomain of composite? There seems to be a problem with the third component of the algebra (the homotopy). E.g.
 
 postulate
   C D : ℕAlg 𝓤
   g : ℕHom (D {𝓤}) (C {𝓤})
   f : ℕHom (C {𝓤}) (D {𝓤})
-  p : _∘ℕ_ {E = C} g f ≡ ℕAlg-id (C {𝓤})  
+  --p : g ∘ℕ f ≡ ℕAlg-id (C {𝓤}) (UE , ? , ?)
+  p : _∘ℕ_ {E = C} g f ≡ ℕAlg-id (C {𝓤}) 
 
 -- 2. The proof seems to rely on some sort of SIP, because it deduces that I = J from the existence of an "equivalence homomorphism". See Ch2.14. Perhaps this is not necessary but it would be useful to work out the properties of equivalence homomorphisms in general.
+
+

@@ -86,6 +86,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
   cocone : 𝓣 ̇ →  𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇
   cocone D = Σ i ꞉ (A → D) , Σ j ꞉ (B → D) , i ∘ f ∼ j ∘ g
 
+-- Problem with implicit arguments. The solution might be to define cocones as a record.
 
 -- -- Lemma 6.8.2 (UMP of pushout)
 
@@ -104,6 +105,6 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
 --   po-rec'∘c⊔ t = po-uniqueness-pple _ _ _ _ (hrefl _) (hrefl _) λ c → lu _ ⁻¹ ∙ (γ-β' f g E (t ∘ inlₚ f g) (t ∘ inrₚ f g) _ c ⁻¹ ∙ ru _)
   
 --   po-UMP : (po f g → E) ≃ cocone f g E
---   po-UMP = c⊔ , (qinv-to-isequiv (po-rec' , c⊔∘po-rec' , po-rec'∘c⊔))
+--   po-UMP = c⊔ , (qinv-to-isequiv (po-rec' , c⊔∘po-rec' , {!!}))
 
 -- -- TO DO: Examples (suspension, join, cofiber, wedge and smash product as pushouts)
