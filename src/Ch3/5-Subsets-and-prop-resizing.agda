@@ -27,8 +27,6 @@ module Ch3.5-Subsets-and-prop-resizing where
   f' : (x : A) → isSet (P x)
   f' x = Props-are-Sets (P x) (f x)
 
--- TO DO : type-⁻¹ and type-∙ (Continuation of Ch2.10-Universes-and-univalence)
-
 
 -- Definitions (subuniverses of propositions and sets).
 

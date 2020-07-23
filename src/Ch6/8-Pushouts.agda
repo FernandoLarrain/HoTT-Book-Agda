@@ -86,25 +86,24 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
   cocone : 𝓣 ̇ →  𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇
   cocone D = Σ i ꞉ (A → D) , Σ j ꞉ (B → D) , i ∘ f ∼ j ∘ g
 
--- Problem with implicit arguments. The solution might be to define cocones as a record.
 
--- -- Lemma 6.8.2 (UMP of pushout)
+  -- Lemma 6.8.2 (UMP of pushout)
 
--- module po-UMP {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) (E : 𝓣 ̇) where
+  module po-UMP (E : 𝓣 ̇) where
 
---   c⊔ : (po f g → E) → cocone f g E
---   c⊔ t = t ∘ inlₚ f g , t ∘ inrₚ f g , λ c → ap t (glue f g c)
+    c⊔ : (po f g → E) → cocone E
+    c⊔ t = t ∘ inlₚ , t ∘ inrₚ , λ c → ap t (glue c) 
 
---   po-rec' : cocone f g E → po f g → E
---   po-rec' (i , j , h) = po-rec f g E i j h
+    po-rec' : cocone E → po f g → E
+    po-rec' (i , j , h) = po-rec E i j h
 
---   c⊔∘po-rec' : c⊔ ∘ po-rec' ∼ id
---   c⊔∘po-rec' (i , j , h) = dpair-≡ ((refl i) , (dpair-≡ ((refl j) , (funext _ _ λ c → γ-β' f g E i j h c ))))
+    c⊔∘po-rec' : c⊔ ∘ po-rec' ∼ id
+    c⊔∘po-rec' (i , j , h) = dpair-≡ ((refl i) , (dpair-≡ ((refl j) , (funext _ _ λ c → γ-β' E i j h c ))))
 
---   po-rec'∘c⊔ :  po-rec' ∘ c⊔ ∼ id
---   po-rec'∘c⊔ t = po-uniqueness-pple _ _ _ _ (hrefl _) (hrefl _) λ c → lu _ ⁻¹ ∙ (γ-β' f g E (t ∘ inlₚ f g) (t ∘ inrₚ f g) _ c ⁻¹ ∙ ru _)
-  
---   po-UMP : (po f g → E) ≃ cocone f g E
---   po-UMP = c⊔ , (qinv-to-isequiv (po-rec' , c⊔∘po-rec' , {!!}))
+    po-rec'∘c⊔ :  po-rec' ∘ c⊔ ∼ id
+    po-rec'∘c⊔ t = po-uniqueness-pple _ _ (hrefl _) (hrefl _) λ c → lu _ ⁻¹ ∙ (γ-β' E (t ∘ inlₚ) (t ∘ inrₚ) _ c ⁻¹ ∙ ru _)
 
--- -- TO DO: Examples (suspension, join, cofiber, wedge and smash product as pushouts)
+    po-UMP : (po f g → E) ≃ cocone E
+    po-UMP = c⊔ , (qinv-to-isequiv (po-rec' , c⊔∘po-rec' , po-rec'∘c⊔))
+
+-- TO DO: Examples (suspension, join, cofiber, wedge and smash product as pushouts)

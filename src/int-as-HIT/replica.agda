@@ -211,7 +211,20 @@ norm-has-sec (strneg (succ n)) = ap predω (norm-has-sec (strneg n))
 emb-has-sec : embedding ∘ normalization ∼ id
 emb-has-sec = ℤₕ-ind (λ z → embedding (normalization z) ≡ z) (refl _) {!!} {!!} {!!} {!!} {!!}
 
+-- Check definition of integers
 
+-- Alternative definitions:
 
+-- Free grp on one generator
 
+-- Contractible fibers
 
+-- Loop space of circle
+
+-- Signed nats
+
+-- Successor with contractible fibers
+
+-- Successor with bi-invertible maps
+
+-- Induction pple as recursion + eta

@@ -29,7 +29,7 @@ module basic-truncation-development (pt : propositional-truncations-exist) where
 
   ∥∥-recursion-computation : {X : 𝓤 ̇ } {P :  𝓥 ̇ } → (i : isProp P) → (f : X → P) → (x : X) → ∥∥-recursion i f ∣ x ∣ ≡ f x
   ∥∥-recursion-computation i f x = i (∥∥-recursion i f ∣ x ∣) (f x)
-
+  
 
   -- ∥∥-induction
 

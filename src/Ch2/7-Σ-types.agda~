@@ -63,7 +63,7 @@ dpr₁-≡-β {w = w₁ , w₂} {.w₁ , .w₂} (refl .w₁) (refl .w₂) = refl
 
 -- Theorem 2.7.4 (Action of transport on Σ-types).
 
-transport-dpair : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {Q : Σ P → 𝓤 ̇ } {x y : A} (p : x ≡ y) (u : P x) (z : Q (x , u)) → transport (λ x → Σ v ꞉ P x , Q (x , v)) p (u , z) ≡ transport P p u , transport Q (dpair-≡ (p , refl (transport P p u))) z
+transport-dpair : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {Q : Σ P → 𝓦 ̇ } {x y : A} (p : x ≡ y) (u : P x) (z : Q (x , u)) → transport (λ x → Σ v ꞉ P x , Q (x , v)) p (u , z) ≡ transport P p u , transport Q (dpair-≡ (p , refl (transport P p u))) z
 transport-dpair (refl x) u z = refl (u , z)
 
 

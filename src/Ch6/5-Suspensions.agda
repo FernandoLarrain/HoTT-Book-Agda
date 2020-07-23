@@ -96,13 +96,20 @@ _₊ : (A : 𝓤 ̇) → 𝓤 ⊙
 A ₊ = ((A + 𝟙) , inr ⋆)
 
 
+-- Transport of function application along function equality.
+
+transport-fun-ap : {X : 𝓤 ̇} {Y : 𝓥 ̇} (x₀ : X) (y₀ : Y) {f g : X → Y} (q : f ≡ g) (p : f x₀ ≡ y₀) → transport (λ (f : X → Y) → f x₀ ≡ y₀) q p ≡ happly f g q x₀ ⁻¹ ∙ p
+transport-fun-ap x₀ y₀ (refl f) p = lu p
+
+
+
 -- Lemma 6.5.3.
 
 module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
 
   B = pr₁ B'
   b₀ = pr₂ B'
-  
+
   from-based-maps : Map⊙ (A ₊) B' → (A → B)
   from-based-maps (f , p) = f ∘ inl
 
@@ -112,15 +119,12 @@ module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
   from∘to : from-based-maps ∘ to-based-maps ∼ id
   from∘to g = funext _ _ λ a → refl (g a)
  
-  lemma : {X : 𝓤 ̇} {Y : 𝓥 ̇} (x₀ : X) (y₀ : Y) {f g : X → Y} (q : f ≡ g) (p : f x₀ ≡ y₀) → transport (λ (f : X → Y) → f x₀ ≡ y₀) q p ≡ happly f g q x₀ ⁻¹ ∙ p
-  lemma x₀ y₀ (refl f) p = lu p
-
   to∘from : to-based-maps ∘ from-based-maps ∼ id
   to∘from (f , p) = dpair-≡ (
       q ,
       (
       transport (λ - → - (inr ⋆) ≡ b₀) q (refl b₀)
-        ≡⟨ lemma (inr ⋆) b₀ q (refl b₀) ⟩
+        ≡⟨ transport-fun-ap (inr ⋆) b₀ q (refl b₀) ⟩
       happly _ _ q (inr ⋆) ⁻¹ ∙ refl b₀
         ≡⟨ ru _ ⁻¹ ⟩
       happly _ _ q (inr ⋆) ⁻¹
@@ -226,3 +230,6 @@ module Susp⊣Ω (A' : 𝓤 ⊙) (B' : 𝓥 ⊙) where
 Sphere-UMP : {𝓤 : Universe} (n : ℕ) (B : 𝓤 ⊙) → Map⊙ (Sphere⊙ n) B ≃ pr₁ (Ω^ n B)
 Sphere-UMP zero B = based-maps-≃-unbased-maps.equivalence 𝟙 B ● points-of-a-type (pr₁ B)
 Sphere-UMP (succ n) B = (Susp⊣Ω.equivalence (Sphere⊙ n) B) ● Sphere-UMP n (Ω B)
+
+
+

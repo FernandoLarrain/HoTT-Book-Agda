@@ -21,6 +21,11 @@ pair-≡ {x = a , b} {.a , .b} (refl .a , refl .b) = refl (a , b)
 ×-η : {A : 𝓤 ̇ } {B : 𝓥 ̇ } (z : A × B) → z ≡ (pr₁ z , pr₂ z)
 ×-η z = pair-≡ (refl _ , refl _)
 
+{- Note that we also have a judgemental or definitional uniqueness principle for pairs: -}
+
+_ : {A : 𝓤 ̇ } {B : 𝓥 ̇ } (z : A × B) → z ≡ (pr₁ z , pr₂ z)
+_ = hrefl id
+
 -- (iii) From equality of pairs to pair of equalities
 
 pr-≡ : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {x y : A × B} → x ≡ y → (pr₁ x ≡ pr₁ y) × (pr₂ x ≡ pr₂ y)

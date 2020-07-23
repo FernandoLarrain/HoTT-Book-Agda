@@ -122,6 +122,7 @@ module higher-paths where
       term-agreement : (b : Bndry 1 A) (p : Path 1 b) (u : P (left-basept b)) → coe (type-agreement b p u) (transport' 0 P p u) ≡ transport P p u 
       term-agreement (b , x , .x) (refl .x) u = refl _
 
+--------------------------------------------------------------------------------
   {- Work in progress
 
   -- transport' in a constant family does nothing
@@ -208,7 +209,7 @@ boundary n A ((a , b) , p) = a , b
   -}
 
   -- TO DO: check definitions, prove that they coincide with the definitions in the book, see if they are related to one another (e.g. dependent case over constant family, transport and dependent paths) and apply to loop spaces and n-spheres (exercise 6.4).
-
+--------------------------------------------------------------------------------
 
 -- Exercise 2.10 (Dependent pairing is associative).
 
