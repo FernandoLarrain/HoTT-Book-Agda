@@ -1,0 +1,80 @@
+{-# OPTIONS --without-K --exact-split #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+
+module Ch5.8-Id-types-and-id-systems where
+
+
+-- Definition 5.8.1 (Pointed predicate, pointed family of maps, identity system)
+
+pted-pred : (A : 𝓤 ⊙) → 𝓤 ⁺ ̇
+pted-pred {𝓤} (A , a₀) = Σ R ꞉ (A → 𝓤 ̇) , R a₀
+
+ppmap : (A : 𝓤 ⊙) → pted-pred A → pted-pred A → 𝓤 ̇
+ppmap (A , a₀) (R , r₀) (S , s₀) = Σ g ꞉ Π (λ a → R a → S a) , g a₀ r₀ ≡ s₀ 
+
+is-id-system : {A : 𝓤 ⊙} → pted-pred A → 𝓤 ⁺ ̇
+is-id-system {𝓤} {A , a₀} (R , r₀) = (D : (a : A) → R a → 𝓤 ̇) (d : D a₀ r₀) → Σ f ꞉ ((a : A) (r : R a) → D a r) , f a₀ r₀ ≡ d
+
+id-system : (A : 𝓤 ⊙) → 𝓤 ⁺ ̇
+id-system {𝓤} (A , a₀) = Σ R ꞉ pted-pred (A , a₀) , is-id-system R
+
+
+-- Theorem 5.8.2
+
+module thm582 (A' : 𝓤 ⊙) (R' : pted-pred A') where
+
+  -- Unfold the pointed type and predicate
+
+  A = pr₁ A'
+  a₀ = pr₂ A'
+  R = pr₁ R'
+  r₀ = pr₂ R'
+
+  -- TFAE
+
+  i = is-id-system R'
+  ii = (S' : pted-pred A') → isContr (ppmap A' R' S')
+  iii = (a : A) → isequiv (λ (- : a₀ ≡ a) → transport R - r₀)
+  iv = isContr (Σ R)
+
+  -- The statements are propositions (the proof of i-is-Prop is omitted).
+
+  ii-is-Prop : isProp ii
+  ii-is-Prop = Π-preserves-Props _ (λ S' → isContr-is-Prop _)
+
+  iii-is-Prop : isProp iii
+  iii-is-Prop = Π-preserves-Props _ (λ a → ishae-is-Prop _)
+
+  iv-is-Prop : isProp iv
+  iv-is-Prop = isContr-is-Prop _
+
+  -- -- Proof of the logical equivalences
+
+  -- aux : (X : 𝓤 ̇) (Y Z : X → 𝓥 ̇) (f g : (x : X) → Y x → Z x) (p : f ≡ g) (x : X) (y : Y x) (z : Z x) (q : f x y ≡ z) → transport (λ - → - x y ≡ z) p q ≡ (happly (f x) (g x) (happly f g p x) y) ⁻¹ ∙ q
+  -- aux X Y Z f .f (refl .f) x y .(f x y) (refl .(f x y)) = refl _
+
+  -- -- Maybe we can just use transport in fibers...
+
+  -- i-to-ii : i → ii
+  -- i-to-ii R'-is-id-system (S , s₀) = pr₂ (isContr-iff-is-inhabited-Prop _) (
+  --   (R'-is-id-system (λ a r → S a) s₀) ,
+  --   Σ-induction (λ f fr → Σ-induction λ g gr → dpair-≡ (
+  --     (funext _ _ λ a → funext _ _ λ r → pr₁ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹)) a r) ,
+  --     (aux _ _ _ f g (funext _ _ λ a → funext _ _ λ r → pr₁ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹)) a r) a₀ r₀ s₀ fr ∙ (ap (λ - → happly (f a₀) (g a₀) - r₀ ⁻¹ ∙ fr) (happly-β _ _ _ a₀) ∙ (ap (λ - → - ⁻¹ ∙ fr) (happly-β _ _ _ r₀ ∙ pr₂ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹))) ∙ ((distr fr (gr ⁻¹) ∙ᵣ fr) ∙ ∙-assoc _ _ _ ⁻¹ ∙ ap ((gr ⁻¹) ⁻¹ ∙_) (linv _) ∙ ru _ ⁻¹ ∙ ⁻¹-invol _ ))))
+  --     ))
+  --   )
+
+  -- ii-to-iii : ii → iii
+  -- ii-to-iii ppmap-is-Contr a = {!!}
+  
+  -- iii-to-iv : iii → iv
+  -- iii-to-iv = {!!}
+
+  -- iv-to-i : iv → i
+  -- iv-to-i = {!!}
+  
+  

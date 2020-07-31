@@ -77,9 +77,9 @@ Trunc-ind-comp n A P g d x = refl _
 
 Tlevel-of-Trunc : (n : Tlevel) (A : 𝓤 ̇) → is n type (Trunc n A)
 Tlevel-of-Trunc ⟨-2⟩ A = hub , spoke ⟨-2⟩
-Tlevel-of-Trunc (S n) A = pr₁ (≃-sym (Tlevel-in-terms-of-Map⊙ n (Trunc (S n) A))) (λ b → ((λ x → b) , (refl b)) , (Σ-induction λ r p → (dpair-≡ (q r b p , (transport-fun-ap (base (to-ℕ n)) b (q r b p) p ∙ (ap (λ - → - ⁻¹ ∙ p) (happly-β _ _ (λ x → spoke (S n) r x ∙ spoke (S n) r (base (to-ℕ n)) ⁻¹ ∙ p) (base (to-ℕ n)) ∙ (rinv _ ∙ᵣ p) ∙ lu _ ⁻¹) ∙ linv p)))) ⁻¹)) where
+Tlevel-of-Trunc (S n) A = pr₁ (≃-sym (Tlevel-in-terms-of-Map⊙ n (Trunc (S n) A))) (λ b → ((λ x → b) , (refl b)) , (Σ-induction λ r p → (dpair-≡ (q r b p , (transport-fun-ap (base (to-ℕ n)) b (q r b p) p ∙ (ap (λ - → - ⁻¹ ∙ p) (happly-β (λ x → spoke (S n) r x ∙ spoke (S n) r (base (to-ℕ n)) ⁻¹ ∙ p) (base (to-ℕ n)) ∙ (rinv _ ∙ᵣ p) ∙ lu _ ⁻¹) ∙ linv p)))) ⁻¹)) where
   q : (r : Sphere (to-ℕ n) → Trunc (S n) A) (b : Trunc (S n) A) (p : r (base (to-ℕ n)) ≡ b) → r ≡ λ x → b
-  q r b p = funext _ _ λ x → spoke (S n) r x ∙ spoke (S n) r (base (to-ℕ n)) ⁻¹ ∙ p
+  q r b p = funext λ x → spoke (S n) r x ∙ spoke (S n) r (base (to-ℕ n)) ⁻¹ ∙ p
 
 
 -- Theorem 7.3.2 (Better induction principle for truncations)
@@ -116,7 +116,7 @@ Trunc-rec-β {𝓤} {𝓥} {S n} {A} {B} i g x = refl _
 -- Corollary: uniqueness principle for functions out of n-truncations.
 
 Trunc-uniqueness-pple : {n : Tlevel} {A : 𝓤 ̇} {B : 𝓥 ̇} → is n type B → (g g' : Trunc n A → B) → g ∘ [_] ∼ g' ∘ [_] → g ≡ g'
-Trunc-uniqueness-pple {𝓤} {𝓥} {n} {A} {B} i g g' f = funext g g' (Trunc-ind' (λ x → g x ≡ g' x) (λ x → cumulativity-of-Tlevels n B i (g x) (g' x)) f)
+Trunc-uniqueness-pple {𝓤} {𝓥} {n} {A} {B} i g g' f = funext (Trunc-ind' (λ x → g x ≡ g' x) (λ x → cumulativity-of-Tlevels n B i (g x) (g' x)) f)
 
 
 -- Lemma 7.3.3 (Universal property of truncations).
@@ -130,7 +130,7 @@ module Trunc-UMP {n : Tlevel} (A : 𝓤 ̇) {B : 𝓥 ̇} (i : is n type B) wher
   ψ = Trunc-rec B i
 
   α : ϕ ∘ ψ ∼ id
-  α g = funext _ _ (Trunc-rec-β i g)
+  α g = funext (Trunc-rec-β i g)
   
   β : ψ ∘ ϕ ∼ id
   β f = Trunc-uniqueness-pple i _ _ (Trunc-rec-β i (f ∘ [_]))
@@ -174,12 +174,12 @@ h-Trunc-is-ap-[] (S n) h a = ru _ ⁻¹ ∙ lu _ ⁻¹
 -- Corollary 7.3.7 (A is n-type iff [_] : A → Trunc n A is an equivalence).
 
 has-Tlevel-≃-[]-is-equiv : (n : Tlevel) (A : 𝓤 ̇) → is n type A ≃ isequiv ([_] {𝓤} {n} {A}) 
-has-Tlevel-≃-[]-is-equiv {𝓤} ⟨-2⟩ A = biimplication-to-≃ _ _ (Tlevel-is-predicate _ _) (ishae-is-Prop _)
-  (λ i → qinv-to-isequiv {f = [_] {𝓤} {⟨-2⟩} {A}} (Trunc-rec _ i id , happly _ _ (Trunc-uniqueness-pple (Tlevel-of-Trunc ⟨-2⟩ A) _ _ (hrefl _)) , hrefl _))
-  λ i → ≃-preserves-Tlevel ⟨-2⟩ (Trunc ⟨-2⟩ A) A (≃-sym ([_] , i)) (Tlevel-of-Trunc ⟨-2⟩ A)
-has-Tlevel-≃-[]-is-equiv {𝓤} (S n) A = biimplication-to-≃ _ _ (Tlevel-is-predicate _ _) (ishae-is-Prop _)
-  (λ i → qinv-to-isequiv {f = [_] {𝓤} {S n} {A}} (Trunc-rec _ i id , happly _ _ (Trunc-uniqueness-pple (Tlevel-of-Trunc (S n) A) _ _ (hrefl _)) , hrefl _))
-  λ i → ≃-preserves-Tlevel (S n) (Trunc (S n) A) A (≃-sym ([_] , i)) (Tlevel-of-Trunc (S n) A)
+has-Tlevel-≃-[]-is-equiv {𝓤} ⟨-2⟩ A = ⇔-to-≃ (Tlevel-is-predicate _ _) (ishae-is-Prop _)
+  ((λ i → qinv-to-isequiv {f = [_] {𝓤} {⟨-2⟩} {A}} (Trunc-rec _ i id , happly (Trunc-uniqueness-pple (Tlevel-of-Trunc ⟨-2⟩ A) _ _ (hrefl _)) , hrefl _)) ,
+  λ i → ≃-preserves-Tlevel ⟨-2⟩ (Trunc ⟨-2⟩ A) A (≃-sym ([_] , i)) (Tlevel-of-Trunc ⟨-2⟩ A))  
+has-Tlevel-≃-[]-is-equiv {𝓤} (S n) A = ⇔-to-≃  (Tlevel-is-predicate _ _) (ishae-is-Prop _)
+  ((λ i → qinv-to-isequiv {f = [_] {𝓤} {S n} {A}} (Trunc-rec _ i id , happly (Trunc-uniqueness-pple (Tlevel-of-Trunc (S n) A) _ _ (hrefl _)) , hrefl _)) ,
+  λ i → ≃-preserves-Tlevel (S n) (Trunc (S n) A) A (≃-sym ([_] , i)) (Tlevel-of-Trunc (S n) A))
 
 
 -- Theorem 7.3.8 ([_] preserves finite products).

@@ -98,7 +98,7 @@ fib {A = A} f y = Σ x ꞉ A , (f x ≡ y)
 
 path-space-fib : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} {y : B} → (w w' : fib f y) → (w ≡ w') ≃ (Σ γ ꞉ (pr₁ w ≡ pr₁ w') , (ap f γ ∙ pr₂ w' ≡ pr₂ w))
 path-space-fib {A = A} {f = f} {y} (x , p) (x' , p') =
-  Σ-≡-equiv _ _ ●
+  Σ-≡-equiv ●
   Σ-preserves-family-≃ (
     λ γ → ((λ r → bpi x' γ ⁻¹ ∙ r) , (qinv-to-isequiv (qinv-pre-∙ _ (bpi x' γ ⁻¹)))) ●
     (ap f γ ∙ₗ_) , qinv-to-isequiv (qinv-∙ₗ _ _ _) ●
@@ -107,7 +107,7 @@ path-space-fib {A = A} {f = f} {y} (x , p) (x' , p') =
   )
   where
   bpi : (x' : A) (γ : x ≡ x') → transport (λ x₁ → f x₁ ≡ y) γ p ≡ (ap f γ ⁻¹ ∙ p)
-  bpi x' (refl .x') = lu _
+  bpi x' (refl .x') = lu _ -- maybe we can just use transport-funval-≡ with a constant function
   
 
 -- Theorem 4.2.6 (Haes are contractible maps (see Def. 4.1.1 in Ch4.4-Contractible-fibers)).
@@ -160,7 +160,7 @@ has-rinv-of-qinv-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → qinv f
 has-rinv-of-qinv-is-Contr {A = A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
   where
   by-funext : fib (λ g → f ∘ g) id ≃ has-rinv f
-  by-funext = Σ-preserves-family-≃ (λ g → (happly _ _) , (hfe _ _))
+  by-funext = Σ-preserves-family-≃ (λ g → happly , fe)
   fiber-of-post-∘-is-Contr : (h : B → B) → isContr (fib (λ g → f ∘ g) h)
   fiber-of-post-∘-is-Contr = ishae-to-isContrMap (λ g → f ∘ g) (qinv-to-ishae (post-∘-by-qinv-is-qinv B f q))  
 
@@ -168,7 +168,7 @@ has-linv-of-qinv-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → qinv f
 has-linv-of-qinv-is-Contr {A = A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
   where
   by-funext : fib (λ g → g ∘ f) id ≃ has-linv f
-  by-funext = Σ-preserves-family-≃ (λ g → (happly _ _) , (hfe _ _))
+  by-funext = Σ-preserves-family-≃ (λ g → happly , fe)
   fiber-of-post-∘-is-Contr : (h : A → A) → isContr (fib (λ g → g ∘ f) h)
   fiber-of-post-∘-is-Contr = ishae-to-isContrMap (λ g → g ∘ f) (qinv-to-ishae (pre-∘-by-qinv-is-qinv A f q))
 
@@ -213,7 +213,7 @@ ishae-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (ishae f)
 ishae-is-Prop {A = A} {B} f = suffices λ h → retract-of-Contr-is-Contr (≃-to-◁ equivalence) (Σ-preserves-Contr _ _ (has-rinv-of-qinv-is-Contr f (ishae-to-qinv h)) (rcoh-of-hae-is-Contr f h))
   where
   suffices : (ishae f → isContr (ishae f)) → isProp (ishae f)
-  suffices = isequiv₁ (pr₂ (isProp-≃-inhabited→isContr (ishae f)))
+  suffices = inv (isProp-≃-inhabited→isContr (ishae f))
   equivalence : Σ (λ (u : has-rinv f) → rcoh f u) ≃ ishae f
   equivalence =
     Σ (λ (u : has-rinv f) → rcoh f u)

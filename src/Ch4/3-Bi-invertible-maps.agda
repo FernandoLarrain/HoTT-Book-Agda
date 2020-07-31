@@ -43,7 +43,7 @@ biinv-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (biinv f)
 biinv-is-Prop f = suffices λ ib → ×-preserves-Contr (has-rinv f) (has-linv f) (has-rinv-of-qinv-is-Contr f (biinv-to-qinv ib)) (has-linv-of-qinv-is-Contr f (biinv-to-qinv ib))
   where
   suffices : (biinv f → isContr (biinv f)) → isProp (biinv f)
-  suffices = isequiv₁ (pr₂ (isProp-≃-inhabited→isContr (biinv f))) 
+  suffices = inv (isProp-≃-inhabited→isContr (biinv f))
     
 
 -- Corollary 4.3.3 (biinv is equivalent to ishae).
@@ -55,11 +55,7 @@ ishae-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → ishae f → biinv
 ishae-to-biinv f = qinv-to-biinv ∘ ishae-to-qinv
 
 biinv-≃-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f ≃ ishae f
-biinv-≃-ishae f = biimplication-to-≃ _ _
-  (biinv-is-Prop f)
-  (ishae-is-Prop f)
-  (biinv-to-ishae f)
-  (ishae-to-biinv f)
+biinv-≃-ishae f = ⇔-to-≃ (biinv-is-Prop f) (ishae-is-Prop f) (biinv-to-ishae f , ishae-to-biinv f)
   
  
   

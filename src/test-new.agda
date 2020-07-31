@@ -5,22 +5,45 @@ module test-new where
 -- Chapter 1
 
 open import Ch1.3-Universes-and-families public
+-- infix  1 _̇
 open import Ch1.2-Function-types public
+-- infixl 70 _∘_
 open import Ch1.4-Dependent-function-types public
+-- infixr -1 -Π
 open import Ch1.6-Dependent-pair-types public
+-- infixr 50 _,_
+-- infixr -1 -Σ
 open import Ch1.5-Product-types public
+-- infixr 30 _×_
 open import Ch1.7-Coproduct-types public
+-- infixl 20 _+_
 open import Ch1.8-The-type-of-booleans public
+-- infix 0 Id
+-- infix 0 _≡_
 open import Ch1.9-The-natural-numbers public
 open import Ch1.11-Propositions-as-types public
+-- infix _⇔_ 10
 open import Ch1.12-Identity-types public
+-- infix 0 _≢_
+
 
 -- Chapter 2
 
 open import Ch2.1-Types-are-higher-groupoids public
+-- infix 40 _⁻¹
+-- infixl 30 _∙_
+-- infixr 0 _≡⟨_⟩_
+-- infix 1 _∎
+-- infix 30 _∙ᵣ_
+-- infix 30 _∙ₗ_
 open import Ch2.2-Functions-are-functors public
 open import Ch2.3-Type-families-are-fibrations public
 open import Ch2.4-Homotopies-and-equivalences public
+-- infix 0 _∼_
+-- infix 10 _≃_
+-- infixl 30 _●_
+-- infixr 0 _≃⟨_⟩_
+-- infix 1 _■
 open import Ch2.6-Cartesian-product-types public
 open import Ch2.7-Σ-types public
 open import Ch2.8-The-unit-type public
@@ -61,6 +84,8 @@ open import Ch4.7-Closure-properties-of-equivalences public
 open import Ch5.1-Introduction-to-inductive-types public
 open import Ch5.3-W-types public
 open import Ch5.4-Inductive-types-are-initial-algebras public
+open import Ch5.8-Id-types-and-id-systems public
+
 
 -- Chapter 6
 
@@ -69,9 +94,12 @@ open import Ch6.3-The-interval public public
 open import Ch6.4-Circles-and-spheres public
 open import Ch6.5-Suspensions public
 open import Ch6.8-Pushouts public
+open import Ch6.9-Truncations public
+open import Ch6.10-Quotients public
 open import Ch6.Exercises public
 
 -- Chapter 7
 
 open import Ch7.1-Definition-of-n-types public
 open import Ch7.2-UIP-and-Hedberg's-theorem public
+open import Ch7.3-Truncations public

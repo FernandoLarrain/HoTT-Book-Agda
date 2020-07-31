@@ -12,38 +12,38 @@ module Ch2.15-Universal-properties where
 
 -- Theorem 2.15.2 (Universal mapping property (UMP) of product of types).
 
-×-UMP : (X : 𝓤 ̇ ) (A : 𝓥 ̇ ) (B : 𝓦 ̇ ) → isequiv {A = X → A × B} {(X → A) × (X → B)} (λ f → (pr₁ ∘ f) , (pr₂ ∘ f))
-×-UMP X A B = qinv-to-isequiv (inv , (α , β)) where
-  inv : (X → A) × (X → B) → X → A × B
-  inv (g , h) x = (g x) , (h x)
-  α : (λ x → (pr₁ ∘ inv x) , (pr₂ ∘ inv x)) ∼ (λ x → x)
+×-UMP : (X : 𝓤 ̇ ) (A : 𝓥 ̇ ) (B : 𝓦 ̇ ) → isequiv {_} {_} {X → A × B} {(X → A) × (X → B)} ⟨ pr₁ ∘_ , pr₂ ∘_ ⟩ 
+×-UMP X A B = qinv-to-isequiv (inverse , (α , β)) where
+  inverse : (X → A) × (X → B) → X → A × B
+  inverse = Σ-induction ⟨_,_⟩
+  α : (λ x → (pr₁ ∘ inverse x) , (pr₂ ∘ inverse x)) ∼ (λ x → x)
   α (g , h) = refl _
-  β : (λ x → inv ((pr₁ ∘ x) , (pr₂ ∘ x))) ∼ (λ x → x)
-  β f = funext _ _ λ x → ×-η (f x) ⁻¹
+  β : (λ x → inverse ((pr₁ ∘ x) , (pr₂ ∘ x))) ∼ (λ x → x)
+  β f = funext λ x → ×-η (f x) ⁻¹
   
 
 -- Theorem 2.15.5 (UMP of product of type families).
 
-dep-×-UMP : (X : 𝓤 ̇ ) (A : X → 𝓥 ̇ ) (B : X → 𝓦 ̇ ) → isequiv {A = (x : X) → A x × B x} {(Π A) × (Π B)} (λ f → (λ x → pr₁ (f x)), (λ x → pr₂ (f x)))
-dep-×-UMP X A B = qinv-to-isequiv (inv , (α , β)) where
-  inv : (Π A) × (Π B) → (x : X) → A x × B x
-  inv (g , h) x = (g x) , (h x)
-  α : (λ x → (λ x₁ → pr₁ (inv x x₁)) , (λ x₁ → pr₂ (inv x x₁))) ∼ (λ x → x)
+dep-×-UMP : (X : 𝓤 ̇ ) (A : X → 𝓥 ̇ ) (B : X → 𝓦 ̇ ) → isequiv {_} {_} {(x : X) → A x × B x} {(Π A) × (Π B)} (λ f → (λ x → pr₁ (f x)), (λ x → pr₂ (f x)))
+dep-×-UMP X A B = qinv-to-isequiv (inverse , (α , β)) where
+  inverse : (Π A) × (Π B) → (x : X) → A x × B x
+  inverse (g , h) x = (g x) , (h x)
+  α : (λ x → (λ x₁ → pr₁ (inverse x x₁)) , (λ x₁ → pr₂ (inverse x x₁))) ∼ (λ x → x)
   α (g , h) = refl _
-  β : (λ x → inv ((λ x₁ → pr₁ (x x₁)) , (λ x₁ → pr₂ (x x₁)))) ∼ (λ x → x)
-  β f = funext _ _ λ x → Σ-η (f x) ⁻¹
+  β : (λ x → inverse ((λ x₁ → pr₁ (x x₁)) , (λ x₁ → pr₂ (x x₁)))) ∼ (λ x → x)
+  β f = funext λ x → Σ-η (f x) ⁻¹
   
 
 -- Theorem 2.15.7 (UMP of sum over type families ("Axiom of Choice")).
 
-dep-Σ-UMP : (X : 𝓤 ̇ ) (A : X → 𝓥 ̇ ) (P : (x : X) → A x → 𝓦 ̇ ) → isequiv {A = (x : X) → Σ (P x)} {Σ g ꞉ Π A , ((x : X) → P x (g x))} (λ f → (λ x → pr₁ (f x)) , (λ x → pr₂ (f x)))
-dep-Σ-UMP X A P = qinv-to-isequiv (inv , (α , β)) where
-  inv : Σ g ꞉ Π A , ((x : X) → P x (g x)) → (x : X) → Σ (P x)
-  inv (g , h) x = (g x) , (h x)
-  α : (λ x → (λ x₁ → pr₁ (inv x x₁)) , (λ x₁ → pr₂ (inv x x₁))) ∼ (λ x → x)
+dep-Σ-UMP : (X : 𝓤 ̇ ) (A : X → 𝓥 ̇ ) (P : (x : X) → A x → 𝓦 ̇ ) → isequiv {_} {_} {(x : X) → Σ (P x)} {Σ g ꞉ Π A , ((x : X) → P x (g x))} (λ f → (λ x → pr₁ (f x)) , (λ x → pr₂ (f x)))
+dep-Σ-UMP X A P = qinv-to-isequiv (inverse , (α , β)) where
+  inverse : Σ g ꞉ Π A , ((x : X) → P x (g x)) → (x : X) → Σ (P x)
+  inverse (g , h) x = (g x) , (h x)
+  α : (λ x → (λ x₁ → pr₁ (inverse x x₁)) , (λ x₁ → pr₂ (inverse x x₁))) ∼ (λ x → x)
   α (g , h) = refl _
-  β : (λ x → inv ((λ x₁ → pr₁ (x x₁)) , (λ x₁ → pr₂ (x x₁)))) ∼ (λ x → x)
-  β f = funext _ _ λ x → Σ-η (f x) ⁻¹
+  β : (λ x → inverse ((λ x₁ → pr₁ (x x₁)) , (λ x₁ → pr₂ (x x₁)))) ∼ (λ x → x)
+  β f = funext λ x → Σ-η (f x) ⁻¹
 
 
 -- (Generalized) Cartesian-Closure Adjunction
@@ -59,7 +59,7 @@ GCCAdj A B C = curry , qinv-to-isequiv (
 -- Definition (Pullback)
 
 pb : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} → (A → C) → (B → C) → (𝓤 ⊔ 𝓥 ⊔ 𝓦) ̇
-pb {A = A} {B} {C} f g = Σ (λ a → Σ (λ b → f a ≡ g b))
+pb {𝓤} {𝓥} {𝓦} {A} {B} {C} f g = Σ (λ a → Σ (λ b → f a ≡ g b))
 
 _×⟨_⟩_ : (A : 𝓤 ̇) (C : 𝓦 ̇) (B : 𝓥 ̇) → (A → C) → (B → C) → (𝓤 ⊔ 𝓥 ⊔ 𝓦) ̇
 (A ×⟨ C ⟩ B) f g = pb f g

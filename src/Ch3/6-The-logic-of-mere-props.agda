@@ -15,7 +15,7 @@ module Ch3.6-The-logic-of-mere-props where
 -- Example 3.6.2. Props are closed under universal quantification, implication and negation
 
 Π-preserves-Props : {A : 𝓤 ̇} (B : A → 𝓥 ̇) → ((x : A) → isProp (B x)) → isProp (Π B)
-Π-preserves-Props B ϕ f g = funext f g (λ x → ϕ x (f x) (g x))
+Π-preserves-Props B ϕ f g = funext (λ x → ϕ x (f x) (g x))
 
 →-preserves-Props : (A : 𝓤 ̇) (B : 𝓥 ̇) → isProp B → isProp (A → B)
 →-preserves-Props A B i = Π-preserves-Props (λ a → B) (λ a → i)

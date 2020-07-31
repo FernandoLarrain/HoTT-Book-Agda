@@ -20,8 +20,8 @@ module 2-out-of-3 {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B
   -∘-is-Prop : isProp (isequiv f → isequiv g → isequiv (g ∘ f))
   -∘-is-Prop = →-preserves-Props _ _ (→-preserves-Props _ _ (ishae-is-Prop _))
 
-  fst : (isequiv g → isequiv (g ∘ f) → isequiv f)
-  fst ieg ie∘ = qinv-to-isequiv ((isequiv₁ ie∘ ∘ g) , (
+  first : (isequiv g → isequiv (g ∘ f) → isequiv f)
+  first ieg ie∘ = qinv-to-isequiv ((isequiv₁ ie∘ ∘ g) , (
     (λ b →
       f (isequiv₁ ie∘ (g b))
         ≡⟨ isequiv₂ ieg _ ⁻¹ ⟩
@@ -34,11 +34,11 @@ module 2-out-of-3 {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B
     isequiv₂ ie∘ 
     ))
   
-  fst-is-Prop : isProp (isequiv g → isequiv (g ∘ f) → isequiv f)
-  fst-is-Prop = →-preserves-Props _ _ (→-preserves-Props _ _ (ishae-is-Prop _))
+  first-is-Prop : isProp (isequiv g → isequiv (g ∘ f) → isequiv f)
+  first-is-Prop = →-preserves-Props _ _ (→-preserves-Props _ _ (ishae-is-Prop _))
   
-  snd : (isequiv f → isequiv (g ∘ f) → isequiv g)
-  snd ief ie∘ = qinv-to-isequiv ((f ∘ isequiv₁ ie∘) , (
+  second : (isequiv f → isequiv (g ∘ f) → isequiv g)
+  second ief ie∘ = qinv-to-isequiv ((f ∘ isequiv₁ ie∘) , (
     (isequiv₃ ie∘) ,
     (λ b →
       f (isequiv₁ ie∘ (g b))
@@ -50,8 +50,8 @@ module 2-out-of-3 {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B
       b ∎)
     ))
 
-  snd-is-Prop : isProp (isequiv f → isequiv (g ∘ f) → isequiv g)
-  snd-is-Prop = →-preserves-Props _ _ (→-preserves-Props _ _ (ishae-is-Prop _))
+  second-is-Prop : isProp (isequiv f → isequiv (g ∘ f) → isequiv g)
+  second-is-Prop = →-preserves-Props _ _ (→-preserves-Props _ _ (ishae-is-Prop _))
 
 
 -- Definition 4.7.2 (Retract of function).
@@ -124,7 +124,7 @@ total-fib-≃ {A = A} {P} {Q} f x v =
   fib (total f) (x , v)
     ≃⟨ ≃-sym (Σ-assoc A P _) ⟩
   (Σ a ꞉ A , Σ u ꞉ P a , (a , f a u) ≡ (x , v))
-    ≃⟨ Σ-preserves-family-≃ (λ a → Σ-preserves-family-≃ λ u → Σ-≡-equiv _ _) ⟩
+    ≃⟨ Σ-preserves-family-≃ (λ a → Σ-preserves-family-≃ λ u → Σ-≡-equiv) ⟩
   (Σ a ꞉ A , Σ u ꞉ P a , Σ p ꞉ a ≡ x , transport Q p (f a u) ≡ v)
     ≃⟨ Σ-preserves-family-≃ (λ a → Σ-swap _ _ _) ⟩
   (Σ a ꞉ A , Σ p ꞉ a ≡ x , Σ u ꞉ P a , transport Q p (f a u) ≡ v)

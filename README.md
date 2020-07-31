@@ -70,17 +70,24 @@ The file `Equivalences` imports `Ch4`.
 1. `1-Introduction-to-inductive-types`
 2. `3-W-types`
 3. `4-Inductive-types-are-initial-algebras`
+4. `8-Id-types-and-id-systems`
 
 #### Chapter 6 (src\Ch6)
 
 1. `2-Induction-pples-and-dependent-paths`
 2. `3-The-interval`
 3. `4-Circles-and-spheres`
+4. `5-Suspensions`
+5. `8-Pushouts`
+6. `9-Truncations`
+7. `10-Quotients`
+8. `Exercises`
 
 #### Chapter 7 (src\Ch7)
 
 1. `1-Definition-of-n-types`
 2. `2-UIP-and-Hedberg's-theorem`
+3. `3-Truncations`
 
 
 ## Potential inconsistencies
@@ -93,7 +100,7 @@ Agda has some features that are inconsitent with HoTT. To avoid them,
 
 Also,
 
-1. The following files use the `rewrite` construct: `Ch2.4`, `Ch4.2` and `Ch7.1` (is it consistent with HoTT?).
+1. The following files use the `rewrite` construct: `Ch2.4`, `Ch4.2` and `Ch7.1` (Is it consistent with HoTT? It shoudn't if it is just a particular case of with-abstraction).
 
 2. The `--safe` option was used until the first postulates were made (around the end of `Ch2`).
 
@@ -112,3 +119,50 @@ Also,
 ## The notion of equivalence
 
 The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences from then on. Accordingly, up to that point, the code works with both definitions, and from then on, only with the second. The default is the new definition. To use the old one, change `open new-equiv public` to `open old-equiv public` in `Ch2.4`.
+
+## Pending
+
+* Results about binary functions, including
+  * Simultaneous action on paths
+  * Iterated function extensionality
+  * Transport along function extensionality
+
+* Direct map from quasi-inverses to equivalences
+
+* Add right-unit law for paths in the other direction
+
+* Use modules (open using / hiding / renaming) and equational reasoning to increase readability of proofs.
+
+* Clean Ch2.Exercise.
+
+* Implement equivalence relations (including equational reasoning) as a type class.
+
+* Systematize description of path-spaces of type constructors (intro, elim, beta and eta rules). Similarly for univalence, function extensionality, propositional truncations, etc. Perhaps use records. Describe how action on paths and transport work on the equivalent descriptions.
+
+* Systematize HITs, perhaps using records. See Generic1HIT in HoTT std. lib.
+
+* Study std. lib. in detail to import other ideas.
+
+* Prove groupoid laws for homotopies (using equality or homotopy?) and equivalence relations.
+
+* Spaces in old type declarations
+
+* Define biimplication
+
+* Define map product and coproduct
+
+* Define disequality
+
+* Whiskering should bind looser than concatenation
+
+* Remove named implicit arguments
+
+* Make function and type arguments for funext and univalence implicit
+
+* Modules with equivalence: .equiv
+
+* Finish / fix 2.14
+
+* Define equivalence with old 1-type definition
+
+* Use PROP and SET?

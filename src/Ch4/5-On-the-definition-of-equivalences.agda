@@ -18,18 +18,18 @@ module Ch4.5-On-the-definition-of-equivalences where
   (λ h b → transport P (ε b) (h (g b))) ,
   (qinv-to-ishae (
     (λ k a → k (f a)) ,
-    (λ k → funext _ _ (λ b → apd k (ε b))) ,
-    λ h → funext _ _ (λ a → ap (λ - → transport P - (h (g (f a)))) (τ a ⁻¹)∙ (transport-∘ P f (η a) (h (g (f a))) ⁻¹ ∙ apd h (η a)))
+    (λ k → funext (λ b → apd k (ε b))) ,
+    λ h → funext (λ a → ap (λ - → transport P - (h (g (f a)))) (τ a ⁻¹)∙ (transport-∘ P f (η a) (h (g (f a))) ⁻¹ ∙ apd h (η a)))
     )
   )
 
 Π-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((a : A) → P a ≃ Q (pr₁ e a)) → Π P ≃ Π Q
 Π-preserves-≃ P Q e t = Π-preserves-family-≃ t ● Π-preserves-base-≃ Q e  
 
-Π-preserves-base-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (e : A ≃ B) → Π P ≃ Π (P ∘ pr₁ (≃-sym e))
+Π-preserves-base-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (e : A ≃ B) → Π P ≃ Π (P ∘ inv e)
 Π-preserves-base-≃' P e = ≃-sym (Π-preserves-base-≃ P (≃-sym e))
 
-Π-preserves-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((b : B) → P (pr₁ (≃-sym e) b) ≃ Q b) → Π P ≃ Π Q
+Π-preserves-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((b : B) → P (inv e b) ≃ Q b) → Π P ≃ Π Q
 Π-preserves-≃' P Q e t = Π-preserves-base-≃' P e ● Π-preserves-family-≃ t
 
 Σ-preserves-base-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : B → 𝓦 ̇) (e : A ≃ B) → (Σ (P ∘ (pr₁ e)) ≃ Σ P) 
@@ -45,8 +45,8 @@ module Ch4.5-On-the-definition-of-equivalences where
 Σ-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((a : A) → P a ≃ Q (pr₁ e a)) → Σ P ≃ Σ Q
 Σ-preserves-≃ P Q e t = Σ-preserves-family-≃ t ● Σ-preserves-base-≃ Q e 
 
-Σ-preserves-base-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (e : A ≃ B) → Σ P ≃ Σ (P ∘ pr₁ (≃-sym e))
+Σ-preserves-base-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (e : A ≃ B) → Σ P ≃ Σ (P ∘ inv e)
 Σ-preserves-base-≃' P e = ≃-sym (Σ-preserves-base-≃ P (≃-sym e)) 
 
-Σ-preserves-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((b : B) → P (pr₁ (≃-sym e) b) ≃ Q b) → Σ P ≃ Σ Q
+Σ-preserves-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((b : B) → P (inv e b) ≃ Q b) → Σ P ≃ Σ Q
 Σ-preserves-≃' P Q e t = Σ-preserves-base-≃' P e ● Σ-preserves-family-≃ t

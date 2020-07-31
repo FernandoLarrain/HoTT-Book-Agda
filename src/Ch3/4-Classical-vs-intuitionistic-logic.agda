@@ -11,7 +11,7 @@ is-decidable : 𝓤 ̇  → 𝓤 ̇
 is-decidable A = A + (¬ A)
 
 decidable-family : {A : 𝓤 ̇ } (B : A → 𝓥 ̇ ) → (𝓤 ⊔ 𝓥) ̇
-decidable-family {A = A} B = (a : A) → is-decidable (B a)
+decidable-family {𝓤} {𝓥} {A} B = (a : A) → is-decidable (B a)
 
 decidable-equality : 𝓤 ̇  → 𝓤 ̇
 decidable-equality A = (x y : A) → is-decidable (x ≡ y)

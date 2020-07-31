@@ -12,7 +12,7 @@ module Ch6.4-Circles-and-spheres where
 -- Lemma 6.4.1 (The circle is non-trivial).
 
 𝕊¹-is-non-trivial : ¬ (loop₁ ≡ refl base₁)
-𝕊¹-is-non-trivial s = 𝓤₀-is-not-set λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
+𝕊¹-is-non-trivial s = 𝓤₀-is-not-Set λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
 
 
 -- Lemma 6.4.2 TO DO
@@ -143,7 +143,7 @@ module apd'-2-is-apd² {A : 𝓤 ̇} {P : A → 𝓥 ̇} (f : (x : A) → P x) w
 
 -- Lemma (apd² and apd²' "reduce" to ap² when family is constant).
 
-apd²-const : {A : 𝓤 ̇} (B : 𝓥 ̇) {x y : A} {p q : x ≡ y} (f : A → B) (r : p ≡ q) → apd² f r ≡ apd-const B f p ∙ (transportconst B p (f x) ∙ₗ (ap² f r ∙ apd-const' B f q)) ∙ ∙-assoc _ _ _ ∙ (transport²const B r (f x) ⁻¹ ∙ᵣ apd f q)
+apd²-const : {A : 𝓤 ̇} (B : 𝓥 ̇) {x y : A} {p q : x ≡ y} (f : A → B) (r : p ≡ q) → apd² f r ≡ apdconst B f p ∙ (transportconst B p (f x) ∙ₗ (ap² f r ∙ apdconst' B f q)) ∙ ∙-assoc _ _ _ ∙ (transport²const B r (f x) ⁻¹ ∙ᵣ apd f q)
 apd²-const B {x} {.x} {.(refl x)} {.(refl x)} f (refl (refl x)) = refl _
 
 

@@ -60,6 +60,10 @@ dpr₁-≡-β {w = w₁ , w₂} {.w₁ , .w₂} (refl .w₁) (refl .w₂) = refl
 Σ-η : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } (z : Σ x ꞉ A , P x) → z ≡ (pr₁ z , pr₂ z)
 Σ-η z = dpair-≡ ((refl (pr₁ z)) , (refl (pr₂ z)))
 
+{- Note that we also have a judgemental uniqueness principle for dependent pairs : -}
+
+_ : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } (z : Σ x ꞉ A , P x) → z ≡ (pr₁ z , pr₂ z)
+_ = hrefl id
 
 -- Theorem 2.7.4 (Action of transport on Σ-types).
 

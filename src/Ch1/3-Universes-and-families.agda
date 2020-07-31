@@ -19,6 +19,8 @@ Type = λ ℓ → Set ℓ
 _̇   : (𝓤 : Universe) → Type (𝓤 ⁺) -- From universe as term to universe as type
 𝓤 ̇  = Type 𝓤
 
+infix  1 _̇
+
 𝓤₁ = 𝓤₀ ⁺
 𝓤₂ = 𝓤₁ ⁺
 𝓤₃ = 𝓤₂ ⁺
@@ -26,19 +28,11 @@ _̇   : (𝓤 : Universe) → Type (𝓤 ⁺) -- From universe as term to univer
 _⁺⁺ : Universe → Universe
 𝓤 ⁺⁺ = 𝓤 ⁺ ⁺
 
-universe-of : {𝓤 : Universe} (X : 𝓤 ̇ ) → Universe
+universe-of : {𝓤 : Universe} (X : 𝓤 ̇) → Universe
 universe-of {𝓤} X = 𝓤
 
-type-of : {𝓤 : Universe} {X : 𝓤 ̇ } → X → 𝓤 ̇
+type-of : {𝓤 : Universe} {X : 𝓤 ̇} → X → 𝓤 ̇
 type-of {𝓤} {X} x = X
-
-of-type : {𝓤 : Universe} (A : 𝓤 ̇) (u : A) → A
-of-type A u = u
-
-syntax of-type A u = [ u :> A ]
-
-
-infix  1 _̇
 
 
 -- Cumulativity
@@ -57,7 +51,7 @@ open Lift public
 Lift-induction : ∀ {𝓤} 𝓥 (X : 𝓤 ̇) (A : Lift 𝓥 X → 𝓦 ̇) → ((x : X) → A (lift x)) → (l : Lift 𝓥 X) → A l
 Lift-induction 𝓥 X A φ (lift x) = φ x
 
-Lift-recursion : ∀ {𝓤} 𝓥 {X : 𝓤 ̇ } {B : 𝓦 ̇ } → (X → B) → Lift 𝓥 X → B
+Lift-recursion : ∀ {𝓤} 𝓥 {X : 𝓤 ̇} {B : 𝓦 ̇} → (X → B) → Lift 𝓥 X → B
 Lift-recursion 𝓥 {X} {B} = Lift-induction 𝓥 X (λ _ → B)
 
 

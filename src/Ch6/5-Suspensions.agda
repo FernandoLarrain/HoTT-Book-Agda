@@ -59,7 +59,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} (n : B) (s : B) (m : A → n ≡ s) where
   south-β' = refl s
 
   merid-β' : (a : A) → ap Susp-rec (merid a) ≡ m a 
-  merid-β' a =  ∙ₗ-inv _ _ _ (apd-const B Susp-rec (merid a) ⁻¹ ∙ merid-β (λ x → B) n s (λ a → transportconst B (merid a) n ∙ m a) a)
+  merid-β' a =  ∙ₗ-inv _ _ _ (apdconst B Susp-rec (merid a) ⁻¹ ∙ merid-β (λ x → B) n s (λ a → transportconst B (merid a) n ∙ m a) a)
 
 
 -- Lemma 6.5.1 (the circle is the suspension of 𝟚)
@@ -98,7 +98,7 @@ A ₊ = ((A + 𝟙) , inr ⋆)
 
 -- Transport of function application along function equality.
 
-transport-fun-ap : {X : 𝓤 ̇} {Y : 𝓥 ̇} (x₀ : X) (y₀ : Y) {f g : X → Y} (q : f ≡ g) (p : f x₀ ≡ y₀) → transport (λ (f : X → Y) → f x₀ ≡ y₀) q p ≡ happly f g q x₀ ⁻¹ ∙ p
+transport-fun-ap : {X : 𝓤 ̇} {Y : 𝓥 ̇} (x₀ : X) (y₀ : Y) {f g : X → Y} (q : f ≡ g) (p : f x₀ ≡ y₀) → transport (λ (f : X → Y) → f x₀ ≡ y₀) q p ≡ happly q x₀ ⁻¹ ∙ p
 transport-fun-ap x₀ y₀ (refl f) p = lu p
 
 
@@ -117,7 +117,7 @@ module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
   to-based-maps g = (+-recursion g (λ u → b₀)) , (refl b₀)
 
   from∘to : from-based-maps ∘ to-based-maps ∼ id
-  from∘to g = funext _ _ λ a → refl (g a)
+  from∘to g = funext λ a → refl (g a)
  
   to∘from : to-based-maps ∘ from-based-maps ∼ id
   to∘from (f , p) = dpair-≡ (
@@ -125,10 +125,10 @@ module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
       (
       transport (λ - → - (inr ⋆) ≡ b₀) q (refl b₀)
         ≡⟨ transport-fun-ap (inr ⋆) b₀ q (refl b₀) ⟩
-      happly _ _ q (inr ⋆) ⁻¹ ∙ refl b₀
+      happly q (inr ⋆) ⁻¹ ∙ refl b₀
         ≡⟨ ru _ ⁻¹ ⟩
-      happly _ _ q (inr ⋆) ⁻¹
-        ≡⟨ ap _⁻¹ (happly-β _ _ _ (inr ⋆)) ⟩
+      happly q (inr ⋆) ⁻¹
+        ≡⟨ ap _⁻¹ (happly-β _ (inr ⋆)) ⟩
       (p ⁻¹) ⁻¹
         ≡⟨ ⁻¹-invol _ ⟩
       p ∎
@@ -136,7 +136,7 @@ module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
     )
     where
     q : +-recursion (f ∘ inl) (λ u → b₀) ≡ f 
-    q = funext _ _ (+-induction _ (λ a → refl (f (inl a))) (𝟙-induction _ (p ⁻¹))) 
+    q = funext (+-induction _ (λ a → refl (f (inl a))) (𝟙-induction _ (p ⁻¹))) 
   equivalence : Map⊙ (A ₊) B' ≃ (A → B)
   equivalence = from-based-maps , qinv-to-isequiv (to-based-maps , from∘to , to∘from)
 
@@ -144,7 +144,7 @@ module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
 -- Points of a type
 
 points-of-a-type : (A : 𝓤 ̇) → (𝟙 → A) ≃ A
-points-of-a-type A = (λ f → f ⋆) , qinv-to-isequiv ((λ a u → a) , (refl , λ f → funext _ _ (𝟙-induction _ (refl (f ⋆))))) 
+points-of-a-type A = (λ f → f ⋆) , qinv-to-isequiv ((λ a u → a) , (refl , λ f → funext (𝟙-induction _ (refl (f ⋆))))) 
 
 
 -- Exercise 6.11 (UMP of Susp).
@@ -158,7 +158,7 @@ module Susp-UMP (A : 𝓤 ̇) (B : 𝓥 ̇) where
   ψ (bₙ , bₛ , m) = Susp-rec bₙ bₛ m
 
   ϕ∘ψ : ϕ ∘ ψ ∼ id
-  ϕ∘ψ (bₙ , bₛ , m) = dpair-≡ (refl bₙ , dpair-≡ (refl bₛ , funext _ _ (merid-β' bₙ bₛ m)))
+  ϕ∘ψ (bₙ , bₛ , m) = dpair-≡ (refl bₙ , dpair-≡ (refl bₛ , funext (merid-β' bₙ bₛ m)))
 
   ψ∘ϕ : ψ ∘ ϕ ∼ id
   ψ∘ϕ f = let
@@ -168,7 +168,7 @@ module Susp-UMP (A : 𝓤 ̇) (B : 𝓥 ̇) where
     bₛ = pr₁ (pr₂ (ϕ f))
     m : (a : A) → bₙ ≡ bₛ
     m = pr₂ (pr₂ (ϕ f))
-    in funext _ _ (Susp-ind (λ x → (ψ ∘ ϕ) f x ≡ f x) (refl _) (refl _) λ a → transport-funval-≡ (ψ (ϕ f)) f (merid a) (refl (ψ (ϕ f) north)) ∙ (ru _ ⁻¹ ∙ᵣ ap f (merid a)) ∙ (ap (λ - → - ⁻¹ ∙ ap f (merid a)) (merid-β' bₙ bₛ m a) ∙ linv _))
+    in funext (Susp-ind (λ x → (ψ ∘ ϕ) f x ≡ f x) (refl _) (refl _) λ a → transport-funval-≡ (ψ (ϕ f)) f (merid a) (refl (ψ (ϕ f) north)) ∙ (ru _ ⁻¹ ∙ᵣ ap f (merid a)) ∙ (ap (λ - → - ⁻¹ ∙ ap f (merid a)) (merid-β' bₙ bₛ m a) ∙ linv _))
   
   equivalence : (Susp A → B) ≃ (Σ bₙ ꞉ B , Σ bₛ ꞉ B , (A → bₙ ≡ bₛ)) 
   equivalence =

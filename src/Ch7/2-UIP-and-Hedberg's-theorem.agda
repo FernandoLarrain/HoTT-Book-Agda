@@ -22,13 +22,13 @@ isSet-≃-Axiom-K X = retraction-of-Prop-to-≃ (isSet-is-Prop _) (sufficiency ,
   necessity : (Axiom-K X → isSet X)
   necessity k x .x p (refl .x) = k x p
   α : sufficiency ∘ necessity ∼ id
-  α k = funext _ _ λ x → funext _ _ λ p → Sets-are-1-types _ (necessity k) _ _ _ _ _ _
+  α k = funext λ x → funext λ p → Sets-are-⟨1⟩-types _ (necessity k) _ _ _ _ _ _
 
 Axiom-K-is-Prop : (X : 𝓤 ̇) → isProp (Axiom-K X)
 Axiom-K-is-Prop X = ≃-preserves-Props _ _ (isSet-≃-Axiom-K X) (isSet-is-Prop X)
 
 Axiom-K-≃-Contr-Ω : (X : 𝓤 ̇) → Axiom-K X ≃ ((x : X) → isContr (x ≡ x))
-Axiom-K-≃-Contr-Ω X = biimplication-to-≃ _ _ (Axiom-K-is-Prop _) (Π-preserves-Props _ λ x → isContr-is-Prop _) (λ k x → refl x , λ p → k x p ⁻¹) (λ c x p → (pr₂ (c x) p) ⁻¹ ∙ pr₂ (c x) (refl x))
+Axiom-K-≃-Contr-Ω X = ⇔-to-≃ (Axiom-K-is-Prop _) (Π-preserves-Props _ λ x → isContr-is-Prop _) ((λ k x → refl x , λ p → k x p ⁻¹) , λ c x p → (pr₂ (c x) p) ⁻¹ ∙ pr₂ (c x) (refl x))
     
 
 -- Theorem 7.2.2 (A useful way to prove "sethood").
@@ -38,7 +38,7 @@ module least-reflexive-rel (X : 𝓤 ̇) (R : X → X → 𝓤 ̇) ( mere-rel : 
   implies-is-Set : isSet X
   implies-is-Set = pr₁ (≃-sym (isSet-≃-Axiom-K X)) (λ x p → ∙ₗ-inv (f x x (ρ x)) _ _ (firstly x p (ρ x) ∙ (ru _))) where
     firstly : (x : X) (p : x ≡ x) (r : R x x)  → f x x r ∙ p ≡ f x x r
-    firstly x p r = transport-post-∙ X x _ _ p (f x x r) ⁻¹ ∙ pr₁ (dfunext.equiv (R x) (Id X x) _ _ p (f x x) (f x x)) (apd (f x) p) r ∙ ap (f x x) (mere-rel x x _ _) 
+    firstly x p r = transport-post-∙ p (f x x r) ⁻¹ ∙ pr₁ (dpath-funext.equiv (R x) (Id X x) p (f x x) (f x x)) (apd (f x) p) r ∙ ap (f x x) (mere-rel x x _ _) 
 
   is-≡ : ((x y : X) → R x y ≃ (x ≡ y))
   is-≡ x y = (f x y) , (pr₂ (fiberwise-≃-iff-total-≃.Hae (f x)) (map-between-Contrs-is-equiv (total (f x)) dom-is-Contr codom-is-Contr) y)
@@ -46,14 +46,14 @@ module least-reflexive-rel (X : 𝓤 ̇) (R : X → X → 𝓤 ̇) ( mere-rel : 
     codom-is-Contr : isContr (Σ λ y → x ≡ y)
     codom-is-Contr = free-right-endpt-is-Contr _ _
     dom-is-Contr : isContr (Σ λ y → R x y)
-    dom-is-Contr = (x , (ρ x)) , Σ-induction (λ y H → Σ-over-predicate X (R x) (mere-rel x) _ _ (f x y H))
+    dom-is-Contr = (x , (ρ x)) , Σ-induction (λ y H → Σ-over-predicate (mere-rel x) _ _ (f x y H))
 
 
   equivalence : isSet X ≃ ((x y : X) → R x y ≃ (x ≡ y))
-  equivalence  = biimplication-to-≃ _ _ (isSet-is-Prop _) (Π-preserves-Props _ (λ x → Π-preserves-Props _ λ y → ≃-to-Prop-is-Prop' _ _ (mere-rel x y))) sufficiency necessity
+  equivalence  = ⇔-to-≃ (isSet-is-Prop _) (Π-preserves-Props _ (λ x → Π-preserves-Props _ λ y → ≃-to-Prop-is-Prop' _ _ (mere-rel x y))) (sufficiency , necessity)
     where
     sufficiency : isSet X → (x y : X) → R x y ≃ (x ≡ y)
-    sufficiency X-is-Set x y = biimplication-to-≃ _ _ (mere-rel x y) (X-is-Set x y) (f x y) (ℍ x (λ y p → R x y) (ρ x) y)
+    sufficiency X-is-Set x y = ⇔-to-≃ (mere-rel x y) (X-is-Set x y) (f x y , ℍ x (λ y p → R x y) (ρ x) y)
     necessity : ((x y : X) → R x y ≃ (x ≡ y)) → isSet X
     necessity g x y = ≃-preserves-Props (R x y) _ (g x y) (mere-rel x y)
 
@@ -61,7 +61,7 @@ module least-reflexive-rel (X : 𝓤 ̇) (R : X → X → 𝓤 ̇) ( mere-rel : 
 -- Corollary 7.2.3 (DNE for _≡_ implies sethood).
 
 dne-≡-to-isSet : (X : 𝓤 ̇) → ((x y : X) → ¬ (¬ (x ≡ y)) → x ≡ y) → isSet X
-dne-≡-to-isSet X dne = least-reflexive-rel.implies-is-Set X (λ x y → ¬ (¬ (x ≡ y))) (λ x y u v → funext _ _ λ z → !𝟘 _ (u z)) (λ x u → u (refl x)) dne
+dne-≡-to-isSet X dne = least-reflexive-rel.implies-is-Set X (λ x y → ¬ (¬ (x ≡ y))) (λ x y u v → funext λ z → !𝟘 _ (u z)) (λ x u → u (refl x)) dne
 
 
 -- Lemma 7.2.4 (LEM implies DNE)
@@ -97,7 +97,7 @@ inhabited-type-assum n X f x x' = f x x x'
 
 -- (ii) Proof of thm:
 
-Tlevel-in-terms-of-Ω n X = biimplication-to-≃ _ _ (Tlevel-is-predicate _ _) (Π-preserves-Props _ (λ x → Tlevel-is-predicate _ _)) sufficiency necessity where
+Tlevel-in-terms-of-Ω n X = ⇔-to-≃ (Tlevel-is-predicate _ _) (Π-preserves-Props _ (λ x → Tlevel-is-predicate _ _)) (sufficiency , necessity) where
   sufficiency : is S (S n) type X → ((x : X) → is S n type (x ≡ x))
   sufficiency f x = f x x
   necessity : ((x : X) → is S n type (x ≡ x)) → is S (S n) type X
@@ -110,7 +110,7 @@ Tlevel-in-terms-of-Ω n X = biimplication-to-≃ _ _ (Tlevel-is-predicate _ _) (
 ∀-over-constant-pred a₀ B-is-Prop = (λ f → f a₀) , (qinv-to-isequiv (
   (λ b a → b) ,
   (λ b → refl b) ,
-  (λ f → funext _ _ (λ a → B-is-Prop _ _))
+  (λ f → funext (λ a → B-is-Prop _ _))
   ))
 
 
@@ -125,19 +125,19 @@ generalized-Axiom-K (S (S n)) A =
   ((a : A) → is S (S n) type (a ≡ a))
     ≃⟨ Π-preserves-family-≃ (λ a → generalized-Axiom-K (S n) (a ≡ a)) ⟩
   ((a : A) (p : a ≡ a) → isContr (pr₁ (Ω^ (to-ℕ (S n)) ((a ≡ a) , p))))
-    ≃⟨ Π-preserves-family-≃ (λ a → Π-preserves-family-≃ λ p → idtoeqv _ _ (ap (λ - → isContr (pr₁ (Ω^ (to-ℕ n) -))) (identity a p))) ⟩
+    ≃⟨ Π-preserves-family-≃ (λ a → Π-preserves-family-≃ λ p → idtoeqv (ap (λ - → isContr (pr₁ (Ω^ (to-ℕ n) -))) (identity a p))) ⟩
   ((a : A) (p : a ≡ a) → isContr (pr₁ (Ω^ (to-ℕ n) ((refl a ≡ refl a) , refl (refl a)))))
     ≃⟨ ((Π-preserves-family-≃ λ a → ∀-over-constant-pred (refl a) (isContr-is-Prop _))) ⟩
   ((a : A) → isContr (pr₁ (Ω^ (to-ℕ n) ((refl a ≡ refl a) , refl (refl a))))) ■
   where
     identity : (a : A) (p : a ≡ a) → Ω ((a ≡ a) , p) ≡ Ω^ 2 (A , a)
     identity a p = dpair-≡ (
-      ua (p ≡ p) (refl a ≡ refl a) (
-        (ap (λ r → r ∙ p ⁻¹) {p} {p}) , ap-of-equiv-is-equiv (a ≡ a) (a ≡ a) (λ r → r ∙ p ⁻¹) (qinv-to-isequiv (qinv-post-∙ a (p ⁻¹))) p p  ●
+      ua (
+        (ap (λ r → r ∙ p ⁻¹) {p} {p}) , ap-of-equiv-is-equiv (qinv-to-isequiv (qinv-post-∙ a (p ⁻¹))) p p  ●
         (_∙ rinv p) , qinv-to-isequiv (qinv-post-∙ _ (rinv p)) ●
         (rinv p ⁻¹ ∙_) , qinv-to-isequiv (qinv-pre-∙ _ (rinv p ⁻¹))
       ) ,
-      (idtoeqv-β (p ≡ p) (refl a ≡ refl a) _ (refl p) ∙ (ap (rinv p ⁻¹ ∙_) (lu (rinv p)) ⁻¹ ∙ linv (rinv p)))
+      (idtoeqv-β _ (refl p) ∙ (ap (rinv p ⁻¹ ∙_) (lu (rinv p)) ⁻¹ ∙ linv (rinv p)))
       )
 
 
@@ -159,7 +159,7 @@ hub-and-spokes n A i l = h , s where
   contr-loops : isContr (Map⊙ (Sphere⊙ m) (A , h))
   contr-loops = pr₁ (Tlevel-in-terms-of-Map⊙ n A) i h
   s : (x : Sphere m) → l x ≡ h
-  s = happly _ _ (ap pr₁ (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop _) contr-loops) l' cₕ))
+  s = happly (ap pr₁ (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop _) contr-loops) l' cₕ))
 
 
 

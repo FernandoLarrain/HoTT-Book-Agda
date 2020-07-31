@@ -32,10 +32,10 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} where
   is-embedding-is-Prop f = Π-preserves-Props _ λ x → Π-preserves-Props _ λ y → ishae-is-Prop _
 
   injectivity-in-Set-is-Prop : isSet A → (f : A → B) → isProp (is-injective f)
-  injectivity-in-Set-is-Prop A-is-Set f f-is-injective f-is-injective' = funext _ _ λ x → funext _ _ λ y → funext _ _ λ p → A-is-Set _ _ _ _
+  injectivity-in-Set-is-Prop A-is-Set f f-is-injective f-is-injective' = funext λ x → funext λ y → funext λ p → A-is-Set _ _ _ _
   
   embedding-of-sets-is-injection : isSet A → isSet B → (f : A → B) → (is-embedding f ≃ is-injective f)
-  embedding-of-sets-is-injection A-is-Set B-is-Set f = biimplication-to-≃ _ _ (is-embedding-is-Prop _) (injectivity-in-Set-is-Prop A-is-Set _) sufficiency necessity
+  embedding-of-sets-is-injection A-is-Set B-is-Set f = ⇔-to-≃ (is-embedding-is-Prop _) (injectivity-in-Set-is-Prop A-is-Set _) (sufficiency , necessity)
     where
     sufficiency : is-embedding f → is-injective f
     sufficiency f-is-embedding x y p = ap-f-inv p where
@@ -56,11 +56,11 @@ module isequiv-≃-is-surjective-embedding (pt : propositional-truncations-exist
   -- Theorem 4.6.3 / Corollary 4.6.4 (Equivalences are surjective embeddings)
 
   isequiv-≃-is-surjective-embedding : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isequiv f ≃ (is-surjective f × is-embedding f)
-  isequiv-≃-is-surjective-embedding f = biimplication-to-≃ _ _ (ishae-is-Prop _) (×-preserves-Props _ _ (is-surjective-is-Prop _) (is-embedding-is-Prop _)) sufficiency necessity where
+  isequiv-≃-is-surjective-embedding f = ⇔-to-≃ (ishae-is-Prop _) (×-preserves-Props _ _ (is-surjective-is-Prop _) (is-embedding-is-Prop _)) (sufficiency , necessity) where
     sufficiency :  isequiv f → is-surjective f × is-embedding f
-    sufficiency f-is-equiv = (λ b → ∣ (pr₁ (ishae-to-isContrMap _ f-is-equiv b)) ∣) , ap-of-equiv-is-equiv _ _ _ f-is-equiv
+    sufficiency f-is-equiv = (λ b → ∣ (pr₁ (ishae-to-isContrMap _ f-is-equiv b)) ∣) , ap-of-equiv-is-equiv f-is-equiv
     necessity : is-surjective f × is-embedding f → isequiv f
-    necessity (f-is-surjective , f-is-embedding) = isContrMap-to-ishae f (λ b → ∃-recursion (isContr-is-Prop _) (λ a u → pr₂ (isContr-iff-is-inhabited-Prop _) ((a , u) , (Σ-induction λ x p → Σ-induction λ y q → isequiv₁ (pr₂ (path-space-fib _ _)) ((isequiv₁ (f-is-embedding x y) (p ∙ q ⁻¹)) , (isequiv₃ (f-is-embedding x y) (p ∙ q ⁻¹) ∙ᵣ q ∙ ∙-assoc _ _ _ ⁻¹ ∙ (p ∙ₗ linv q) ∙ ru p ⁻¹ ))))) (f-is-surjective b))
+    necessity (f-is-surjective , f-is-embedding) = isContrMap-to-ishae f (λ b → ∃-recursion (isContr-is-Prop _) (λ a u → pr₂ (isContr-iff-is-inhabited-Prop _) ((a , u) , (Σ-induction λ x p → Σ-induction λ y q → inv (path-space-fib _ _) ((isequiv₁ (f-is-embedding x y) (p ∙ q ⁻¹)) , ((isequiv₃ (f-is-embedding x y) (p ∙ q ⁻¹) ∙ᵣ q) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (p ∙ₗ linv q) ∙ ru p ⁻¹ ))))) (f-is-surjective b))
   
 
   

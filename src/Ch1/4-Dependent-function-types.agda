@@ -7,10 +7,10 @@ module Ch1.4-Dependent-function-types where
 
 -- Dependent function types
 
-Π : {X : 𝓤 ̇ } (A : X → 𝓥 ̇ ) → 𝓤 ⊔ 𝓥 ̇
+Π : {X : 𝓤 ̇ } (A : X → 𝓥 ̇) → 𝓤 ⊔ 𝓥 ̇
 Π {𝓤} {𝓥} {X} A = (x : X) → A x
 
--Π : {𝓤 𝓥 : Universe} (X : 𝓤 ̇ ) (Y : X → 𝓥 ̇ ) → 𝓤 ⊔ 𝓥 ̇
+-Π : {𝓤 𝓥 : Universe} (X : 𝓤 ̇) (Y : X → 𝓥 ̇) → 𝓤 ⊔ 𝓥 ̇
 -Π X Y = Π Y
 
 infixr -1 -Π

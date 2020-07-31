@@ -92,7 +92,7 @@ cumulativity-of-Tlevels (S n) X X-is-Sn-type x x' = cumulativity-of-Tlevels n _ 
 
 Σ-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : A → 𝓥 ̇) → is n type A → ((a : A) → is n type (B a)) → is n type (Σ B)
 Σ-preserves-Tlevel ⟨-2⟩ = Σ-preserves-Contr 
-Σ-preserves-Tlevel (S n) A B A-is-Sn-type B-is-Sn-family (a , b) (a' , b') = ≃-preserves-Tlevel n _ _ (≃-sym (Σ-≡-equiv _ _)) (Σ-preserves-Tlevel n _ _ (A-is-Sn-type _ _) λ p → B-is-Sn-family _ _ _)
+Σ-preserves-Tlevel (S n) A B A-is-Sn-type B-is-Sn-family (a , b) (a' , b') = ≃-preserves-Tlevel n _ _ (≃-sym Σ-≡-equiv) (Σ-preserves-Tlevel n _ _ (A-is-Sn-type _ _) λ p → B-is-Sn-family _ _ _)
 
 
 -- Corollaries (× and pb)
@@ -112,7 +112,7 @@ pb-preserves-Tlevel n A B C f g A-is-n-type B-is-n-type C-is-n-type = Σ-preserv
 
 Π-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : A → 𝓥 ̇) → ((a : A) → is n type (B a)) → is n type (Π B)
 Π-preserves-Tlevel ⟨-2⟩ A = Π-preserves-Contr
-Π-preserves-Tlevel (S n) A B B-is-Sn-family f g = ≃-preserves-Tlevel n (f ∼ g) _ (≃-sym ((happly _ _) , (hfe _ _))) (Π-preserves-Tlevel n _ _ λ a → B-is-Sn-family _ _ _)
+Π-preserves-Tlevel (S n) A B B-is-Sn-family f g = ≃-preserves-Tlevel n (f ∼ g) _ (≃-sym (happly , fe)) (Π-preserves-Tlevel n _ _ λ a → B-is-Sn-family _ _ _)
 
 →-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : 𝓥 ̇) → is n type B → is n type (A → B)
 →-preserves-Tlevel n A B B-is-n-type = Π-preserves-Tlevel n A (λ a → B) (λ a → B-is-n-type) 
@@ -139,12 +139,12 @@ Tlevel-Type-is-of-next-Tlevel : (n : Tlevel) → is S n type (n -Type 𝓤)
 -- (i) Irrelevance of Tlevel data.
   
 irrelevance-of-Tdata : (n : Tlevel) (Y Y' : n -Type 𝓤) → (Y ≡ Y') ≃ (pr₁ Y ≃ pr₁ Y')
-irrelevance-of-Tdata n (X , p) (X' , p') = Σ-over-predicate' _ _ (Tlevel-is-predicate n) _ _ ● ((idtoeqv X X') , (univ _ _ _)) 
+irrelevance-of-Tdata n (X , p) (X' , p') = Σ-over-predicate' (Tlevel-is-predicate n) _ _ ● (idtoeqv , univ) 
 
 -- (ii) pr₁ is an embedding.
 
 pr₁-is-embedding : (X X' : 𝓤 ̇) → is-embedding (pr₁ {X = X → X'} {λ f → isequiv f}) 
-pr₁-is-embedding X X' e e' = pr₂ (Σ-over-predicate' _ _ ishae-is-Prop e e')
+pr₁-is-embedding X X' e e' = pr₂ (Σ-over-predicate' ishae-is-Prop e e')
 
 -- (iii) The theorem.
 
@@ -161,13 +161,13 @@ Tlevel-Type-is-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S 
 -- Translation to old terminology (isContr, isProp, isSet)
 
 isContr-≃-is-⟨-2⟩-type : (A : 𝓤 ̇) → isContr A ≃ is ⟨-2⟩ type A
-isContr-≃-is-⟨-2⟩-type A = idtoeqv _ _ (refl _)
+isContr-≃-is-⟨-2⟩-type A = idtoeqv (refl _)
 
 isProp-≃-is-⟨-1⟩-type : (A : 𝓤 ̇) → isProp A ≃ is ⟨-1⟩ type A
-isProp-≃-is-⟨-1⟩-type A = biimplication-to-≃ _ _ (isProp-is-Prop _) (Tlevel-is-predicate ⟨-1⟩ A ) (pr₁ (Prop-iff-Contr-≡ _)) (pr₂ (Prop-iff-Contr-≡ _))
+isProp-≃-is-⟨-1⟩-type A = ⇔-to-≃ (isProp-is-Prop _) (Tlevel-is-predicate ⟨-1⟩ A ) (pr₁ (Prop-iff-Contr-≡ _) , pr₂ (Prop-iff-Contr-≡ _))
 
 isSet-≃-is-⟨0⟩-type : (A : 𝓤 ̇) → isSet A ≃ is ⟨0⟩ type A
-isSet-≃-is-⟨0⟩-type A = biimplication-to-≃ _ _ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) (λ A-is-Set x y → pr₁ (isProp-≃-is-⟨-1⟩-type _) (A-is-Set x y)) λ A-is-⟨0⟩-type x y → pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type _)) (A-is-⟨0⟩-type x y)
+isSet-≃-is-⟨0⟩-type A = ⇔-to-≃ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) ((λ A-is-Set x y → pr₁ (isProp-≃-is-⟨-1⟩-type _) (A-is-Set x y)) , λ A-is-⟨0⟩-type x y → pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type _)) (A-is-⟨0⟩-type x y))
 
 ≃-preserves-Contr : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isContr A → isContr B
 ≃-preserves-Contr = ≃-preserves-Tlevel ⟨-2⟩ 
@@ -197,7 +197,7 @@ Tlevel-is-Set = ≃-preserves-Set ℕ Tlevel (≃-sym Tlevel-≃-ℕ) ℕ-is-Set
 -- (ii) ≃-sym is its own quasi-inverse
 
 qinv-≃-sym : (A : 𝓤 ̇) (B : 𝓥 ̇) → qinv (≃-sym {𝓤} {𝓥} {A} {B})
-qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate _ _ ishae-is-Prop _ _ (refl _)) , (λ e → Σ-over-predicate _ _ ishae-is-Prop _ _ (refl _))
+qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate ishae-is-Prop _ _ (refl _)) , (λ e → Σ-over-predicate ishae-is-Prop _ _ (refl _))
 
 -- (iii) (i) symmetrized
 
@@ -206,18 +206,18 @@ qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate _ _ ishae-is-Prop 
 
 -- (iv) The lemma
 
-biimplication-of-Props-is-≃ : (P : 𝓤 ̇) (Q : 𝓥 ̇) → isProp P → isProp Q → (P → Q) × (Q → P) ≃ (P ≃ Q)
-biimplication-of-Props-is-≃ P Q P-is-Prop Q-is-Prop = biimplication-to-≃ _ _ (×-preserves-Props _ _ (→-preserves-Props _ _ Q-is-Prop) (→-preserves-Props _ _ P-is-Prop)) (≃-to-Prop-is-Prop _ _ Q-is-Prop) (Σ-induction (biimplication-to-≃ _ _ P-is-Prop Q-is-Prop)) (≃-to-biimplication _ _)
+biimplication-of-Props-is-≃ : {P : 𝓤 ̇} {Q : 𝓥 ̇} → isProp P → isProp Q → (P ⇔ Q) ≃ (P ≃ Q)
+biimplication-of-Props-is-≃ P-is-Prop Q-is-Prop = ⇔-to-≃ (×-preserves-Props _ _ (→-preserves-Props _ _ Q-is-Prop) (→-preserves-Props _ _ P-is-Prop)) (≃-to-Prop-is-Prop _ _ Q-is-Prop) (⇔-to-≃ P-is-Prop Q-is-Prop , ≃-to-⇔)
 
 -- (v) Corollary : retraction of proposition gives equivalence
 
 retraction-of-Prop-to-≃ : {X : 𝓤 ̇} {Y : 𝓥 ̇} → isProp X → Y ◁ X → X ≃ Y
-retraction-of-Prop-to-≃ {𝓤} {𝓥} {X} {Y} X-is-Prop (r , s , α) = biimplication-to-≃ _ _ X-is-Prop (retractions-preserve-Props X Y (r , s , α) X-is-Prop) r s
+retraction-of-Prop-to-≃ {𝓤} {𝓥} {X} {Y} X-is-Prop (r , s , α) = ⇔-to-≃ X-is-Prop (retractions-preserve-Props X Y (r , s , α) X-is-Prop) (r , s)
 
 -- (vi) Related result: is n type preserves ≃
 
 Tlevel-preserves-≃ : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → is n type A ≃ is n type B
-Tlevel-preserves-≃ n e = biimplication-to-≃ _ _ (Tlevel-is-predicate _ _) (Tlevel-is-predicate _ _) (≃-preserves-Tlevel _ _ _ e) (≃-preserves-Tlevel _ _ _ (≃-sym e))
+Tlevel-preserves-≃ n e = ⇔-to-≃ (Tlevel-is-predicate _ _) (Tlevel-is-predicate _ _) (≃-preserves-Tlevel _ _ _ e , ≃-preserves-Tlevel _ _ _ (≃-sym e))
 
 isContr-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → isContr A ≃ isContr B
 isContr-preserves-≃ e = Tlevel-preserves-≃ ⟨-2⟩ e

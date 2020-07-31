@@ -66,7 +66,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
     j-β' b = refl (j b)
 
     γ-β' : (c : C) → ap po-rec (glue c) ≡ γ c
-    γ-β' c = ∙ₗ-inv _ _ _ (apd-const D po-rec (glue c) ⁻¹ ∙ γ-β (λ x → D) i j γ' c) 
+    γ-β' c = ∙ₗ-inv _ _ _ (apdconst D po-rec (glue c) ⁻¹ ∙ γ-β (λ x → D) i j γ' c) 
       where
       γ' : (c : C) → i (f c) ≡ j (g c) [ (λ x → D) ↓ glue c ]
       γ' c = transportconst D (glue c) (i (f c)) ∙ γ c
@@ -75,10 +75,10 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
   -- (vii) Uniqueness principle
 
   po-η' : {D : 𝓣 ̇} (s : po f g → D) → po-rec D (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) ≡ s
-  po-η' s = funext _ _ (po-ind _ (λ a → refl _) (λ b → refl _) λ c → transport-funval-≡ _ _ (glue c) (refl _) ∙ (((ru _ ⁻¹ ∙  ap _⁻¹ (γ-β' _ (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) c)) ∙ᵣ ap s (glue c)) ∙ linv _))
+  po-η' s = funext (po-ind _ (λ a → refl _) (λ b → refl _) λ c → transport-funval-≡ _ _ (glue c) (refl _) ∙ (((ru _ ⁻¹ ∙  ap _⁻¹ (γ-β' _ (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) c)) ∙ᵣ ap s (glue c)) ∙ linv _))
 
   po-uniqueness-pple : {D : 𝓣 ̇} (s s' : po f g → D) (α : s ∘ inlₚ ∼ s' ∘ inlₚ) (β : s ∘ inrₚ ∼ s' ∘ inrₚ) → ((c : C) → α (f c) ∙ ap s' (glue c) ≡ ap s (glue c) ∙ β (g c)) → s ≡ s'   
-  po-uniqueness-pple {𝓣} {D} s s' α β θ = funext s s' (po-ind _ α β (λ c → transport-funval-≡ s s' (glue c) (α (f c)) ∙ (∙-assoc _ _ _ ⁻¹ ∙ ((ap s (glue c) ⁻¹ ∙ₗ (θ c)) ∙ ∙-assoc _ _ _ ∙ (linv _ ∙ᵣ β (g c)) ∙ lu _ ⁻¹))))
+  po-uniqueness-pple {𝓣} {D} s s' α β θ = funext (po-ind _ α β (λ c → transport-funval-≡ s s' (glue c) (α (f c)) ∙ (∙-assoc _ _ _ ⁻¹ ∙ ((ap s (glue c) ⁻¹ ∙ₗ (θ c)) ∙ ∙-assoc _ _ _ ∙ (linv _ ∙ᵣ β (g c)) ∙ lu _ ⁻¹))))
 
 
   -- Definition 6.8.1 (cocone under a span)
@@ -98,7 +98,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
     po-rec' (i , j , h) = po-rec E i j h
 
     c⊔∘po-rec' : c⊔ ∘ po-rec' ∼ id
-    c⊔∘po-rec' (i , j , h) = dpair-≡ ((refl i) , (dpair-≡ ((refl j) , (funext _ _ λ c → γ-β' E i j h c ))))
+    c⊔∘po-rec' (i , j , h) = dpair-≡ ((refl i) , (dpair-≡ ((refl j) , (funext λ c → γ-β' E i j h c ))))
 
     po-rec'∘c⊔ :  po-rec' ∘ c⊔ ∼ id
     po-rec'∘c⊔ t = po-uniqueness-pple _ _ (hrefl _) (hrefl _) λ c → lu _ ⁻¹ ∙ (γ-β' E (t ∘ inlₚ) (t ∘ inrₚ) _ c ⁻¹ ∙ ru _)

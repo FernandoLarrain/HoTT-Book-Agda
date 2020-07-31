@@ -1,20 +1,22 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
 open import Ch2.2-Functions-are-functors
 open import Ch2.3-Type-families-are-fibrations
 open import Ch2.4-Homotopies-and-equivalences
+open import Ch2.9-Π-types-and-funext
 
 module Ch2.11-Identity-type where
 
 
 -- Theorem 2.11.1 (The action on paths of an equivalence is an equivalence).
 
-{- The proof is not hard; it is just a very long and detailed example of equational reasoning. -}
+{- The proof is not hard; it is just a very long and detailed example of equational reasoning. It is easier to use the rewrite construct. -}
 
-ap-of-equiv-is-equiv : (A : 𝓤 ̇ ) (B : 𝓥 ̇ ) (f : A → B) → isequiv (f) → (a a' : A) → isequiv (ap f {a} {a'})
-ap-of-equiv-is-equiv A B f e a a' = qinv-to-isequiv (
+ap-of-equiv-is-equiv : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → isequiv (f) → (a a' : A) → isequiv (ap f {a} {a'})
+ap-of-equiv-is-equiv {𝓤} {𝓥} {A} {B} {f} e a a' with isequiv-to-qinv e
+... | (f⁻¹ , α , β) = qinv-to-isequiv (
   (λ q → β a ⁻¹ ∙ ap f⁻¹ q ∙ β a') ,
   (λ q → (
     ap f (β a ⁻¹ ∙ ap f⁻¹ q ∙ β a')
@@ -85,23 +87,15 @@ ap-of-equiv-is-equiv A B f e a a' = qinv-to-isequiv (
       ≡⟨ lu _ ⁻¹ ∙ ap-id _ ⟩
     p ∎
   ))
-  where
-  e' = isequiv-to-qinv e
-  f⁻¹ : B → A
-  f⁻¹ = qinv₁ e'
-  α : (f ∘ f⁻¹) ∼ id
-  α = qinv₂ e'
-  β : (f⁻¹ ∘ f) ∼ id
-  β = qinv₃ e'
 
 
 -- Lemma 2.11.2 (Transport of paths along equality of endpts).
 
-transport-post-∙ : (A : 𝓤 ̇ ) (a x₁ x₂ : A) (p : x₁ ≡ x₂) (q : a ≡ x₁) → transport (λ - → a ≡ - ) p q ≡  (q ∙ p)
-transport-post-∙ A a x₁ .x₁ (refl .x₁) = ru
+transport-post-∙ : {A : 𝓤 ̇} {a x₁ x₂ : A} (p : x₁ ≡ x₂) (q : a ≡ x₁) → transport (λ - → a ≡ - ) p q ≡  (q ∙ p)
+transport-post-∙ (refl _) = ru
 
-transport-pre-∙ : (A : 𝓤 ̇ ) (a x₁ x₂ : A) (p : x₁ ≡ x₂) (q : x₁ ≡ a) → transport (λ - → - ≡ a ) p q ≡  p ⁻¹ ∙ q
-transport-pre-∙ A a x₁ .x₁ (refl .x₁) = lu
+transport-pre-∙ : {A : 𝓤 ̇} {a x₁ x₂ : A} (p : x₁ ≡ x₂) (q : x₁ ≡ a) → transport (λ - → - ≡ a ) p q ≡  p ⁻¹ ∙ q
+transport-pre-∙ (refl _) = lu
 
 transport-loop : {A : 𝓤 ̇} {x₁ x₂ : A} (p : x₁ ≡ x₂) (q : x₁ ≡ x₁) → transport (λ - → - ≡ - ) p q ≡  p ⁻¹ ∙ q ∙ p
 transport-loop (refl x₁) q = q ≡⟨ ru q ⟩ q ∙ refl x₁ ≡⟨ ap (λ - → - ∙ refl x₁) (lu q) ⟩ refl x₁ ∙ q ∙ refl x₁ ∎
@@ -112,11 +106,19 @@ transport-loop (refl x₁) q = q ≡⟨ ru q ⟩ q ∙ refl x₁ ≡⟨ ap (λ -
 transport-funval-≡ : {A : 𝓤 ̇} {B : 𝓥 ̇} (f g : A → B) {a a' : A} (p : a ≡ a') (q : f a ≡ g a) → transport (λ - → f - ≡ g -) p q ≡ ap f p ⁻¹ ∙ q ∙ ap g p
 transport-funval-≡ f g (refl x) q = ru q ∙ ap (_∙ refl (g x)) (lu q)
 
+-- Transport of equality of function value along equality of functions
+
+transport-funval-≡' : {A : 𝓤 ̇} {B : 𝓥 ̇} (a : A) (b : B) {f g : A → B} (p : f ≡ g) (q : f a ≡ b) → transport (λ - → - a ≡ b) p q ≡ happly p a ⁻¹ ∙ q
+transport-funval-≡' a b (refl _) q = lu _
+
 
 -- Theorem 2.11.4 (2.11.3 for dependent functions).
 
 transport-dfunval-≡ : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f g : Π B) {a a' : A} (p : a ≡ a') (q : f a ≡ g a) → transport (λ - → f - ≡ g -) p q ≡ apd f p ⁻¹ ∙ ap (transport B p) q ∙ apd g p
 transport-dfunval-≡ f g (refl x) q = ap-id q ⁻¹ ∙ ru _ ∙ ap (_∙ refl (g x)) (lu _)
+
+transport-dfunval-≡' : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (a : A) (b : B a) {f g : Π B} (p : f ≡ g) (q : f a ≡ b) → transport (λ - → - a ≡ b) p q ≡ happly p a ⁻¹ ∙ q
+transport-dfunval-≡' a b (refl _) q = lu _
 
 
 -- Theorem 2.11.5 (Dependent paths between loops)

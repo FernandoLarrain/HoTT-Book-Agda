@@ -23,7 +23,7 @@ isContrMap-to-ishae f P = g , pr₁ r , ε , pr₂ r
   g = (λ y → pr₁ (pr₁ (P y)))
   ε = (λ y → pr₂ (pr₁ (P y)))
   r : rcoh f (g , ε)
-  r = pr₁ (≃-sym (rcoh-≃-fib f (g , ε))) (λ x → pr₂ (P (f x)) (x , refl (f x)))
+  r = inv (rcoh-≃-fib f (g , ε)) (λ x → pr₂ (P (f x)) (x , refl (f x)))
 
 
 -- Theorem 4.4.4 (isContrMap is a proposition).
@@ -35,7 +35,7 @@ isContrMap-is-Prop f = Π-preserves-Props _ (λ y → isContr-is-Prop _)
 -- Theorem 4.4.5 (isContrMap is equivalent to ishae).
 
 isContrMap-≃-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f ≃ ishae f
-isContrMap-≃-ishae f = biimplication-to-≃ _ _ (isContrMap-is-Prop _) (ishae-is-Prop _) (isContrMap-to-ishae _) (ishae-to-isContrMap _)
+isContrMap-≃-ishae f = ⇔-to-≃ (isContrMap-is-Prop _) (ishae-is-Prop _) (isContrMap-to-ishae _ , ishae-to-isContrMap _)
 
 -- Corollary
 
@@ -46,7 +46,7 @@ isContrMap-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f
 isContrMap-to-biinv f = pr₁ (isContrMap-≃-biinv f)
 
 biinv-to-isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f → isContrMap f
-biinv-to-isContrMap f = pr₁ (≃-sym (isContrMap-≃-biinv f))
+biinv-to-isContrMap f = inv (isContrMap-≃-biinv f)
 
 
 -- Corollary 4.4.6 (Can assume inhabited codomain).

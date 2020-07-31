@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
@@ -72,10 +72,10 @@ code-ℕ-is-𝟘-or-𝟙 (succ m) zero = inl (refl _)
 code-ℕ-is-𝟘-or-𝟙 (succ m) (succ n) = +-recursion inl inr (code-ℕ-is-𝟘-or-𝟙 m n)
 
 code-ℕ-is-Prop : (m n : ℕ) (x y : code-ℕ m n) → x ≡ y
-code-ℕ-is-Prop m n = +-recursion
+code-ℕ-is-Prop m n =
+ let P : 𝓤₀ ̇  → 𝓤₀ ̇
+     P = λ t → (x y : t) → x ≡ y
+ in +-recursion
  (λ p → transport P (p ⁻¹) (𝟘-induction (λ x → (y : 𝟘) → x ≡ y)))
  (λ p → transport P (p ⁻¹) (𝟙-is-Prop))
  (code-ℕ-is-𝟘-or-𝟙 m n)
- where
- P : 𝓤₀ ̇  → 𝓤₀ ̇
- P = λ t → (x y : t) → x ≡ y

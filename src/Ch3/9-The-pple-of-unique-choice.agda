@@ -16,7 +16,7 @@ module unique-choice (pt : propositional-truncations-exist) where
   -- Lemma 3.9.1 (Truncating a proposition does nothing).
 
   trunc-of-Prop-is-Prop : (P : 𝓤 ̇ ) → isProp P → P ≃ ∥ P ∥
-  trunc-of-Prop-is-Prop P i = biimplication-to-≃ P ∥ P ∥ i ∥∥-is-Prop ∣_∣ (∥∥-recursion i (𝑖𝑑 P))
+  trunc-of-Prop-is-Prop P i = ⇔-to-≃ i ∥∥-is-Prop (∣_∣ , ∥∥-recursion i (𝑖𝑑 P))
 
 
   -- Corollary 3.9.2 (The principle of unique choice).

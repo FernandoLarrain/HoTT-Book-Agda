@@ -50,7 +50,7 @@ module Lifting-equivalences (A B : 𝓤 ̇) (e : A ≃ B) (m : A → A → A) (a
   β = qinv₃ q
   
   p : A ≡ B
-  p = ua A B e
+  p = ua e
 
   -- Semigroup structure on A induces a semigroup structure on B
 
@@ -81,20 +81,24 @@ module Lifting-equivalences (A B : 𝓤 ̇) (e : A ≃ B) (m : A → A → A) (a
   sgrp-str-characterization = transport-dpair {A = 𝓤 ̇} {P = λ X → X → X → X} {Q = Assoc} p m a
 
   m'-characterization : m' ≡ (λ b₁ b₂ → f (m (f⁻¹ b₁) (f⁻¹ b₂)))
-  m'-characterization = funext _ _ λ b₁ → transport-fun' {X = 𝓤 ̇} {A = id} {B = λ X → X → X} _ _ p m b₁ ∙ funext _ _ λ b₂ → transport-fun' {X = 𝓤 ̇} {A = id} {B = id} _ _ p _ _ ∙ (happly _ _ aux _ ∙ ap f ( ap (m (coe (ua A B e ⁻¹) b₁)) (happly _ _ aux⁻¹ _) ∙ ap (λ - → m - (f⁻¹ b₂)) (happly _ _ aux⁻¹ _) )) where
-    aux : coe (ua A B e) ≡ f
-    aux = funext _ _ (idtoeqv-β A B e)
-    aux⁻¹ : coe (ua A B e ⁻¹) ≡ f⁻¹
-    aux⁻¹ = ap coe (type-sym e) ∙ funext _ _ (idtoeqv-β _ _ (≃-sym e))
-
+  m'-characterization = 
+    funext λ b₁ → transport-fun p m b₁ ∙    
+      funext λ b₂ → transport-fun p _ _ ∙ (
+        idtoeqv-β e _ ∙ ap (f ∘ Σ-induction m) (pair-≡ (
+          (ap (λ - → coe - b₁) (type-sym e) ∙ idtoeqv-β (≃-sym e) b₁) ,
+          (ap (λ - → coe - b₂) (type-sym e) ∙ idtoeqv-β (≃-sym e) b₂)
+          )
+        )
+      )
+  
   associativity-eqn : Assoc (B , m')
-  associativity-eqn b₁ b₂ b₃ = happly _ _ (happly _ _ m'-characterization b₁) (m' b₂ b₃) ∙
-    ap (λ - → f (m (f⁻¹ b₁) (f⁻¹ -))) (happly _ _ (happly _ _ m'-characterization b₂) b₃) ∙
+  associativity-eqn b₁ b₂ b₃ = happly (happly m'-characterization b₁) (m' b₂ b₃) ∙
+    ap (λ - → f (m (f⁻¹ b₁) (f⁻¹ -))) (happly (happly m'-characterization b₂) b₃) ∙
     ap (λ - → f ( m (f⁻¹ b₁) -)) (β (m (f⁻¹ b₂) (f⁻¹ b₃))) ∙
     ap f (a _ _ _) ∙
     ap (λ - → f (m - (f⁻¹ b₃))) (β (m (f⁻¹ b₁) (f⁻¹ b₂)) ⁻¹) ∙
-    ap (λ - → f (m (f⁻¹ -) (f⁻¹ b₃))) (happly _ _ (happly _ _ (m'-characterization ⁻¹)  b₁) b₂) ∙
-    happly _ _ (happly _ _ (m'-characterization ⁻¹) (m' b₁ b₂)) b₃
+    ap (λ - → f (m (f⁻¹ -) (f⁻¹ b₃))) (happly (happly (m'-characterization ⁻¹)  b₁) b₂) ∙
+    happly (happly (m'-characterization ⁻¹) (m' b₁ b₂)) b₃
 
   -- TO DO
 

@@ -27,10 +27,11 @@ isContr-iff-is-inhabited-Prop A = sufficiency , necessity where
 is-inhabited-Prop-iff-is-𝟙 : (A : 𝓤 ̇ ) → (A × isProp A → A ≃ 𝟙) × (A ≃ 𝟙 → A × isProp A)
 is-inhabited-Prop-iff-is-𝟙 A = sufficiency , necessity where
   sufficiency : A × isProp A → A ≃ 𝟙
-  sufficiency (a , i) = inhabited-Prop-is-𝟙 A i a
+  sufficiency (a , i) = inhabited-Prop-is-𝟙 i a
   necessity : A ≃ 𝟙 → A × isProp A
-  necessity e = 
-    pr₁ (≃-sym e) ⋆ ,
+  necessity (f , i) with isequiv-to-qinv i
+  ... | (f⁻¹ , β , α) = 
+    inv (f , i) ⋆ ,
     λ x y →
       x
         ≡⟨ α x ⁻¹ ⟩
@@ -39,12 +40,6 @@ is-inhabited-Prop-iff-is-𝟙 A = sufficiency , necessity where
       f⁻¹ (f y)
         ≡⟨ α y ⟩
       y ∎
-    where
-      f = pr₁ e
-      i = pr₂ e
-      q = isequiv-to-qinv i
-      f⁻¹ = qinv₁ q
-      α = qinv₃ q
 
 isContr-iff-is-𝟙 : (A : 𝓤 ̇) → (isContr A → A ≃ 𝟙) × (A ≃ 𝟙 → isContr A)
 isContr-iff-is-𝟙 A = sufficiency , necessity where
@@ -144,13 +139,13 @@ free-right-endpt-is-Contr : (A : 𝓤 ̇ ) (a : A) → isContr (Σ x ꞉ A , (a 
 free-right-endpt-is-Contr A a = center , centrality
   where
   center = (a , (refl a))
-  centrality =  λ z → dpair-≡ (pr₂ z , (transport-post-∙ A a _ _ (pr₂ z) (refl a) ∙ (lu _ ⁻¹)))
+  centrality =  λ z → dpair-≡ (pr₂ z , (transport-post-∙ (pr₂ z) (refl a) ∙ (lu _ ⁻¹)))
 
 free-left-endpt-is-Contr : (A : 𝓤 ̇ ) (a : A) → isContr (Σ x ꞉ A , (x ≡ a))
 free-left-endpt-is-Contr A a = center , centrality 
   where
   center = (a , (refl a)) 
-  centrality = λ z → dpair-≡ ((pr₂ z ⁻¹) , (transport-pre-∙ A a _ _ ((pr₂ z) ⁻¹) (refl a) ∙ ((ru _ ⁻¹) ∙ ⁻¹-invol (pr₂ z))))
+  centrality = λ z → dpair-≡ ((pr₂ z ⁻¹) , (transport-pre-∙ ((pr₂ z) ⁻¹) (refl a) ∙ ((ru _ ⁻¹) ∙ ⁻¹-invol (pr₂ z))))
 
 
 -- Lemma 3.11.9.
@@ -187,7 +182,7 @@ free-left-endpt-is-Contr A a = center , centrality
   qinv-to-isequiv (
     (λ b x → transport P (i x) b) ,
     (λ b → ap (λ - → transport P - b) (A-is-Set a a (i a) (refl a))) ,
-    λ f → funext _ _ λ x → apd f (i x)
+    λ f → funext λ x → apd f (i x)
     )
   where
   A-is-Set : isSet A

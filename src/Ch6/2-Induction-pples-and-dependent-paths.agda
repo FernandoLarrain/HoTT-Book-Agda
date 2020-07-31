@@ -23,7 +23,7 @@ module PathOver'-1-is-PathOver where
   open higher-paths
 
   BndryOver-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 1 X) → BndryOver 1 P b ≡ P (lhs b) × P (rhs b)
-  BndryOver-agreement P b = ua (BndryOver 1 P b) (P (lhs b) × P (rhs b)) (pr₂ , qinv-to-isequiv ((lift ⋆ ,_) , (refl , β)))
+  BndryOver-agreement P b = ua (pr₂ , qinv-to-isequiv ((lift ⋆ ,_) , (refl , β)))
     where
     β :  (lift ⋆ ,_) ∘ pr₂ ∼ id
     β (lift ⋆ , w) = dpair-≡ ((refl _) , (refl _))
@@ -40,7 +40,7 @@ module PathOver'-1-is-PathOver where
   PathOver-agreement P (refl _) b' = refl _
 
   PathOver-agreement' : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {b : Bndry 1 X} (p : Path 1 b) (b' : BndryOver 1 P b) → PathOver' 1 P {b} p b' ≃ PathOver P p (pr₁ (pr₂ b')) (pr₂ (pr₂ b')) 
-  PathOver-agreement' P p b' = idtoeqv _ _ (PathOver-agreement P p b')
+  PathOver-agreement' P p b' = idtoeqv (PathOver-agreement P p b')
   
 
 -- The rewrite relation _↦_.
@@ -101,7 +101,7 @@ module _ {A : 𝓤 ̇} (a : A) (p : a ≡ a) where
   base₁-β' = refl _
 
   loop₁-β' : ap 𝕊¹-rec loop₁ ≡ p
-  loop₁-β' = ∙ₗ-inv _ (ap 𝕊¹-rec loop₁) p (apd-const A 𝕊¹-rec loop₁ ⁻¹ ∙ loop₁-β (λ x → A) a (transportconst A loop₁ a ∙ p))
+  loop₁-β' = ∙ₗ-inv _ (ap 𝕊¹-rec loop₁) p (apdconst A 𝕊¹-rec loop₁ ⁻¹ ∙ loop₁-β (λ x → A) a (transportconst A loop₁ a ∙ p))
   
 
 -- Lemma 6.2.8 (Uniqueness principle for 𝕊¹)
@@ -127,7 +127,7 @@ UMP-𝕊¹ A =
   (qinv-to-isequiv (
     Σ-induction (𝕊¹-rec {A = A}) ,
     Σ-induction (λ a l → dpair-≡ (refl _ , loop₁-β' a l)) ,
-    λ f → funext _ _ (𝕊¹-η' _ _ (refl _) (loop₁-β' (f base₁) (ap f loop₁))) 
+    λ f → funext (𝕊¹-η' _ _ (refl _) (loop₁-β' (f base₁) (ap f loop₁))) 
     )
   )
 

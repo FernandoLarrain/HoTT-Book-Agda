@@ -1,3 +1,4 @@
+
 {-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
@@ -21,28 +22,24 @@ isProp P = (x y : P) → x ≡ y
 
 -- Lemma 3.3.3 (Logically equivalent propositions are equivalent).
 
-biimplication-to-≃ : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp P → isProp Q → (P → Q) → (Q → P) → P ≃ Q
-biimplication-to-≃ P Q p q f g = f , qinv-to-isequiv (g , ((λ x → q _ _) , (λ x → p _ _)))
+⇔-to-≃ : {P : 𝓤 ̇} {Q : 𝓥 ̇} → isProp P → isProp Q → (P ⇔ Q) → P ≃ Q
+⇔-to-≃ p q (f , g) = f , qinv-to-isequiv (g , (λ x → q _ _) , (λ x → p _ _))
 
-≃-to-biimplication : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → (P ≃ Q) → (P → Q) × (Q → P)
-≃-to-biimplication P Q e = pr₁ e , pr₁ (≃-sym e)
+≃-to-⇔ : {P : 𝓤 ̇} {Q : 𝓥 ̇} → (P ≃ Q) → (P ⇔ Q)
+≃-to-⇔ e = pr₁ e , inv e
 
 {- Note: the actual equivalence is proved in Ch7.1 -}
 
 
 -- Lemma 3.3.2 (Inhabited propositions are 𝟙).
 
-inhabited-Prop-is-𝟙 : (P : 𝓤 ̇ ) → isProp P → (x₀ : P) → P ≃ 𝟙
-inhabited-Prop-is-𝟙 P p x₀ = biimplication-to-≃ P 𝟙 p 𝟙-is-Prop f g  where
-  f : P → 𝟙
-  f x = ⋆
-  g : 𝟙 → P
-  g ⋆ = x₀
+inhabited-Prop-is-𝟙 : {P : 𝓤 ̇} → isProp P → (x₀ : P) → P ≃ 𝟙
+inhabited-Prop-is-𝟙 P-is-Prop x₀ = ⇔-to-≃ P-is-Prop 𝟙-is-Prop ((λ x → ⋆) , λ x → x₀)  where
 
 
 -- Lemma 3.3.4 (Propositions are sets).
 
-Props-are-Sets : (A : 𝓤 ̇ ) → isProp A → isSet A
+Props-are-Sets : (A : 𝓤 ̇) → isProp A → isSet A
 Props-are-Sets A f x y p q =
   p
     ≡⟨ ii x y p ⟩
@@ -55,7 +52,7 @@ Props-are-Sets A f x y p q =
   i : (y z : A) → (p : y ≡ z) → g y ∙ p ≡ g z
   i y z p =
     g y ∙ p
-      ≡⟨ transport-post-∙ A x y z p (g y) ⁻¹ ⟩
+      ≡⟨ transport-post-∙ p (g y) ⁻¹ ⟩
     transport (λ - → x ≡ -) p (g y)
       ≡⟨ apd g p ⟩
     g z ∎
@@ -74,22 +71,22 @@ Props-are-Sets A f x y p q =
 
 -- Lemma 3.1.8 (Sets are 1-types).
 
-Sets-are-1-types : (A : 𝓤 ̇ ) → isSet A → is-1-type A
-Sets-are-1-types A f x y = Props-are-Sets (x ≡ y) (f x y)
+Sets-are-⟨1⟩-types : (A : 𝓤 ̇) → isSet A → is-⟨1⟩-type A
+Sets-are-⟨1⟩-types A f x y = Props-are-Sets (x ≡ y) (f x y)
 
 
 -- Lemma 3.3.5.
 
-isProp-is-Prop : (A : 𝓤 ̇ ) → isProp (isProp A)
-isProp-is-Prop A f g = funext f g (λ x → funext (f x) (g x) (λ y → Props-are-Sets A f x y (f x y) (g x y)))
+isProp-is-Prop : (A : 𝓤 ̇) → isProp (isProp A)
+isProp-is-Prop A f g = funext (λ x → funext (λ y → Props-are-Sets A f x y (f x y) (g x y)))
 
-isSet-is-Prop : (A : 𝓤 ̇ ) → isProp (isSet A)
+isSet-is-Prop : (A : 𝓤 ̇) → isProp (isSet A)
 isSet-is-Prop A f g =
-  funext f g (λ a →
-    funext (f a) (g a) (λ b →
-      funext (f a b) (g a b) (λ p →
-        funext (f a b p) (g a b p) (λ q →
-          Sets-are-1-types A f a b p q (f a b p q) (g a b p q)
+  funext (λ a →
+    funext (λ b →
+      funext (λ p →
+        funext (λ q →
+          Sets-are-⟨1⟩-types A f a b p q (f a b p q) (g a b p q)
         )
       )
     )

@@ -8,7 +8,7 @@ module Ch3.1-Sets-and-n-types where
 
 -- Definition 3.1.1 (Set).
 
-isSet : 𝓤 ̇  → 𝓤 ̇
+isSet : 𝓤 ̇ → 𝓤 ̇
 isSet A = (x y : A) (p q : x ≡ y) → p ≡ q
 
 
@@ -28,7 +28,7 @@ isSet A = (x y : A) (p q : x ≡ y) → p ≡ q
 -- Example 3.1.3 (𝟘 is a set).
 
 𝟘-is-Set : isSet 𝟘
-𝟘-is-Set = λ c → !𝟘 _ c
+𝟘-is-Set = 𝟘-induction _
 
 
 -- Example 3.1.4 (ℕ is a set).
@@ -46,36 +46,23 @@ isSet A = (x y : A) (p q : x ≡ y) → p ≡ q
 
 -- Example 3.1.5 (_×_ preserves sets).
 
-×-preserves-sets : {A : 𝓤 ̇ } {B : 𝓥 ̇ } → isSet A → isSet B → isSet (A × B)
-×-preserves-sets f g (x , y) (z , w) p q = (((×-≡-η p) ⁻¹) ∙ ap pair-≡ (ap (λ - → - , ap pr₂ p) (f x z _ _) ∙ ap (λ - → ap pr₁ q , -) (g y w _ _))) ∙ (×-≡-η q)
+×-preserves-Sets : {A : 𝓤 ̇} {B : 𝓥 ̇} → isSet A → isSet B → isSet (A × B)
+×-preserves-Sets f g (x , y) (z , w) p q = ×-≡-η p ⁻¹ ∙ ap pair-≡ (ap (λ - → - , ap pr₂ p) (f x z _ _) ∙ ap (λ - → ap pr₁ q , -) (g y w _ _)) ∙ ×-≡-η q
 
-Σ-preserves-sets : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } → isSet A → ((x : A) → isSet (P x)) → isSet (Σ P)
-Σ-preserves-sets {P = P} f g (z₁ , z₂) (w₁ , w₂) p q = (((Σ-≡-η p) ⁻¹) ∙ (ap dpair-≡ (dpair-≡ (α , β)) ∙ Σ-≡-η q))
-  where
-  p₁ : z₁ ≡ w₁
-  p₁ = pr₁ (dpr-≡ p)
-  p₂ : transport P p₁ z₂ ≡ w₂
-  p₂ = pr₂ (dpr-≡ p)
-  q₁ : z₁ ≡ w₁
-  q₁ = pr₁ (dpr-≡ q)
-  q₂ : transport P q₁ z₂ ≡ w₂
-  q₂ = pr₂ (dpr-≡ q)
-  α : p₁ ≡ q₁
-  α = f z₁ w₁ _ _
-  β : transport (λ - → transport P - z₂ ≡ w₂) α p₂ ≡ q₂
-  β = g w₁ _ w₂ _ _
+Σ-preserves-Sets : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → isSet A → ((x : A) → isSet (P x)) → isSet (Σ P)
+Σ-preserves-Sets {𝓤} {𝓥} {A} {P} f g (z₁ , z₂) (w₁ , w₂) p q = Σ-≡-η p ⁻¹ ∙ ap dpair-≡ (dpair-≡ (f z₁ w₁ _ _ , g w₁ _ w₂ _ _)) ∙ Σ-≡-η q
 
 
 -- Example 3.1.6 (Π preserves sets).
 
-Π-preserves-sets : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } → ((x : A) → isSet (P x)) → isSet (Π P)
-Π-preserves-sets e f g p q = (happly-η f g p ⁻¹) ∙ (ap (funext f g) (funext (happly f g p) (happly f g q) (λ x → e x (f x) (g x) _ _)) ∙ happly-η f g q)
+Π-preserves-Sets : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isSet (P x)) → isSet (Π P)
+Π-preserves-Sets i f g p q = happly-η p ⁻¹ ∙ ap funext (funext (λ x → i x _ _ _ _)) ∙ happly-η q
 
 
 -- Definition 3.1.7 (1-type).
 
-is-1-type : 𝓤 ̇  → 𝓤 ̇
-is-1-type A = (x y : A) (p q : x ≡ y) (r s : p ≡ q) → r ≡ s
+is-⟨1⟩-type : 𝓤 ̇ → 𝓤 ̇
+is-⟨1⟩-type A = (x y : A) (p q : x ≡ y) (r s : p ≡ q) → r ≡ s
 
 
 -- Lemma 3.1.8. See Lemma 3.3.4.
@@ -83,17 +70,28 @@ is-1-type A = (x y : A) (p q : x ≡ y) (r s : p ≡ q) → r ≡ s
 
 -- Example 3.1.9 (Not all types are sets).
 
-𝓤₀-is-not-set : isSet (𝓤₀ ̇ )→ 𝟘
-𝓤₀-is-not-set g = ₀-is-not-₁ (transport (λ (- : 𝟚 → 𝟚) → ₀ ≡ - ₀) (ap pr₁ q) (refl ₀))
-  where
+module 𝓤₀-is-not-Set where
+
+  id-equiv : 𝟚 ≃ 𝟚
+  id-equiv = 𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚)
+
   f : 𝟚 → 𝟚
   f ₀ = ₁
   f ₁ = ₀
-  e : 𝟚 ≃ 𝟚
-  e = f , qinv-to-isequiv (f , (𝟚-induction (λ - → f (f -) ≡ -) (refl _) (refl _) , 𝟚-induction (λ - → f (f -) ≡ -) (refl _) (refl _)))
-  p : 𝟚 ≡ 𝟚
-  p = ua 𝟚 𝟚 e
-  α : refl 𝟚 ≡ ua 𝟚 𝟚 (𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚))
-  α = type-refl 𝟚
-  q : (𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚)) ≡ e
-  q = ((idtoeqv-β' 𝟚 𝟚 (𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚)) ⁻¹)) ∙ (ap (idtoeqv 𝟚 𝟚) (g 𝟚 𝟚 (ua 𝟚 𝟚 (𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚))) p) ∙ idtoeqv-β' 𝟚 𝟚 e)
+
+  swap-equiv : 𝟚 ≃ 𝟚
+  swap-equiv =
+    f ,
+    qinv-to-isequiv (
+      f ,
+      (𝟚-induction _ (refl _) (refl _)) ,
+      (𝟚-induction _ (refl _) (refl _))
+      ) 
+  
+  𝓤₀-is-not-Set : ¬ (isSet (𝓤₀ ̇))
+  𝓤₀-is-not-Set g =
+    let p : id-equiv ≡ swap-equiv
+        p = idtoeqv-β' id-equiv ⁻¹ ∙ ap idtoeqv (g 𝟚 𝟚 (ua id-equiv) (ua swap-equiv)) ∙ idtoeqv-β' (swap-equiv)
+    in ₀-is-not-₁ (transport (λ (- : 𝟚 → 𝟚) → ₀ ≡ - ₀) (ap pr₁ p) (refl ₀))
+
+open 𝓤₀-is-not-Set using (𝓤₀-is-not-Set) public
