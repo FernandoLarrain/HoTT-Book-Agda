@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
@@ -21,45 +21,49 @@ happly (refl f) x = refl (f x)
 
 -- (ii).1 Definition of function extensionality for a pair of universes
 
-has-funext : ∀ 𝓤 𝓥 → (𝓤 ⊔ 𝓥)⁺ ̇
+has-funext : (𝓤 𝓥 : Universe) → (𝓤 ⊔ 𝓥) ⁺ ̇
 has-funext 𝓤 𝓥 = {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} → isequiv (happly {𝓤} {𝓥} {A} {B} {f} {g})
 
 -- (ii).2 Definition of global function extensionality
 
 function-extensionality : 𝓤ω
-function-extensionality = ∀ {𝓤 𝓥} → has-funext 𝓤 𝓥
+function-extensionality = {𝓤 𝓥 : Universe} → has-funext 𝓤 𝓥
 
-module _ ⦃ fe : function-extensionality ⦄ where
+-- (ii).3 Postulating the axiom
 
-  -- (iii) From homotopy to equality
-
-  funext : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} → (f ∼ g) → (f ≡ g)
-  funext = qinv₁ (isequiv-to-qinv fe)
+postulate
+  fe : function-extensionality
 
 
-  -- (iv) Computation rules for function extensionality
+-- (iii) From homotopy to equality
 
-  happly-β : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} (h : f ∼ g) → happly (funext h) ∼ h
-  happly-β h = happly (qinv₂ (isequiv-to-qinv fe) h)
-
-
-  -- (v) Uniqueness rules for function extensionality
-
-  happly-η : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} (p : f ≡ g) → funext (happly p) ≡ p
-  happly-η = qinv₃ (isequiv-to-qinv fe)
+funext : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} → (f ∼ g) → (f ≡ g)
+funext = qinv₁ (isequiv-to-qinv fe)
 
 
-  -- Pointwise characterization of refl, _⁻¹ and _∙_.
+-- (iv) Computation rules for function extensionality
 
-  fun-refl : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } (f : Π B) → refl f ≡ funext (λ x → refl (f x))
-  fun-refl f = (happly-η (refl f)) ⁻¹
+happly-β : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} (h : f ∼ g) → happly (funext h) ∼ h
+happly-β h = happly (qinv₂ (isequiv-to-qinv fe) h)
 
-  fun-sym : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} (α : f ≡ g) → (α ⁻¹) ≡ funext (λ x → (happly α x) ⁻¹)
-  fun-sym (refl f) = fun-refl f
 
-  fun-trans : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g h : Π B} (α : f ≡ g) (β : g ≡ h) → (α ∙ β) ≡ funext (λ x → happly α x ∙ happly β x)
-  fun-trans (refl f) (refl f) = fun-refl f
-  
+-- (v) Uniqueness rules for function extensionality
+
+happly-η : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} (p : f ≡ g) → funext (happly p) ≡ p
+happly-η = qinv₃ (isequiv-to-qinv fe)
+
+
+-- Pointwise characterization of refl, _⁻¹ and _∙_.
+
+fun-refl : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } (f : Π B) → refl f ≡ funext (λ x → refl (f x))
+fun-refl f = (happly-η (refl f)) ⁻¹
+
+fun-sym : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} (α : f ≡ g) → (α ⁻¹) ≡ funext (λ x → (happly α x) ⁻¹)
+fun-sym (refl f) = fun-refl f
+
+fun-trans : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g h : Π B} (α : f ≡ g) (β : g ≡ h) → (α ∙ β) ≡ funext (λ x → happly α x ∙ happly β x)
+fun-trans (refl f) (refl f) = fun-refl f
+
 
 -- Equation 2.9.4 (Transport of functions).
 
@@ -75,7 +79,7 @@ transport-dfun (refl _) f a = refl (f a)
 
 -- Lemma 2.9.6 (Function extensionality with respect to dependent paths; equality of parameterized functions).
 
-module dpath-funext ⦃ fe : function-extensionality ⦄ {X : 𝓤 ̇} (A B : X → 𝓥 ̇) where
+module dpath-funext {X : 𝓤 ̇} (A B : X → 𝓥 ̇) where
 
   P : X → 𝓥 ̇
   P x = A x → B x
@@ -104,7 +108,7 @@ module dpath-funext ⦃ fe : function-extensionality ⦄ {X : 𝓤 ̇} (A B : X 
 
 -- Lemma 2.9.7
 
-module dpath-dfunext ⦃ fe : function-extensionality ⦄ {X : 𝓤 ̇} (A : X → 𝓥 ̇) (B : (x : X) → A x → 𝓥 ̇) where
+module dpath-dfunext {X : 𝓤 ̇} (A : X → 𝓥 ̇) (B : (x : X) → A x → 𝓥 ̇) where
 
   P : X → 𝓥 ̇
   P x = (a : A x) → B x a

@@ -26,13 +26,13 @@ has-funext 𝓤 𝓥 = {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} → iseq
 
 -- (ii).2 Definition of global function extensionality
 
-function-extensionality : 𝓤ω
-function-extensionality = {𝓤 𝓥 : Universe} → has-funext 𝓤 𝓥
+Function-Extensionality : 𝓤ω
+Function-Extensionality = {𝓤 𝓥 : Universe} → has-funext 𝓤 𝓥
 
 -- (ii).3 Postulating the axiom
 
 postulate
-  fe : function-extensionality
+  fe : Function-Extensionality
 
 
 -- (iii) From homotopy to equality
