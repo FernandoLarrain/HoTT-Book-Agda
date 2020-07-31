@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -6,6 +6,7 @@ open import Ch3.Sets-and-logic
 
 module Ch4.Equivalences where
 
+open import Ch4.1-Quasi-inverses public
 open import Ch4.2-Half-adjoint-equivalences public
 open import Ch4.3-Bi-invertible-maps public
 open import Ch4.4-Contractible-fibers public

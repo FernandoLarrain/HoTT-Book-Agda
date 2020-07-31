@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -11,26 +11,28 @@ module Ch4.5-On-the-definition-of-equivalences where
 
 {- Note: Up to this point, the official definition of equivalence is bi-invertible maps. From now on , it is half-adjoint equivalences. The code works with both definitions until Ch4.4-Contractible-fibers. -}
 
--- ishae contains the most directly useful data, as can be seen from the following results, which extend exercise 2.
+-- ishae contains the most directly useful data, as can be seen from the following results, which extend exercise 2.17.
 
-Π-preserves-base-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : B → 𝓦 ̇) (e : A ≃ B) → Π (P ∘ pr₁ e) ≃ Π P
-Π-preserves-base-≃ P (f , g , η , ε , τ) =
-  (λ h b → transport P (ε b) (h (g b))) ,
-  (qinv-to-ishae (
-    (λ k a → k (f a)) ,
-    (λ k → funext (λ b → apd k (ε b))) ,
-    λ h → funext (λ a → ap (λ - → transport P - (h (g (f a)))) (τ a ⁻¹)∙ (transport-∘ P f (η a) (h (g (f a))) ⁻¹ ∙ apd h (η a)))
+module _ ⦃ fe : FunExt ⦄ where
+
+  Π-preserves-base-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : B → 𝓦 ̇) (e : A ≃ B) → Π (P ∘ pr₁ e) ≃ Π P
+  Π-preserves-base-≃ P (f , g , η , ε , τ) =
+    (λ h b → transport P (ε b) (h (g b))) ,
+    (qinv-to-ishae (
+      (λ k a → k (f a)) ,
+      (λ k → funext (λ b → apd k (ε b))) ,
+      λ h → funext (λ a → ap (λ - → transport P - (h (g (f a)))) (τ a ⁻¹)∙ (transport-∘ P f (η a) (h (g (f a))) ⁻¹ ∙ apd h (η a)))
+      )
     )
-  )
 
-Π-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((a : A) → P a ≃ Q (pr₁ e a)) → Π P ≃ Π Q
-Π-preserves-≃ P Q e t = Π-preserves-family-≃ t ● Π-preserves-base-≃ Q e  
+  Π-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((a : A) → P a ≃ Q (pr₁ e a)) → Π P ≃ Π Q
+  Π-preserves-≃ P Q e t = Π-preserves-family-≃ t ● Π-preserves-base-≃ Q e  
 
-Π-preserves-base-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (e : A ≃ B) → Π P ≃ Π (P ∘ inv e)
-Π-preserves-base-≃' P e = ≃-sym (Π-preserves-base-≃ P (≃-sym e))
+  Π-preserves-base-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (e : A ≃ B) → Π P ≃ Π (P ∘ inv e)
+  Π-preserves-base-≃' P e = ≃-sym (Π-preserves-base-≃ P (≃-sym e))
 
-Π-preserves-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((b : B) → P (inv e b) ≃ Q b) → Π P ≃ Π Q
-Π-preserves-≃' P Q e t = Π-preserves-base-≃' P e ● Π-preserves-family-≃ t
+  Π-preserves-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((b : B) → P (inv e b) ≃ Q b) → Π P ≃ Π Q
+  Π-preserves-≃' P Q e t = Π-preserves-base-≃' P e ● Π-preserves-family-≃ t
 
 Σ-preserves-base-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : B → 𝓦 ̇) (e : A ≃ B) → (Σ (P ∘ (pr₁ e)) ≃ Σ P) 
 Σ-preserves-base-≃ P (f , g , η , ε , τ) =

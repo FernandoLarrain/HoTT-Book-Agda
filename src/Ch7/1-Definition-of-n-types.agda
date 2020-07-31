@@ -112,7 +112,7 @@ pb-preserves-Tlevel n A B C f g A-is-n-type B-is-n-type C-is-n-type = Σ-preserv
 
 Π-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : A → 𝓥 ̇) → ((a : A) → is n type (B a)) → is n type (Π B)
 Π-preserves-Tlevel ⟨-2⟩ A = Π-preserves-Contr
-Π-preserves-Tlevel (S n) A B B-is-Sn-family f g = ≃-preserves-Tlevel n (f ∼ g) _ (≃-sym (happly , fe)) (Π-preserves-Tlevel n _ _ λ a → B-is-Sn-family _ _ _)
+Π-preserves-Tlevel (S n) A B B-is-Sn-family f g = ≃-preserves-Tlevel n (f ∼ g) _ (≃-sym (happly , happly-is-equiv)) (Π-preserves-Tlevel n _ _ λ a → B-is-Sn-family _ _ _)
 
 →-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : 𝓥 ̇) → is n type B → is n type (A → B)
 →-preserves-Tlevel n A B B-is-n-type = Π-preserves-Tlevel n A (λ a → B) (λ a → B-is-n-type) 
@@ -139,7 +139,7 @@ Tlevel-Type-is-of-next-Tlevel : (n : Tlevel) → is S n type (n -Type 𝓤)
 -- (i) Irrelevance of Tlevel data.
   
 irrelevance-of-Tdata : (n : Tlevel) (Y Y' : n -Type 𝓤) → (Y ≡ Y') ≃ (pr₁ Y ≃ pr₁ Y')
-irrelevance-of-Tdata n (X , p) (X' , p') = Σ-over-predicate' (Tlevel-is-predicate n) _ _ ● (idtoeqv , univ) 
+irrelevance-of-Tdata n (X , p) (X' , p') = Σ-over-predicate' (Tlevel-is-predicate n) _ _ ● (idtoeqv , idtoeqv-is-equiv) 
 
 -- (ii) pr₁ is an embedding.
 

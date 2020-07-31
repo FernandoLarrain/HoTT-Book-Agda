@@ -1,7 +1,7 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
-open import Ch2.Homotopy-type-theory --renaming (isequiv to biinv; isequiv₁ to biinv₁; isequiv-to-qinv to biinv-to-qinv; qinv-to-isequiv to qinv-to-biinv)
+open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.2-Half-adjoint-equivalences
 
@@ -37,25 +37,27 @@ biinv-to-qinv {𝓤} {𝓥} {A} {B} {f} ((g , α) , (h , β)) =
   λ x → hsym β (g (f x)) ∙ (ap h (α (f x)) ∙ β x)  
 
 
--- Theorem 4.3.2 (biinv f is a proposition).
+module _ ⦃ fe : FunExt ⦄ where
 
-biinv-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (biinv f)
-biinv-is-Prop f = suffices λ ib → ×-preserves-Contr (has-rinv f) (has-linv f) (has-rinv-of-qinv-is-Contr f (biinv-to-qinv ib)) (has-linv-of-qinv-is-Contr f (biinv-to-qinv ib))
-  where
-  suffices : (biinv f → isContr (biinv f)) → isProp (biinv f)
-  suffices = inv (isProp-≃-inhabited→isContr (biinv f))
-    
+  -- Theorem 4.3.2 (biinv f is a proposition).
 
--- Corollary 4.3.3 (biinv is equivalent to ishae).
+  biinv-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (biinv f)
+  biinv-is-Prop f = suffices λ ib → ×-preserves-Contr (has-rinv f) (has-linv f) (has-rinv-of-qinv-is-Contr f (biinv-to-qinv ib)) (has-linv-of-qinv-is-Contr f (biinv-to-qinv ib))
+    where
+    suffices : (biinv f → isContr (biinv f)) → isProp (biinv f)
+    suffices = inv (isProp-≃-inhabited→isContr (biinv f))
 
-biinv-to-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f → ishae f
-biinv-to-ishae f = qinv-to-ishae ∘ biinv-to-qinv
 
-ishae-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → ishae f → biinv f
-ishae-to-biinv f = qinv-to-biinv ∘ ishae-to-qinv
+  -- Corollary 4.3.3 (biinv is equivalent to ishae).
 
-biinv-≃-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f ≃ ishae f
-biinv-≃-ishae f = ⇔-to-≃ (biinv-is-Prop f) (ishae-is-Prop f) (biinv-to-ishae f , ishae-to-biinv f)
+  biinv-to-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f → ishae f
+  biinv-to-ishae f = qinv-to-ishae ∘ biinv-to-qinv
+
+  ishae-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → ishae f → biinv f
+  ishae-to-biinv f = qinv-to-biinv ∘ ishae-to-qinv
+
+  biinv-≃-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f ≃ ishae f
+  biinv-≃-ishae f = ⇔-to-≃ (biinv-is-Prop f) (ishae-is-Prop f) (biinv-to-ishae f , ishae-to-biinv f)
   
  
   

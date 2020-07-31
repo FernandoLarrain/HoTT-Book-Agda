@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -15,38 +15,40 @@ isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
 isContrMap {B = B} f = (y : B) → isContr (fib f y)
 
 
--- Theorem 4.4.3 (contractible maps are haes).
+module _ ⦃ fe : FunExt ⦄ where 
 
-isContrMap-to-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → ishae f
-isContrMap-to-ishae f P = g , pr₁ r , ε , pr₂ r
-  where
-  g = (λ y → pr₁ (pr₁ (P y)))
-  ε = (λ y → pr₂ (pr₁ (P y)))
-  r : rcoh f (g , ε)
-  r = inv (rcoh-≃-fib f (g , ε)) (λ x → pr₂ (P (f x)) (x , refl (f x)))
+  -- Theorem 4.4.3 (contractible maps are haes).
 
-
--- Theorem 4.4.4 (isContrMap is a proposition).
-
-isContrMap-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (isContrMap f)
-isContrMap-is-Prop f = Π-preserves-Props _ (λ y → isContr-is-Prop _)
+  isContrMap-to-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → ishae f
+  isContrMap-to-ishae f P = g , pr₁ r , ε , pr₂ r
+    where
+    g = (λ y → pr₁ (pr₁ (P y)))
+    ε = (λ y → pr₂ (pr₁ (P y)))
+    r : rcoh f (g , ε)
+    r = inv (rcoh-≃-fib f (g , ε)) (λ x → pr₂ (P (f x)) (x , refl (f x)))
 
 
--- Theorem 4.4.5 (isContrMap is equivalent to ishae).
+  -- Theorem 4.4.4 (isContrMap is a proposition).
 
-isContrMap-≃-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f ≃ ishae f
-isContrMap-≃-ishae f = ⇔-to-≃ (isContrMap-is-Prop _) (ishae-is-Prop _) (isContrMap-to-ishae _ , ishae-to-isContrMap _)
+  isContrMap-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (isContrMap f)
+  isContrMap-is-Prop f = Π-preserves-Props _ (λ y → isContr-is-Prop _)
 
--- Corollary
 
-isContrMap-≃-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f ≃ biinv f
-isContrMap-≃-biinv f = (isContrMap-≃-ishae f) ● (≃-sym (biinv-≃-ishae f))
+  -- Theorem 4.4.5 (isContrMap is equivalent to ishae).
 
-isContrMap-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → biinv f
-isContrMap-to-biinv f = pr₁ (isContrMap-≃-biinv f)
+  isContrMap-≃-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f ≃ ishae f
+  isContrMap-≃-ishae f = ⇔-to-≃ (isContrMap-is-Prop _) (ishae-is-Prop _) (isContrMap-to-ishae _ , ishae-to-isContrMap _)
 
-biinv-to-isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f → isContrMap f
-biinv-to-isContrMap f = inv (isContrMap-≃-biinv f)
+  -- Corollary
+
+  isContrMap-≃-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f ≃ biinv f
+  isContrMap-≃-biinv f = (isContrMap-≃-ishae f) ● (≃-sym (biinv-≃-ishae f))
+
+  isContrMap-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → biinv f
+  isContrMap-to-biinv f = pr₁ (isContrMap-≃-biinv f)
+
+  biinv-to-isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f → isContrMap f
+  biinv-to-isContrMap f = inv (isContrMap-≃-biinv f)
 
 
 -- Corollary 4.4.6 (Can assume inhabited codomain).
@@ -56,8 +58,8 @@ module inhabited-codom-assum {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) where
   Contr : (B → isContrMap f) → isContrMap f
   Contr e y = e y y
 
-  Hae : (B → ishae f) → ishae f
+  Hae : ⦃ fe : FunExt ⦄ → (B → ishae f) → ishae f
   Hae e = isContrMap-to-ishae f (Contr (λ y → ishae-to-isContrMap f (e y)))
 
-  Biinv : (B → biinv f) → biinv f
+  Biinv : ⦃ fe : FunExt ⦄ → (B → biinv f) → biinv f
   Biinv e = isContrMap-to-biinv f (Contr (λ y → biinv-to-isContrMap f (e y)))

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -136,41 +136,28 @@ has-rinv {A = A} {B} f = Σ g ꞉ (B → A) , f ∘ g ∼ 𝑖𝑑 B
 {- has-rinv and has-section are definitionally the same and can be used interchangeably. -}
 
 
-{- The lemma was copied to Ch2.Exercises.
+-- Lemma 4.2.8: Copied to Ch2.Exercises. It is useful in problem 2.17 and does not require later results.
 
--- Lemma 4.2.8
-
-pre-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : B → C) → h ∘ f)
-pre-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
-  (λ h → h ∘ g) ,
-  (λ h → funext (h ∘ g ∘ f) h λ a → ap h (α a)) ,
-  λ h → funext (h ∘ f ∘ g) h (λ b → ap h (β b))
-
-post-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : C → A) → f ∘ h)
-post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
-  (λ h → g ∘ h) ,
-  (λ h → funext (f ∘ (g ∘ h)) h λ c → β (h c)) ,
-  λ h → funext (g ∘ (f ∘ h)) h (λ c → α (h c))
-
--}
 
 -- Lemma 4.2.9 (Invertibility data of quasi-invertible maps is contractible).
 
-has-rinv-of-qinv-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → qinv f → isContr (has-rinv f)  
-has-rinv-of-qinv-is-Contr {A = A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
-  where
-  by-funext : fib (λ g → f ∘ g) id ≃ has-rinv f
-  by-funext = Σ-preserves-family-≃ (λ g → happly , fe)
-  fiber-of-post-∘-is-Contr : (h : B → B) → isContr (fib (λ g → f ∘ g) h)
-  fiber-of-post-∘-is-Contr = ishae-to-isContrMap (λ g → f ∘ g) (qinv-to-ishae (post-∘-by-qinv-is-qinv B f q))  
+module _ ⦃ fe : FunExt ⦄ where 
 
-has-linv-of-qinv-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → qinv f → isContr (has-linv f)  
-has-linv-of-qinv-is-Contr {A = A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
-  where
-  by-funext : fib (λ g → g ∘ f) id ≃ has-linv f
-  by-funext = Σ-preserves-family-≃ (λ g → happly , fe)
-  fiber-of-post-∘-is-Contr : (h : A → A) → isContr (fib (λ g → g ∘ f) h)
-  fiber-of-post-∘-is-Contr = ishae-to-isContrMap (λ g → g ∘ f) (qinv-to-ishae (pre-∘-by-qinv-is-qinv A f q))
+  has-rinv-of-qinv-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → qinv f → isContr (has-rinv f)  
+  has-rinv-of-qinv-is-Contr {A = A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
+    where
+    by-funext : fib (λ g → f ∘ g) id ≃ has-rinv f
+    by-funext = Σ-preserves-family-≃ (λ g → happly , happly-is-equiv)
+    fiber-of-post-∘-is-Contr : (h : B → B) → isContr (fib (λ g → f ∘ g) h)
+    fiber-of-post-∘-is-Contr = ishae-to-isContrMap (λ g → f ∘ g) (qinv-to-ishae (post-∘-by-qinv-is-qinv B f q))  
+
+  has-linv-of-qinv-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → qinv f → isContr (has-linv f)  
+  has-linv-of-qinv-is-Contr {A = A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
+    where
+    by-funext : fib (λ g → g ∘ f) id ≃ has-linv f
+    by-funext = Σ-preserves-family-≃ (λ g → happly , happly-is-equiv)
+    fiber-of-post-∘-is-Contr : (h : A → A) → isContr (fib (λ g → g ∘ f) h)
+    fiber-of-post-∘-is-Contr = ishae-to-isContrMap (λ g → g ∘ f) (qinv-to-ishae (pre-∘-by-qinv-is-qinv A f q))
 
 
 -- Definition 4.2.10 (Coherence data)
@@ -182,42 +169,44 @@ rcoh : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → has-rinv f → 𝓤 ⊔ �
 rcoh {A = A} f (g , ε) = Σ η ꞉ (g ∘ f ∼ id) , ((x : A) → ap f (η x) ≡ ε (f x))
 
 
--- Lemma 4.2.11 (Characterization of coherence data in terms of fibers).
+module _ ⦃ fe : FunExt ⦄ where
 
-lcoh-≃-fib : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → (l : has-linv f) → lcoh f l ≃ ((y : B) → Id (fib (pr₁ l) (pr₁ l y)) (f (pr₁ l y) , pr₂ l (pr₁ l y)) (y , refl (pr₁ l y)))
-lcoh-≃-fib {B = B} f (g , η) = ≃-sym (Π-preserves-family-≃ by-path-space-fib ● choice-fun , dep-Σ-UMP _ _ _)
-  where  
-  by-path-space-fib : (y : B) → (Id (fib g (g y)) (f (g y) , η (g y)) (y , refl (g y))) ≃ (Σ γ ꞉ (f (g y) ≡ y) , (ap g (γ) ≡ η (g y))) 
-  by-path-space-fib y = path-space-fib (f (g y) , η (g y)) (y , refl (g y)) ● Σ-preserves-family-≃ (λ γ → (ru (ap g γ) ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) 
-  choice-fun : Π (λ y → Σ λ γ → ap g γ ≡ η (g y)) → Σ (λ Γ → Π (λ y → ap g (Γ y) ≡ η (g y)))  
-  choice-fun = λ F → (λ y → pr₁ (F y)) , λ y → pr₂ (F y)
+  -- Lemma 4.2.11 (Characterization of coherence data in terms of fibers).
 
-rcoh-≃-fib : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → (r : has-rinv f) → rcoh f r ≃ ((x : A) → Id (fib f (f x)) (pr₁ r (f x) , pr₂ r (f x)) (x , refl (f x)))
-rcoh-≃-fib {A = A} f (g , ε) = ≃-sym (Π-preserves-family-≃ by-path-space-fib ● choice-fun , dep-Σ-UMP _ _ _)
-  where  
-  by-path-space-fib : (x : A) → (Id (fib f (f x)) (g (f x) , ε (f x)) (x , refl (f x))) ≃ (Σ γ ꞉ (g (f x) ≡ x) , (ap f (γ) ≡ ε (f x))) 
-  by-path-space-fib x = path-space-fib (g (f x) , ε (f x)) (x , refl (f x)) ● Σ-preserves-family-≃ (λ γ → (ru (ap f γ) ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) 
-  choice-fun : Π (λ x → Σ λ γ → ap f γ ≡ ε (f x)) → Σ (λ Γ → Π (λ x → ap f (Γ x) ≡ ε (f x)))  
-  choice-fun = λ F → (λ x → pr₁ (F x)) , λ x → pr₂ (F x)
+  lcoh-≃-fib : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → (l : has-linv f) → lcoh f l ≃ ((y : B) → Id (fib (pr₁ l) (pr₁ l y)) (f (pr₁ l y) , pr₂ l (pr₁ l y)) (y , refl (pr₁ l y)))
+  lcoh-≃-fib {B = B} f (g , η) = ≃-sym (Π-preserves-family-≃ by-path-space-fib ● choice-fun , dep-Σ-UMP _ _ _)
+    where  
+    by-path-space-fib : (y : B) → (Id (fib g (g y)) (f (g y) , η (g y)) (y , refl (g y))) ≃ (Σ γ ꞉ (f (g y) ≡ y) , (ap g (γ) ≡ η (g y))) 
+    by-path-space-fib y = path-space-fib (f (g y) , η (g y)) (y , refl (g y)) ● Σ-preserves-family-≃ (λ γ → (ru (ap g γ) ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) 
+    choice-fun : Π (λ y → Σ λ γ → ap g γ ≡ η (g y)) → Σ (λ Γ → Π (λ y → ap g (Γ y) ≡ η (g y)))  
+    choice-fun = λ F → (λ y → pr₁ (F y)) , λ y → pr₂ (F y)
+
+  rcoh-≃-fib : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → (r : has-rinv f) → rcoh f r ≃ ((x : A) → Id (fib f (f x)) (pr₁ r (f x) , pr₂ r (f x)) (x , refl (f x)))
+  rcoh-≃-fib {A = A} f (g , ε) = ≃-sym (Π-preserves-family-≃ by-path-space-fib ● choice-fun , dep-Σ-UMP _ _ _)
+    where  
+    by-path-space-fib : (x : A) → (Id (fib f (f x)) (g (f x) , ε (f x)) (x , refl (f x))) ≃ (Σ γ ꞉ (g (f x) ≡ x) , (ap f (γ) ≡ ε (f x))) 
+    by-path-space-fib x = path-space-fib (g (f x) , ε (f x)) (x , refl (f x)) ● Σ-preserves-family-≃ (λ γ → (ru (ap f γ) ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) 
+    choice-fun : Π (λ x → Σ λ γ → ap f γ ≡ ε (f x)) → Σ (λ Γ → Π (λ x → ap f (Γ x) ≡ ε (f x)))  
+    choice-fun = λ F → (λ x → pr₁ (F x)) , λ x → pr₂ (F x)
  
 
--- Lemma 4.2.12 (Right coherence-data of haes is contractible)
+  -- Lemma 4.2.12 (Right coherence-data of haes is contractible)
 
-rcoh-of-hae-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → ishae f → (r : has-rinv f) → isContr (rcoh f r)
-rcoh-of-hae-is-Contr f h (g , ε) = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (rcoh-≃-fib f (g , ε)))) (Π-preserves-Contr _ λ x → pr₁ (Prop-iff-Contr-≡ _) (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop (fib f (f x))) (ishae-to-isContrMap f h (f x)))) _ _)
+  rcoh-of-hae-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → ishae f → (r : has-rinv f) → isContr (rcoh f r)
+  rcoh-of-hae-is-Contr f h (g , ε) = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (rcoh-≃-fib f (g , ε)))) (Π-preserves-Contr _ λ x → pr₁ (Prop-iff-Contr-≡ _) (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop (fib f (f x))) (ishae-to-isContrMap f h (f x)))) _ _)
 
 
--- Theorem 4.2.13 (ishae is a proposition).
+  -- Theorem 4.2.13 (ishae is a proposition).
 
-ishae-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (ishae f)
-ishae-is-Prop {A = A} {B} f = suffices λ h → retract-of-Contr-is-Contr (≃-to-◁ equivalence) (Σ-preserves-Contr _ _ (has-rinv-of-qinv-is-Contr f (ishae-to-qinv h)) (rcoh-of-hae-is-Contr f h))
-  where
-  suffices : (ishae f → isContr (ishae f)) → isProp (ishae f)
-  suffices = inv (isProp-≃-inhabited→isContr (ishae f))
-  equivalence : Σ (λ (u : has-rinv f) → rcoh f u) ≃ ishae f
-  equivalence =
-    Σ (λ (u : has-rinv f) → rcoh f u)
-      ≃⟨ ≃-sym (Σ-assoc _ _ (λ (u : has-rinv f) → rcoh f u)) ⟩
-    (Σ λ (g : B → A) → Σ λ (ε : f ∘ g ∼ id) → rcoh f (g , ε))
-      ≃⟨ Σ-preserves-family-≃ (λ g → Σ-swap _ _ _) ⟩
-    ishae f ■
+  ishae-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (ishae f)
+  ishae-is-Prop {A = A} {B} f = suffices λ h → retract-of-Contr-is-Contr (≃-to-◁ equivalence) (Σ-preserves-Contr _ _ (has-rinv-of-qinv-is-Contr f (ishae-to-qinv h)) (rcoh-of-hae-is-Contr f h))
+    where
+    suffices : (ishae f → isContr (ishae f)) → isProp (ishae f)
+    suffices = inv (isProp-≃-inhabited→isContr (ishae f))
+    equivalence : Σ (λ (u : has-rinv f) → rcoh f u) ≃ ishae f
+    equivalence =
+      Σ (λ (u : has-rinv f) → rcoh f u)
+        ≃⟨ ≃-sym (Σ-assoc _ _ (λ (u : has-rinv f) → rcoh f u)) ⟩
+      (Σ λ (g : B → A) → Σ λ (ε : f ∘ g ∼ id) → rcoh f (g , ε))
+        ≃⟨ Σ-preserves-family-≃ (λ g → Σ-swap _ _ _) ⟩
+      ishae f ■

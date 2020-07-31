@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -55,7 +55,7 @@ isSet A = (x y : A) (p q : x ≡ y) → p ≡ q
 
 -- Example 3.1.6 (Π preserves sets).
 
-Π-preserves-Sets : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isSet (P x)) → isSet (Π P)
+Π-preserves-Sets : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isSet (P x)) → isSet (Π P)
 Π-preserves-Sets i f g p q = happly-η p ⁻¹ ∙ ap funext (funext (λ x → i x _ _ _ _)) ∙ happly-η q
 
 
@@ -70,7 +70,7 @@ is-⟨1⟩-type A = (x y : A) (p q : x ≡ y) (r s : p ≡ q) → r ≡ s
 
 -- Example 3.1.9 (Not all types are sets).
 
-module 𝓤₀-is-not-Set where
+module 𝓤₀-is-not-Set ⦃ univ : Univalence ⦄ where
 
   id-equiv : 𝟚 ≃ 𝟚
   id-equiv = 𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚)

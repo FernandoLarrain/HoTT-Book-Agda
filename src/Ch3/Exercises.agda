@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -11,7 +11,7 @@ module Ch3.Exercises where
 
 -- Exercise 3.5
 
-isProp-≃-inhabited→isContr : (A : 𝓤 ̇) → isProp A ≃ (A → isContr A)
+isProp-≃-inhabited→isContr : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) → isProp A ≃ (A → isContr A)
 isProp-≃-inhabited→isContr A = ⇔-to-≃ (isProp-is-Prop _) (Π-preserves-Props _ (λ a → isContr-is-Prop _)) (sufficiency , necessity)
   where
   sufficiency : isProp A → A → isContr A

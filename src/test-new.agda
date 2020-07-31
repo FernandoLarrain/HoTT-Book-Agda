@@ -79,27 +79,27 @@ open import Ch4.5-On-the-definition-of-equivalences public
 open import Ch4.6-Surjections-and-embeddings public
 open import Ch4.7-Closure-properties-of-equivalences public
 
--- Chapter 5
+-- -- Chapter 5
 
-open import Ch5.1-Introduction-to-inductive-types public
-open import Ch5.3-W-types public
-open import Ch5.4-Inductive-types-are-initial-algebras public
-open import Ch5.8-Id-types-and-id-systems public
+-- open import Ch5.1-Introduction-to-inductive-types public
+-- open import Ch5.3-W-types public
+-- open import Ch5.4-Inductive-types-are-initial-algebras public
+-- open import Ch5.8-Id-types-and-id-systems public
 
 
--- Chapter 6
+-- -- Chapter 6
 
-open import Ch6.2-Induction-pples-and-dependent-paths public
-open import Ch6.3-The-interval public public
-open import Ch6.4-Circles-and-spheres public
-open import Ch6.5-Suspensions public
-open import Ch6.8-Pushouts public
-open import Ch6.9-Truncations public
-open import Ch6.10-Quotients public
-open import Ch6.Exercises public
+-- open import Ch6.2-Induction-pples-and-dependent-paths public
+-- open import Ch6.3-The-interval public public
+-- open import Ch6.4-Circles-and-spheres public
+-- open import Ch6.5-Suspensions public
+-- open import Ch6.8-Pushouts public
+-- open import Ch6.9-Truncations public
+-- open import Ch6.10-Quotients public
+-- open import Ch6.Exercises public
 
--- Chapter 7
+-- -- Chapter 7
 
-open import Ch7.1-Definition-of-n-types public
-open import Ch7.2-UIP-and-Hedberg's-theorem public
-open import Ch7.3-Truncations public
+-- open import Ch7.1-Definition-of-n-types public
+-- open import Ch7.2-UIP-and-Hedberg's-theorem public
+-- open import Ch7.3-Truncations public

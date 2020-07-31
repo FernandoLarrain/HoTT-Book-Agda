@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -57,34 +57,36 @@ map-between-Contrs-is-equiv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isCo
 map-between-Contrs-is-equiv f (a , i) (b , j) = qinv-to-isequiv ((λ y → a) , (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop _) (b , j)) (f a)) , i)
 
 
--- Lemma 3.11.4 (isContr is a proposition).
+module _ ⦃ fe : FunExt ⦄ where
 
-isContr-is-Prop : (A : 𝓤 ̇ ) → isProp (isContr A)
-isContr-is-Prop A (a , p) (a' , p') =
-  dpair-≡ ((p a') ,
-  Π-preserves-Props (λ - → a' ≡ -) (Ids-are-Props a') _ p')
-  where
-    A-is-Prop : isProp A
-    A-is-Prop = pr₂ (pr₁ (isContr-iff-is-inhabited-Prop A) (a , p))
-    Ids-are-Props : (x y : A) → isProp (x ≡ y)
-    Ids-are-Props x y = Props-are-Sets A A-is-Prop x y
+  -- Lemma 3.11.4 (isContr is a proposition).
 
-
--- Corollary 3.11.5 (isContr is contractible when predicated of a contractible type).
-
-isContr-of-Contr-is-Contr : (A : 𝓤 ̇ ) → isContr A → isContr (isContr A)
-isContr-of-Contr-is-Contr A c = pr₂ (isContr-iff-is-inhabited-Prop (isContr A)) (c , (isContr-is-Prop A))
+  isContr-is-Prop : (A : 𝓤 ̇ ) → isProp (isContr A)
+  isContr-is-Prop A (a , p) (a' , p') =
+    dpair-≡ ((p a') ,
+    Π-preserves-Props (λ - → a' ≡ -) (Ids-are-Props a') _ p')
+    where
+      A-is-Prop : isProp A
+      A-is-Prop = pr₂ (pr₁ (isContr-iff-is-inhabited-Prop A) (a , p))
+      Ids-are-Props : (x y : A) → isProp (x ≡ y)
+      Ids-are-Props x y = Props-are-Sets A A-is-Prop x y
 
 
--- Lemma 3.11.6 (Π preserves contractibility).
+  -- Corollary 3.11.5 (isContr is contractible when predicated of a contractible type).
 
-Π-preserves-Contr : {A : 𝓤 ̇ } (P : A → 𝓥 ̇ ) → ((x : A) → isContr (P x)) → isContr (Π P)
-Π-preserves-Contr P i =  pr₂ (isContr-iff-is-inhabited-Prop (Π P)) ((λ x → pr₁ (i x)) , (Π-preserves-Props P (λ x → pr₂ (pr₁ (isContr-iff-is-inhabited-Prop (P x)) (i x)))))
+  isContr-of-Contr-is-Contr : (A : 𝓤 ̇ ) → isContr A → isContr (isContr A)
+  isContr-of-Contr-is-Contr A c = pr₂ (isContr-iff-is-inhabited-Prop (isContr A)) (c , (isContr-is-Prop A))
 
--- Corollary (→)
-  
-→-preserves-Contr : (A : 𝓤 ̇) (B : 𝓥 ̇) → isContr B → isContr (A → B)
-→-preserves-Contr A B B-is-Contr = Π-preserves-Contr (λ a → B) (λ a → B-is-Contr)
+
+  -- Lemma 3.11.6 (Π preserves contractibility).
+
+  Π-preserves-Contr : {A : 𝓤 ̇ } (P : A → 𝓥 ̇ ) → ((x : A) → isContr (P x)) → isContr (Π P)
+  Π-preserves-Contr P i =  pr₂ (isContr-iff-is-inhabited-Prop (Π P)) ((λ x → pr₁ (i x)) , (Π-preserves-Props P (λ x → pr₂ (pr₁ (isContr-iff-is-inhabited-Prop (P x)) (i x)))))
+
+  -- Corollary (→)
+
+  →-preserves-Contr : (A : 𝓤 ̇) (B : 𝓥 ̇) → isContr B → isContr (A → B)
+  →-preserves-Contr A B B-is-Contr = Π-preserves-Contr (λ a → B) (λ a → B-is-Contr)
 
 
 -- Definition of section, retraction and retract.
@@ -176,7 +178,7 @@ free-left-endpt-is-Contr A a = center , centrality
       ≡⟨ ap (λ - → transport P - y) (linv (i x)) ⟩
     y ∎))
 
-Π-over-Contr-base-is-fib : (A : 𝓤 ̇) (P : A → 𝓥 ̇) → (c : isContr A) → Π P ≃ P (pr₁ c)
+Π-over-Contr-base-is-fib : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (P : A → 𝓥 ̇) → (c : isContr A) → Π P ≃ P (pr₁ c)
 Π-over-Contr-base-is-fib A P (a , i) =
   (λ f → f a) ,
   qinv-to-isequiv (

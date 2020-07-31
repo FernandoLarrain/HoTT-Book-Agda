@@ -1,5 +1,5 @@
 
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -77,17 +77,19 @@ Sets-are-⟨1⟩-types A f x y = Props-are-Sets (x ≡ y) (f x y)
 
 -- Lemma 3.3.5.
 
-isProp-is-Prop : (A : 𝓤 ̇) → isProp (isProp A)
-isProp-is-Prop A f g = funext (λ x → funext (λ y → Props-are-Sets A f x y (f x y) (g x y)))
+module _  ⦃ fe : FunExt ⦄ where
 
-isSet-is-Prop : (A : 𝓤 ̇) → isProp (isSet A)
-isSet-is-Prop A f g =
-  funext (λ a →
-    funext (λ b →
-      funext (λ p →
-        funext (λ q →
-          Sets-are-⟨1⟩-types A f a b p q (f a b p q) (g a b p q)
+  isProp-is-Prop : (A : 𝓤 ̇) → isProp (isProp A)
+  isProp-is-Prop A f g = funext (λ x → funext (λ y → Props-are-Sets A f x y (f x y) (g x y)))
+
+  isSet-is-Prop : (A : 𝓤 ̇) → isProp (isSet A)
+  isSet-is-Prop A f g =
+    funext (λ a →
+      funext (λ b →
+        funext (λ p →
+          funext (λ q →
+            Sets-are-⟨1⟩-types A f a b p q (f a b p q) (g a b p q)
+          )
         )
       )
     )
-  )

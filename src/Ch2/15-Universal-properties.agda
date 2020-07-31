@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
@@ -9,41 +9,42 @@ open import Ch2.9-Π-types-and-funext
 
 module Ch2.15-Universal-properties where
 
+module _ ⦃ fe : FunExt ⦄ where
 
--- Theorem 2.15.2 (Universal mapping property (UMP) of product of types).
+  -- Theorem 2.15.2 (Universal mapping property (UMP) of product of types).
 
-×-UMP : (X : 𝓤 ̇ ) (A : 𝓥 ̇ ) (B : 𝓦 ̇ ) → isequiv {_} {_} {X → A × B} {(X → A) × (X → B)} ⟨ pr₁ ∘_ , pr₂ ∘_ ⟩ 
-×-UMP X A B = qinv-to-isequiv (inverse , (α , β)) where
-  inverse : (X → A) × (X → B) → X → A × B
-  inverse = Σ-induction ⟨_,_⟩
-  α : (λ x → (pr₁ ∘ inverse x) , (pr₂ ∘ inverse x)) ∼ (λ x → x)
-  α (g , h) = refl _
-  β : (λ x → inverse ((pr₁ ∘ x) , (pr₂ ∘ x))) ∼ (λ x → x)
-  β f = funext λ x → ×-η (f x) ⁻¹
-  
+  ×-UMP : (X : 𝓤 ̇) (A : 𝓥 ̇) (B : 𝓦 ̇) → isequiv {_} {_} {X → A × B} {(X → A) × (X → B)} ⟨ pr₁ ∘_ , pr₂ ∘_ ⟩ 
+  ×-UMP X A B = qinv-to-isequiv (inverse , (α , β)) where
+    inverse : (X → A) × (X → B) → X → A × B
+    inverse = Σ-induction ⟨_,_⟩
+    α : (λ x → (pr₁ ∘ inverse x) , (pr₂ ∘ inverse x)) ∼ (λ x → x)
+    α (g , h) = refl _
+    β : (λ x → inverse ((pr₁ ∘ x) , (pr₂ ∘ x))) ∼ (λ x → x)
+    β f = funext λ x → ×-η (f x) ⁻¹
 
--- Theorem 2.15.5 (UMP of product of type families).
 
-dep-×-UMP : (X : 𝓤 ̇ ) (A : X → 𝓥 ̇ ) (B : X → 𝓦 ̇ ) → isequiv {_} {_} {(x : X) → A x × B x} {(Π A) × (Π B)} (λ f → (λ x → pr₁ (f x)), (λ x → pr₂ (f x)))
-dep-×-UMP X A B = qinv-to-isequiv (inverse , (α , β)) where
-  inverse : (Π A) × (Π B) → (x : X) → A x × B x
-  inverse (g , h) x = (g x) , (h x)
-  α : (λ x → (λ x₁ → pr₁ (inverse x x₁)) , (λ x₁ → pr₂ (inverse x x₁))) ∼ (λ x → x)
-  α (g , h) = refl _
-  β : (λ x → inverse ((λ x₁ → pr₁ (x x₁)) , (λ x₁ → pr₂ (x x₁)))) ∼ (λ x → x)
-  β f = funext λ x → Σ-η (f x) ⁻¹
-  
+  -- Theorem 2.15.5 (UMP of product of type families).
 
--- Theorem 2.15.7 (UMP of sum over type families ("Axiom of Choice")).
+  dep-×-UMP : (X : 𝓤 ̇) (A : X → 𝓥 ̇) (B : X → 𝓦 ̇) → isequiv {_} {_} {(x : X) → A x × B x} {(Π A) × (Π B)} (λ f → (λ x → pr₁ (f x)), (λ x → pr₂ (f x)))
+  dep-×-UMP X A B = qinv-to-isequiv (inverse , (α , β)) where
+    inverse : (Π A) × (Π B) → (x : X) → A x × B x
+    inverse (g , h) x = (g x) , (h x)
+    α : (λ x → (λ x₁ → pr₁ (inverse x x₁)) , (λ x₁ → pr₂ (inverse x x₁))) ∼ (λ x → x)
+    α (g , h) = refl _
+    β : (λ x → inverse ((λ x₁ → pr₁ (x x₁)) , (λ x₁ → pr₂ (x x₁)))) ∼ (λ x → x)
+    β f = funext λ x → Σ-η (f x) ⁻¹
 
-dep-Σ-UMP : (X : 𝓤 ̇ ) (A : X → 𝓥 ̇ ) (P : (x : X) → A x → 𝓦 ̇ ) → isequiv {_} {_} {(x : X) → Σ (P x)} {Σ g ꞉ Π A , ((x : X) → P x (g x))} (λ f → (λ x → pr₁ (f x)) , (λ x → pr₂ (f x)))
-dep-Σ-UMP X A P = qinv-to-isequiv (inverse , (α , β)) where
-  inverse : Σ g ꞉ Π A , ((x : X) → P x (g x)) → (x : X) → Σ (P x)
-  inverse (g , h) x = (g x) , (h x)
-  α : (λ x → (λ x₁ → pr₁ (inverse x x₁)) , (λ x₁ → pr₂ (inverse x x₁))) ∼ (λ x → x)
-  α (g , h) = refl _
-  β : (λ x → inverse ((λ x₁ → pr₁ (x x₁)) , (λ x₁ → pr₂ (x x₁)))) ∼ (λ x → x)
-  β f = funext λ x → Σ-η (f x) ⁻¹
+
+  -- Theorem 2.15.7 (UMP of sum over type families ("Axiom of Choice")).
+
+  dep-Σ-UMP : (X : 𝓤 ̇) (A : X → 𝓥 ̇) (P : (x : X) → A x → 𝓦 ̇) → isequiv {_} {_} {(x : X) → Σ (P x)} {Σ g ꞉ Π A , ((x : X) → P x (g x))} (λ f → (λ x → pr₁ (f x)) , (λ x → pr₂ (f x)))
+  dep-Σ-UMP X A P = qinv-to-isequiv (inverse , (α , β)) where
+    inverse : Σ g ꞉ Π A , ((x : X) → P x (g x)) → (x : X) → Σ (P x)
+    inverse (g , h) x = (g x) , (h x)
+    α : (λ x → (λ x₁ → pr₁ (inverse x x₁)) , (λ x₁ → pr₂ (inverse x x₁))) ∼ (λ x → x)
+    α (g , h) = refl _
+    β : (λ x → inverse ((λ x₁ → pr₁ (x x₁)) , (λ x₁ → pr₂ (x x₁)))) ∼ (λ x → x)
+    β f = funext λ x → Σ-η (f x) ⁻¹
 
 
 -- (Generalized) Cartesian-Closure Adjunction

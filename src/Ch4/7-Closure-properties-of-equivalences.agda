@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -17,7 +17,7 @@ module 2-out-of-3 {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B
   -∘ : (isequiv f → isequiv g → isequiv (g ∘ f))
   -∘ ief ieg = pr₂ (f , ief ● g , ieg)
  
-  -∘-is-Prop : isProp (isequiv f → isequiv g → isequiv (g ∘ f))
+  -∘-is-Prop :  ⦃ fe : FunExt ⦄ → isProp (isequiv f → isequiv g → isequiv (g ∘ f))
   -∘-is-Prop = →-preserves-Props _ _ (→-preserves-Props _ _ (ishae-is-Prop _))
 
   first : (isequiv g → isequiv (g ∘ f) → isequiv f)
@@ -34,7 +34,7 @@ module 2-out-of-3 {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B
     isequiv₂ ie∘ 
     ))
   
-  first-is-Prop : isProp (isequiv g → isequiv (g ∘ f) → isequiv f)
+  first-is-Prop : ⦃ fe : FunExt ⦄ → isProp (isequiv g → isequiv (g ∘ f) → isequiv f)
   first-is-Prop = →-preserves-Props _ _ (→-preserves-Props _ _ (ishae-is-Prop _))
   
   second : (isequiv f → isequiv (g ∘ f) → isequiv g)
@@ -50,7 +50,7 @@ module 2-out-of-3 {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B
       b ∎)
     ))
 
-  second-is-Prop : isProp (isequiv f → isequiv (g ∘ f) → isequiv g)
+  second-is-Prop : ⦃ fe : FunExt ⦄ → isProp (isequiv f → isequiv (g ∘ f) → isequiv g)
   second-is-Prop = →-preserves-Props _ _ (→-preserves-Props _ _ (ishae-is-Prop _))
 
 
@@ -79,7 +79,7 @@ dom-section g f (ρ , etc) = section ρ
 
 -- Lemma 4.7.3 (Retractions of maps induce retractions of fibers).
 
-retraction-of-maps-to-fiberwise-retraction : {A : 𝓤 ̇} {B : 𝓥 ̇} {X : 𝓦 ̇} {Y : 𝓣 ̇} (g : A → B) (f : X → Y) → (ρ : g is-retract-of f) → (b : B) → fib g b ◁ fib f (codom-section _ _ ρ b)
+retraction-of-maps-to-fiberwise-retraction : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} {X : 𝓦 ̇} {Y : 𝓣 ̇} (g : A → B) (f : X → Y) → (ρ : g is-retract-of f) → (b : B) → fib g b ◁ fib f (codom-section _ _ ρ b)
 retraction-of-maps-to-fiberwise-retraction {A = A} {B} g f ((r , s , R) , (r' , s' , R') , L , K , H) b = (ψ b) , ((ϕ b) , (retraction-equation b))
 
   where 
@@ -107,7 +107,7 @@ retraction-of-maps-to-fiberwise-retraction {A = A} {B} g f ((r , s , R) , (r' , 
 
 -- Theorem 4.7.4 (A retract of an equivalence is an equivalence).
 
-retract-of-ContrMap-is-ContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} {X : 𝓦 ̇} {Y : 𝓣 ̇} (g : A → B) (f : X → Y) → isContrMap f → g is-retract-of f → isContrMap g
+retract-of-ContrMap-is-ContrMap : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} {X : 𝓦 ̇} {Y : 𝓣 ̇} (g : A → B) (f : X → Y) → isContrMap f → g is-retract-of f → isContrMap g
 retract-of-ContrMap-is-ContrMap g f c ρ y = retract-of-Contr-is-Contr (retraction-of-maps-to-fiberwise-retraction g f ρ y) (c _)
 
 
@@ -147,14 +147,14 @@ module fiberwise-≃-iff-total-≃ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 
     necessity : isContrMap (total f) → ((x : A) → isContrMap (f x))
     necessity t-is-Contr x v = retract-of-Contr-is-Contr (≃-to-◁ (total-fib-≃ f x v)) (t-is-Contr (x , v))
 
-  Hae : (((x : A) → ishae (f x)) → ishae (total f)) × (ishae (total f) → ((x : A) → ishae (f x)))
+  Hae : ⦃ fe : FunExt ⦄ → (((x : A) → ishae (f x)) → ishae (total f)) × (ishae (total f) → ((x : A) → ishae (f x)))
   Hae = sufficiency , necessity where
     sufficiency : ((x : A) → ishae (f x)) → ishae (total f)
     sufficiency f-is-hae = isContrMap-to-ishae (total f) (pr₁ Contr (λ x → ishae-to-isContrMap (f x) (f-is-hae x)))
     necessity : ishae (total f) → ((x : A) → ishae (f x))
     necessity t-is-hae x = isContrMap-to-ishae (f x) (pr₂ Contr (ishae-to-isContrMap (total f) t-is-hae) x)
 
-  Biinv : (((x : A) → biinv (f x)) → biinv (total f)) × (biinv (total f) → ((x : A) → biinv (f x)))
+  Biinv : ⦃ fe : FunExt ⦄ → (((x : A) → biinv (f x)) → biinv (total f)) × (biinv (total f) → ((x : A) → biinv (f x)))
   Biinv = sufficiency , necessity where
     sufficiency : ((x : A) → biinv (f x)) → biinv (total f)
     sufficiency f-is-hae = isContrMap-to-biinv (total f) (pr₁ Contr (λ x → biinv-to-isContrMap (f x) (f-is-hae x)))
