@@ -91,7 +91,7 @@ ishae-to-qinv (g , η , ε , τ) = (g , ε , η)
 -- Definition 4.2.4 (Fiber).
 
 fib : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → B → 𝓤 ⊔ 𝓥 ̇
-fib {A = A} f y = Σ x ꞉ A , (f x ≡ y)
+fib {𝓤} {𝓥} {A} {B} f y = Σ x ꞉ A , (f x ≡ y)
 
 
 -- Lemma 4.2.5 (Path space of fibers).
@@ -108,7 +108,7 @@ path-space-fib {A = A} {f = f} {y} (x , p) (x' , p') =
   where
   bpi : (x' : A) (γ : x ≡ x') → transport (λ x₁ → f x₁ ≡ y) γ p ≡ (ap f γ ⁻¹ ∙ p)
   bpi x' (refl .x') = lu _ -- maybe we can just use transport-funval-≡ with a constant function
-  
+  -- bpi stands for based path-induction. Change name!
 
 -- Theorem 4.2.6 (Haes are contractible maps (see Def. 4.1.1 in Ch4.4-Contractible-fibers)).
 

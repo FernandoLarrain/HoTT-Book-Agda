@@ -22,6 +22,23 @@ idtoeqv {𝓤} {A} {B} p =
   qinv-to-isequiv (ℍ A (λ B p → qinv (coe p)) (qinv-𝑖𝑑 A) B p)
 
 
+-- Univalent universe
+
+is-univalent : (𝓤 : Universe) → 𝓤 ⁺ ̇
+is-univalent 𝓤 = {A B : 𝓤 ̇} → isequiv (idtoeqv {𝓤} {A} {B})
+
+module is-univalent (isuniv : is-univalent 𝓤) {A B : 𝓤 ̇} where
+
+  ua : A ≃ B → A ≡ B
+  ua = qinv₁ (isequiv-to-qinv isuniv)
+
+  idtoeqv-β' : idtoeqv ∘ ua ∼ 𝑖𝑑 (A ≃ B)
+  idtoeqv-β' = qinv₂ (isequiv-to-qinv isuniv)
+
+  idtoeqv-η : ua ∘ idtoeqv ∼ 𝑖𝑑 (A ≡ B)
+  idtoeqv-η = qinv₃ (isequiv-to-qinv isuniv)
+
+
 -- Axiom 2.10.3 (Univalence)
 
 record Univalence : 𝓤ω where
@@ -32,13 +49,14 @@ record Univalence : 𝓤ω where
 
 open Univalence ⦃ ... ⦄ public
 
+
 module _ ⦃ univ : Univalence ⦄ where
 
   -- Univalence axiom, as stated in the book.
 
-  idtoeqv-is-equiv : {A B : 𝓤 ̇} → isequiv (idtoeqv {𝓤} {A} {B})
+  idtoeqv-is-equiv : {𝓤 : Universe} → is-univalent 𝓤
   idtoeqv-is-equiv = qinv-to-isequiv (ua , idtoeqv-β' , idtoeqv-η)
-
+  
   -- Computation rule for univalence (underlying function)
 
   idtoeqv-β : {A B : 𝓤 ̇} → (f : A ≃ B) → coe (ua f) ∼ pr₁ f

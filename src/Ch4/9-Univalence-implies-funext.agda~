@@ -1,0 +1,25 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+
+module Ch4.9-Univalence-implies-funext where
+
+
+-- Definition 4.9.1 (The weak function extensionality principle).
+
+weak-funext : (A : 𝓤 ̇) → (A → 𝓥 ̇) → 𝓤 ⊔ 𝓥 ̇
+weak-funext A P = Π (isContr ∘ P) → isContr (Π P)
+
+
+-- -- Lemma 4.9.2 (→-preserves-codom-≃ is proved in exercise 2.17 using function extensionality).
+
+-- →-preserves-codom-≃' : {𝓤 : Universe} → is-univalent 𝓤 → (X A B : 𝓤 ̇) (e : A ≃ B) → isequiv {𝓤} {𝓤} {X → A} {X → B} (pr₁ e ∘_) 
+-- →-preserves-codom-≃' {𝓤} univ X A B e = transport (λ - → isequiv (- ∘_)) {!!} (lemma (pr₁ univ e)) where
+--   lemma : {A B : 𝓤 ̇} (p : A ≡ B) → isequiv {𝓤} {𝓤} {X → A} {X → B} (pr₁ (idtoeqv p) ∘_)
+--   lemma (refl _) = qinv-to-isequiv (qinv-𝑖𝑑 _)
+
+-- -- ℍ A (λ B p → (X → A) ≃ (X → B)) (id , qinv-to-isequiv (qinv-𝑖𝑑 _)) B (pr₁ univ e)
+
+

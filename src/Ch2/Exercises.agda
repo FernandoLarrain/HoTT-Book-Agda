@@ -169,7 +169,7 @@ module _ ⦃ fe : FunExt ⦄ where
 
   -- The proof of the following lemma does not require tools beyond Ch2, but the book does not use (nor prove) it until Ch4.
 
-  -- Lemma 4.2.8
+  -- Lemma 4.2.8.
 
   pre-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : B → C) → h ∘ f)
   pre-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =

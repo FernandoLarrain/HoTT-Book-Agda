@@ -166,3 +166,15 @@ The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences fro
 * Define equivalence with old 1-type definition
 
 * Use PROP and SET?
+
+* Improve readability of univalence and funext modules
+
+* Change where-lemmas to sublemmas
+
+* Change inhabited prop by pted prop
+
+* Rename idtoeqv-beta
+
+* Prove function extensionality using universe lifting instead of bootstrapping.
+
+* Solve issue with type inference in corollary-4-9-3' with argument isuniv : is-univalent (U \lub V).
