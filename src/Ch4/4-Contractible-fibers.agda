@@ -15,24 +15,22 @@ isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
 isContrMap {B = B} f = (y : B) → isContr (fib f y)
 
 
+-- Theorem 4.4.3 (contractible maps are haes).
+
+isContrMap-to-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → ishae f
+isContrMap-to-ishae f P = g , pr₁ r , ε , pr₂ r
+  where
+  g = (λ y → pr₁ (pr₁ (P y)))
+  ε = (λ y → pr₂ (pr₁ (P y)))
+  r : rcoh f (g , ε)
+  r = fib-to-rcoh f (g , ε) (λ x → pr₂ (P (f x)) (x , refl (f x)))
+
 module _ ⦃ fe : FunExt ⦄ where 
-
-  -- Theorem 4.4.3 (contractible maps are haes).
-
-  isContrMap-to-ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → ishae f
-  isContrMap-to-ishae f P = g , pr₁ r , ε , pr₂ r
-    where
-    g = (λ y → pr₁ (pr₁ (P y)))
-    ε = (λ y → pr₂ (pr₁ (P y)))
-    r : rcoh f (g , ε)
-    r = inv (rcoh-≃-fib f (g , ε)) (λ x → pr₂ (P (f x)) (x , refl (f x)))
-
 
   -- Theorem 4.4.4 (isContrMap is a proposition).
 
   isContrMap-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (isContrMap f)
   isContrMap-is-Prop f = Π-preserves-Props _ (λ y → isContr-is-Prop _)
-
 
   -- Theorem 4.4.5 (isContrMap is equivalent to ishae).
 

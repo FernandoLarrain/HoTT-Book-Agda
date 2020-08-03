@@ -43,21 +43,49 @@ module is-univalent (isuniv : is-univalent 𝓤) {A B : 𝓤 ̇} where
 
 record Univalence : 𝓤ω where
   field
-    ua : {𝓤 : Universe} {A B : 𝓤 ̇} → A ≃ B → A ≡ B
-    idtoeqv-β' : {𝓤 : Universe} {A B : 𝓤 ̇} → idtoeqv ∘ ua ∼ 𝑖𝑑 (A ≃ B)
-    idtoeqv-η : {𝓤 : Universe} {A B : 𝓤 ̇} → ua ∘ idtoeqv ∼ 𝑖𝑑 (A ≡ B)
+    idtoeqv-is-equiv : {𝓤 : Universe} {A B : 𝓤 ̇} → isequiv (idtoeqv {𝓤} {A} {B})
 
 open Univalence ⦃ ... ⦄ public
 
 
 module _ ⦃ univ : Univalence ⦄ where
 
-  -- Univalence axiom, as stated in the book.
+  -- Quasi-inverse of idtoeqv
 
-  idtoeqv-is-equiv : {𝓤 : Universe} → is-univalent 𝓤
-  idtoeqv-is-equiv = qinv-to-isequiv (ua , idtoeqv-β' , idtoeqv-η)
+  ua : {𝓤 : Universe} {A B : 𝓤 ̇} → A ≃ B → A ≡ B
+  ua = qinv₁ (isequiv-to-qinv idtoeqv-is-equiv)
+
+  -- Computation rule
+
+  idtoeqv-β' : {𝓤 : Universe} {A B : 𝓤 ̇} → idtoeqv ∘ ua ∼ 𝑖𝑑 (A ≃ B)
+  idtoeqv-β' = qinv₂ (isequiv-to-qinv idtoeqv-is-equiv)
+
+  -- Uniqueness principle
+
+  idtoeqv-η : {𝓤 : Universe} {A B : 𝓤 ̇} → ua ∘ idtoeqv ∼ 𝑖𝑑 (A ≡ B)
+  idtoeqv-η = qinv₃ (isequiv-to-qinv idtoeqv-is-equiv)
+
+--------------------------------------------------------------------------------
+-- -- Axiom 2.10.3 (Univalence)
+
+-- record Univalence : 𝓤ω where
+--   field
+--     ua : {𝓤 : Universe} {A B : 𝓤 ̇} → A ≃ B → A ≡ B
+--     idtoeqv-β' : {𝓤 : Universe} {A B : 𝓤 ̇} → idtoeqv ∘ ua ∼ 𝑖𝑑 (A ≃ B)
+--     idtoeqv-η : {𝓤 : Universe} {A B : 𝓤 ̇} → ua ∘ idtoeqv ∼ 𝑖𝑑 (A ≡ B)
+
+-- open Univalence ⦃ ... ⦄ public
+
+
+-- module _ ⦃ univ : Univalence ⦄ where
+
+--   -- Univalence axiom, as stated in the book.
+
+--   idtoeqv-is-equiv : {𝓤 : Universe} → is-univalent 𝓤
+--   idtoeqv-is-equiv = qinv-to-isequiv (ua , idtoeqv-β' , idtoeqv-η)
+--------------------------------------------------------------------------------
   
-  -- Computation rule for univalence (underlying function)
+  -- Computation rule (underlying function)
 
   idtoeqv-β : {A B : 𝓤 ̇} → (f : A ≃ B) → coe (ua f) ∼ pr₁ f
   idtoeqv-β f = happly (pr₁ (dpr-≡ (idtoeqv-β' f)))

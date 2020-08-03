@@ -17,29 +17,68 @@ module Ch2.9-Π-types-and-funext where
 happly : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} → f ≡ g → f ∼ g
 happly (refl f) x = refl (f x)
 
+
+-- Pair of universes satisfies function extensionality
+
+hfunext : (𝓤 𝓥 : Universe) → (𝓤 ⊔ 𝓥) ⁺ ̇
+hfunext 𝓤 𝓥 = {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → isequiv (happly {𝓤} {𝓥} {A} {B} {f} {g})  
+
+module hfunext {hfe : hfunext 𝓤 𝓥} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} where
+
+  funext : f ∼ g → f ≡ g
+  funext = qinv₁ (isequiv-to-qinv hfe)
+
+  happly-β : happly ∘ funext ∼ 𝑖𝑑 (f ∼ g)
+  happly-β = qinv₂ (isequiv-to-qinv hfe)
+
+  happly-η : funext ∘ happly ∼ 𝑖𝑑 (f ≡ g)
+  happly-η = qinv₃ (isequiv-to-qinv hfe)
+
+
 -- (ii) Axiom 2.9.3 (Function Extensionality)
 
 record FunExt : 𝓤ω where
   field
-    funext : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → f ∼ g → f ≡ g
-    happly-β : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (h : f ∼ g) → happly (funext h) ∼ h
-    happly-η : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (p : f ≡ g) → funext (happly p) ≡ p
+    happly-is-equiv : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → isequiv (happly {𝓤} {𝓥} {A} {B} {f} {g}) 
 
 open FunExt ⦃ ... ⦄ public
 
-{- 
-Notes: 
-  1. Rather than postulating axioms, we assume them via modules and use instance arguments to take care of all the bookkeeping.
-  2. The actual statement of the axiom is that happly is an equivalence. One can then construct funext and prove the β and η rules. We proceed in the opposite order for practical reasons. 
--}
 
 module _ ⦃ fe : FunExt ⦄ where
 
-  -- The function extensionality axiom, as stated in the book.
+  -- Quasi-inverse
 
-  happly-is-equiv : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → isequiv (happly {𝓤} {𝓥} {A} {B} {f} {g})
-  happly-is-equiv = qinv-to-isequiv (funext , (λ h → funext (happly-β h)) , happly-η)
+  funext : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → f ∼ g → f ≡ g
+  funext = qinv₁ (isequiv-to-qinv happly-is-equiv)
+  
+  happly-β : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (h : f ∼ g) → happly (funext h) ∼ h
+  happly-β h = happly (qinv₂ (isequiv-to-qinv happly-is-equiv) h)
 
+  happly-η : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (p : f ≡ g) → funext (happly p) ≡ p
+  happly-η = qinv₃ (isequiv-to-qinv happly-is-equiv)
+
+--------------------------------------------------------------------------------
+-- record FunExt : 𝓤ω where
+--   field
+--     funext : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → f ∼ g → f ≡ g
+--     happly-β : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (h : f ∼ g) → happly (funext h) ∼ h
+--     happly-η : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (p : f ≡ g) → funext (happly p) ≡ p
+
+-- open FunExt ⦃ ... ⦄ public
+
+-- {- 
+-- Notes: 
+--   1. Rather than postulating axioms, we assume them via modules and use instance arguments to take care of all the bookkeeping.
+--   2. The actual statement of the axiom is that happly is an equivalence. One can then construct funext and prove the β and η rules. We proceed in the opposite order for practical reasons. 
+-- -}
+
+-- module _ ⦃ fe : FunExt ⦄ where
+
+--   -- The function extensionality axiom, as stated in the book.
+
+--   happly-is-equiv : {𝓤 𝓥 : Universe} → hfunext 𝓤 𝓥
+--   happly-is-equiv = qinv-to-isequiv (funext , (λ h → funext (happly-β h)) , happly-η)
+--------------------------------------------------------------------------------
 
   -- Pointwise characterization of refl, _⁻¹ and _∙_.
 

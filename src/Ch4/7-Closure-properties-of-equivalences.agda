@@ -147,7 +147,7 @@ module fiberwise-≃-iff-total-≃ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 
     necessity : isContrMap (total f) → ((x : A) → isContrMap (f x))
     necessity t-is-Contr x v = retract-of-Contr-is-Contr (≃-to-◁ (total-fib-≃ f x v)) (t-is-Contr (x , v))
 
-  Hae : ⦃ fe : FunExt ⦄ → (((x : A) → ishae (f x)) → ishae (total f)) × (ishae (total f) → ((x : A) → ishae (f x)))
+  Hae : (((x : A) → ishae (f x)) → ishae (total f)) × (ishae (total f) → ((x : A) → ishae (f x)))
   Hae = sufficiency , necessity where
     sufficiency : ((x : A) → ishae (f x)) → ishae (total f)
     sufficiency f-is-hae = isContrMap-to-ishae (total f) (pr₁ Contr (λ x → ishae-to-isContrMap (f x) (f-is-hae x)))

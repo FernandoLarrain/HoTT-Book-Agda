@@ -5,25 +5,44 @@ open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.2-Half-adjoint-equivalences
 open import Ch4.4-Contractible-fibers
+open import Ch4.7-Closure-properties-of-equivalences
+
 module Ch4.9-Univalence-implies-funext where
 
 
 -- Definition 4.9.1 (The Weak Function Extensionality Principle).
 
-weak-funext : {A : 𝓤 ̇} → (A → 𝓥 ̇) → 𝓤 ⊔ 𝓥 ̇
-weak-funext P = Π (isContr ∘ P) → isContr (Π P)
+weak-funext : (𝓤 𝓥 : Universe) → (𝓤 ⊔ 𝓥) ⁺ ̇ 
+weak-funext 𝓤 𝓥 = {A : 𝓤 ̇} {P : A → 𝓥 ̇} → Π (isContr ∘ P) → isContr (Π P) 
+
+-- weak-funext' : {A : 𝓤 ̇} → (A → 𝓥 ̇) → 𝓤 ⊔ 𝓥 ̇
+-- weak-funext' P = Π (isContr ∘ P) → isContr (Π P)
+
+-- hfunext' : (𝓤 𝓥 : Universe) → (𝓤 ⊔ 𝓥) ⁺ ̇
+-- hfunext' 𝓤 𝓥 = (A : 𝓤 ̇) (B : A → 𝓥 ̇) (f g : Π B) → isequiv (happly {𝓤} {𝓥} {A} {B} {f} {g})  
+
+-- module hfunext' (hfe : hfunext' 𝓤 𝓥) (A : 𝓤 ̇) (B : A → 𝓥 ̇) (f g : Π B) where
+
+--   funext' : f ∼ g → f ≡ g
+--   funext' = qinv₁ (isequiv-to-qinv (hfe A B f g))
+
+--   happly-β' : happly ∘ funext' ∼ 𝑖𝑑 (f ∼ g)
+--   happly-β' = qinv₂ (isequiv-to-qinv (hfe  A B f g))
+
+--   happly-η' : funext' ∘ happly ∼ 𝑖𝑑 (f ≡ g)
+--   happly-η' = qinv₃ (isequiv-to-qinv (hfe  A B f g))
 
 
--- Definition (Non-dependent Function Extensionality Principle).
+-- -- Definition (Non-dependent Function Extensionality Principle).
 
-non-dep-funext : (𝓤 𝓥 : Universe) → (𝓤 ⊔ 𝓥) ⁺ ̇ 
-non-dep-funext 𝓤 𝓥 = {A : 𝓤 ̇} {B : 𝓥 ̇} {f g : A → B} → f ∼ g → f ≡ g
+-- non-dep-funext : (𝓤 𝓥 : Universe) → (𝓤 ⊔ 𝓥) ⁺ ̇ 
+-- non-dep-funext 𝓤 𝓥 = {A : 𝓤 ̇} {B : 𝓥 ̇} {f g : A → B} → f ∼ g → f ≡ g
 
 
 -- Lemma 4.9.2 (For a proof using function extensionality, see lemma 4.2.8 and exercise 2.17).
 
-→-preserves-codom-≃' : is-univalent 𝓥 → (X : 𝓤 ̇) {A B : 𝓥 ̇} (e : A ≃ B) → isequiv {_} {_} {X → A} {X → B} (pr₁ e ∘_)
-→-preserves-codom-≃' isuniv X {A} {B} e = transport (λ - → isequiv (- ∘_)) (ap pr₁ (𝓤.idtoeqv-β' e)) (ℍ A (λ B p → isequiv (coe p ∘_)) (qinv-to-isequiv (qinv-𝑖𝑑 _)) B (𝓤.ua e)) where module 𝓤 = is-univalent isuniv {A} {B}
+→-preserves-codom-≃' : (𝓥 : Universe) → is-univalent 𝓥 → (X : 𝓤 ̇) {A B : 𝓥 ̇} (e : A ≃ B) → isequiv {_} {_} {X → A} {X → B} (pr₁ e ∘_)
+→-preserves-codom-≃' 𝓥 isuniv X {A} {B} e = transport (λ - → isequiv (- ∘_)) (ap pr₁ (𝓤.idtoeqv-β' e)) (ℍ A (λ B p → isequiv (coe p ∘_)) (qinv-to-isequiv (qinv-𝑖𝑑 _)) B (𝓤.ua e)) where module 𝓤 = is-univalent isuniv {A} {B}
 
 →-preserves-dom-≃' : is-univalent 𝓤 → {A B : 𝓤 ̇} (X : 𝓥 ̇) (e : A ≃ B) → isequiv {_} {_} {B → X} {A → X} (_∘ pr₁ e) 
 →-preserves-dom-≃' isuniv {A} {B} X e = transport (λ - → isequiv (_∘ -)) (ap pr₁ (𝓥.idtoeqv-β' e)) (ℍ A (λ B p → isequiv (_∘ coe p)) (qinv-to-isequiv (qinv-𝑖𝑑 _)) B (𝓥.ua e)) where module 𝓥 = is-univalent isuniv {A} {B}
@@ -31,31 +50,31 @@ non-dep-funext 𝓤 𝓥 = {A : 𝓤 ̇} {B : 𝓥 ̇} {f g : A → B} → f ∼
 
 -- Corollary 4.9.3.
 
-module corollary-4-9-3 (isuniv : is-univalent 𝓤) {A : 𝓤 ̇} {P : A → 𝓤 ̇} (P-is-Contr : Π (isContr ∘ P)) where
+-- module corollary-4-9-3 (isuniv : is-univalent 𝓤) {A : 𝓤 ̇} {P : A → 𝓤 ̇} (P-is-Contr : Π (isContr ∘ P)) where
 
-  post-∘-with-pr₁-is-equiv : isequiv {_} {_} {A → Σ P} {A → A} (pr₁ ∘_)
-  post-∘-with-pr₁-is-equiv = →-preserves-codom-≃' isuniv A (Σ-of-Contr-family-is-base A P P-is-Contr)
+--   post-∘-with-pr₁-is-equiv : isequiv {_} {_} {A → Σ P} {A → A} (pr₁ ∘_)
+--   post-∘-with-pr₁-is-equiv = →-preserves-codom-≃' 𝓤 isuniv A (Σ-of-Contr-family-is-base A P P-is-Contr)
 
-  post-∘-with-pr₁-is-ContrMap : isContrMap {_} {_} {A → Σ P} {A → A} (pr₁ ∘_)
-  post-∘-with-pr₁-is-ContrMap = ishae-to-isContrMap _ post-∘-with-pr₁-is-equiv
+--   post-∘-with-pr₁-is-ContrMap : isContrMap {_} {_} {A → Σ P} {A → A} (pr₁ ∘_)
+--   post-∘-with-pr₁-is-ContrMap = ishae-to-isContrMap _ post-∘-with-pr₁-is-equiv
 
-  δ : A → Σ P -- diagonal map
-  δ x = let y : P x
-            y = pr₁ (P-is-Contr x)
-        in x , y
+-- --   δ : A → Σ P -- diagonal map
+-- --   δ x = let y : P x
+-- --             y = pr₁ (P-is-Contr x)
+-- --         in x , y
 
-  pre-∘-with-diagonal-is-equiv : isequiv {_} {_} {Σ P → A} {A → A} (_∘ δ)
-  pre-∘-with-diagonal-is-equiv = →-preserves-dom-≃' isuniv A (≃-sym (Σ-of-Contr-family-is-base A P P-is-Contr))
+-- --   pre-∘-with-diagonal-is-equiv : isequiv {_} {_} {Σ P → A} {A → A} (_∘ δ)
+-- --   pre-∘-with-diagonal-is-equiv = →-preserves-dom-≃' isuniv A (≃-sym (Σ-of-Contr-family-is-base A P P-is-Contr))
 
-open corollary-4-9-3 public hiding (δ)
+-- open corollary-4-9-3 public --hiding (δ)
 
 
 -- Test
 
-module test (isuniv : is-univalent (𝓤 ⊔ 𝓥)) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (P-is-Contr : Π (isContr ∘ P)) where
+module test (𝓤 𝓥 : Universe) (isuniv : is-univalent (𝓤 ⊔ 𝓥)) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (P-is-Contr : Π (isContr ∘ P)) where
 
   post-∘-with-pr₁-is-equiv'' : isequiv {_} {_} {A → Σ P} {A → Lift 𝓥 A} ((lift ∘ pr₁) ∘_)
-  post-∘-with-pr₁-is-equiv'' = →-preserves-codom-≃' {𝓤 ⊔ 𝓥} {𝓤} isuniv A {Σ P} {Lift 𝓥 A} (Σ-of-Contr-family-is-base A P P-is-Contr ● lift , (qinv-to-isequiv (lower , ((hrefl _) , (hrefl _)))))
+  post-∘-with-pr₁-is-equiv'' =  →-preserves-codom-≃' (𝓤 ⊔ 𝓥) isuniv A {Σ P} {Lift 𝓥 A} (Σ-of-Contr-family-is-base A P P-is-Contr ● lift , (qinv-to-isequiv (lower , ((hrefl _) , (hrefl _)))))
 
   post-∘-with-pr₁-is-ContrMap'' : isContrMap {_} {_} {A → Σ P} {A → Lift 𝓥 A} ((lift ∘ pr₁) ∘_)
   post-∘-with-pr₁-is-ContrMap'' = ishae-to-isContrMap _ post-∘-with-pr₁-is-equiv''
@@ -64,121 +83,150 @@ module test (isuniv : is-univalent (𝓤 ⊔ 𝓥)) {A : 𝓤 ̇} {P : A → �
 --
 
 
-module bootstrapping where
+-- module bootstrapping where
 
-  {- This module generalizes the previous lemmas to be able obtain inter-universal function extensionality. The proof of the book works within a universe and would only let us obtain intra-universal function extensionality because we don't have strict cumulativity of universes. -}
+--   {- This module generalizes the previous lemmas to be able obtain inter-universal function extensionality. The proof of the book works within a universe and would only let us obtain intra-universal function extensionality because we don't have strict cumulativity of universes. -}
 
-  -- Univalence implies non-dependent function extensionality
+--   -- Univalence implies non-dependent function extensionality
 
-  univalence-to-non-dep-funext : is-univalent 𝓥 → non-dep-funext 𝓤 𝓥
-  univalence-to-non-dep-funext {𝓥} {𝓤} isuniv {A} {B} {f} {g} h = ap (_∘ (λ x → f x , g x , h x)) q where
+--   univalence-to-non-dep-funext : is-univalent 𝓥 → non-dep-funext 𝓤 𝓥
+--   univalence-to-non-dep-funext {𝓥} {𝓤} isuniv {A} {B} {f} {g} h = ap (_∘ (λ x → f x , g x , h x)) q where
 
-    -- Type family for dual of corollary 4.9.3
+--     -- Type family for dual of corollary 4.9.3
 
-    P : B → 𝓥 ̇
-    P x = Σ y ꞉ B , x ≡ y
+--     P : B → 𝓥 ̇
+--     P x = Σ y ꞉ B , x ≡ y
 
-    -- Instantiation of dual of corollary 4.9.3
+--     -- Instantiation of dual of corollary 4.9.3
 
-    open module M = corollary-4-9-3 isuniv {B} {P} (free-right-endpt-is-Contr B) using (δ) renaming (pre-∘-with-diagonal-is-equiv to α-is-equiv)
+--     open module M = corollary-4-9-3 isuniv {B} {P} (free-right-endpt-is-Contr B) using (δ) renaming (pre-∘-with-diagonal-is-equiv to α-is-equiv)
 
-    α : (Σ P → B) → (B → B)
-    α = _∘ δ
-    α⁻¹ = isequiv₁ α-is-equiv
-    η = isequiv₂ α-is-equiv
-    ε = isequiv₃ α-is-equiv
+--     α : (Σ P → B) → (B → B)
+--     α = _∘ δ
+--     α⁻¹ = isequiv₁ α-is-equiv
+--     η = isequiv₂ α-is-equiv
+--     ε = isequiv₃ α-is-equiv
 
-    -- Application of equivalence to obtain path
+--     -- Application of equivalence to obtain path
 
-    π₁ : Σ P → B
-    π₁ (x , y , p) = x
-    π₂ : Σ P → B
-    π₂ (x , y , p) = y
-    q : π₁ ≡ π₂
-    q = η π₁ ⁻¹ ∙ ap α⁻¹ (refl _) ∙ η π₂
+--     π₁ : Σ P → B
+--     π₁ (x , y , p) = x
+--     π₂ : Σ P → B
+--     π₂ (x , y , p) = y
+--     q : π₁ ≡ π₂
+--     q = η π₁ ⁻¹ ∙ ap α⁻¹ (refl _) ∙ η π₂
 
 
-  -- Boostrapping:
+--   -- Boostrapping:
 
-  -- 1. Corollary 4.9.2 generalized
+--   -- 1. Corollary 4.9.2 generalized
 
-  →-preserves-codom-≃'' : is-univalent 𝓥 → is-univalent 𝓦 → (X : 𝓤 ̇) {A : 𝓥 ̇} {B : 𝓦 ̇} (e : A ≃ B) → isequiv {_} {_} {X → A} {X → B} (pr₁ e ∘_)  
-  →-preserves-codom-≃'' {𝓥} {𝓦} {𝓤} 𝓥-is-univ 𝓦-is-univ X (f , g , η , ε , τ) = qinv-to-isequiv (
-    (g ∘_) ,
-    (λ h → funext₂ (ε ∘ h)) ,
-    λ h → funext₁ (η ∘ h)
-    )
-    where
-    funext₁ : non-dep-funext 𝓤 𝓥
-    funext₁ = univalence-to-non-dep-funext 𝓥-is-univ
-    funext₂ : non-dep-funext 𝓤 𝓦
-    funext₂ = univalence-to-non-dep-funext 𝓦-is-univ
+--   →-preserves-codom-≃'' : is-univalent 𝓥 → is-univalent 𝓦 → (X : 𝓤 ̇) {A : 𝓥 ̇} {B : 𝓦 ̇} (e : A ≃ B) → isequiv {_} {_} {X → A} {X → B} (pr₁ e ∘_)  
+--   →-preserves-codom-≃'' {𝓥} {𝓦} {𝓤} 𝓥-is-univ 𝓦-is-univ X (f , g , η , ε , τ) = qinv-to-isequiv (
+--     (g ∘_) ,
+--     (λ h → funext₂ (ε ∘ h)) ,
+--     λ h → funext₁ (η ∘ h)
+--     )
+--     where
+--     funext₁ : non-dep-funext 𝓤 𝓥
+--     funext₁ = univalence-to-non-dep-funext 𝓥-is-univ
+--     funext₂ : non-dep-funext 𝓤 𝓦
+--     funext₂ = univalence-to-non-dep-funext 𝓦-is-univ
 
-  →-preserves-dom-≃'' : is-univalent 𝓦 → {A : 𝓤 ̇} {B : 𝓥 ̇} (X : 𝓦 ̇) (e : A ≃ B) → isequiv {_} {_} {B → X} {A → X} (_∘ pr₁ e)  
-  →-preserves-dom-≃'' {𝓦} {𝓤} {𝓥} 𝓦-is-univ X (f , g , η , ε , τ) =
-    let funext' : (𝓤 : Universe) → non-dep-funext 𝓤 𝓦
-        funext' 𝓤 = univalence-to-non-dep-funext 𝓦-is-univ
-    in qinv-to-isequiv (
-    _∘ g ,
-    (λ h → funext' 𝓤 (λ x → ap h (η x))) ,
-    λ h → funext' 𝓥 (λ x → ap h (ε x))
-    )
+--   →-preserves-dom-≃'' : is-univalent 𝓦 → {A : 𝓤 ̇} {B : 𝓥 ̇} (X : 𝓦 ̇) (e : A ≃ B) → isequiv {_} {_} {B → X} {A → X} (_∘ pr₁ e)  
+--   →-preserves-dom-≃'' {𝓦} {𝓤} {𝓥} 𝓦-is-univ X (f , g , η , ε , τ) =
+--     let funext' : (𝓤 : Universe) → non-dep-funext 𝓤 𝓦
+--         funext' 𝓤 = univalence-to-non-dep-funext 𝓦-is-univ
+--     in qinv-to-isequiv (
+--     _∘ g ,
+--     (λ h → funext' 𝓤 (λ x → ap h (η x))) ,
+--     λ h → funext' 𝓥 (λ x → ap h (ε x))
+--     )
 
-  -- 2. Corollary 4.9.3 generalized
+--   -- 2. Corollary 4.9.3 generalized
 
-  module corollary-4-9-3' {𝓤 𝓥 : Universe} (isuniv₁ : is-univalent 𝓤) (isuniv₂ : is-univalent (𝓤 ⊔ 𝓥)) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (P-is-Contr : Π (isContr ∘ P)) where
+--   module corollary-4-9-3' {𝓤 𝓥 : Universe} (isuniv₁ : is-univalent 𝓤) (isuniv₂ : is-univalent (𝓤 ⊔ 𝓥)) {A : 𝓤 ̇} {P : A → 𝓥 ̇} (P-is-Contr : Π (isContr ∘ P)) where
 
-    post-∘-with-pr₁-is-equiv' : isequiv {_} {_} {A → Σ P} {A → A} (pr₁ ∘_)
-    post-∘-with-pr₁-is-equiv' = →-preserves-codom-≃'' {𝓤 ⊔ 𝓥} {𝓤} {𝓤} isuniv₂ isuniv₁ A {Σ P} {A} (Σ-of-Contr-family-is-base A P P-is-Contr)
+--     post-∘-with-pr₁-is-equiv' : isequiv {_} {_} {A → Σ P} {A → A} (pr₁ ∘_)
+--     post-∘-with-pr₁-is-equiv' = →-preserves-codom-≃'' {𝓤 ⊔ 𝓥} {𝓤} {𝓤} isuniv₂ isuniv₁ A {Σ P} {A} (Σ-of-Contr-family-is-base A P P-is-Contr)
 
-    post-∘-with-pr₁-is-ContrMap' : isContrMap {_} {_} {A → Σ P} {A → A} (pr₁ ∘_)
-    post-∘-with-pr₁-is-ContrMap' = ishae-to-isContrMap _ post-∘-with-pr₁-is-equiv'
+--     post-∘-with-pr₁-is-ContrMap' : isContrMap {_} {_} {A → Σ P} {A → A} (pr₁ ∘_)
+--     post-∘-with-pr₁-is-ContrMap' = ishae-to-isContrMap _ post-∘-with-pr₁-is-equiv'
 
-    -- Dual version of the corollary:
+--     -- Dual version of the corollary:
 
-    δ : A → Σ P -- diagonal map
-    δ x = let y : P x
-              y = pr₁ (P-is-Contr x)
-          in x , y
+--     δ : A → Σ P -- diagonal map
+--     δ x = let y : P x
+--               y = pr₁ (P-is-Contr x)
+--           in x , y
 
-    pre-∘-with-diagonal-is-equiv' : isequiv {_} {_} {Σ P → A} {A → A} (_∘ δ)
-    pre-∘-with-diagonal-is-equiv' = →-preserves-dom-≃'' isuniv₁ A (≃-sym (Σ-of-Contr-family-is-base A P P-is-Contr))
+--     pre-∘-with-diagonal-is-equiv' : isequiv {_} {_} {Σ P → A} {A → A} (_∘ δ)
+--     pre-∘-with-diagonal-is-equiv' = →-preserves-dom-≃'' isuniv₁ A (≃-sym (Σ-of-Contr-family-is-base A P P-is-Contr))
 
-  open corollary-4-9-3' public hiding (δ)
+--   open corollary-4-9-3' public hiding (δ)
 
-open bootstrapping public
+-- open bootstrapping public
 
 
 -- Theorem 4.9.4 (Univalence implies weak function extensionality)
 
-univalence-to-weak-funext : {𝓤 𝓥 : Universe} → is-univalent 𝓤 → is-univalent (𝓤 ⊔ 𝓥) → {A : 𝓤 ̇} (P : A → 𝓥 ̇) → weak-funext P  
-univalence-to-weak-funext {𝓤} {𝓥} isuniv₁ isuniv₂ {A} P P-is-Contr = retract-of-Contr-is-Contr (ψ , (ϕ , (hrefl _))) (α-is-ContrMap id)
-  where
-  α : (A → Σ P) → (A → A) 
-  α = pr₁ ∘_
-  α-is-ContrMap : isContrMap α
-  α-is-ContrMap = post-∘-with-pr₁-is-ContrMap' {𝓤} {𝓥} isuniv₁ isuniv₂ P-is-Contr 
-  ϕ : Π P → fib α id
-  ϕ f = (λ x → x , f x) , (refl _)
-  ψ : fib α id → Π P
-  ψ (g , p) x = transport P (happly p x) (pr₂ (g x))
+-- univalence-to-weak-funext' : {𝓤 𝓥 : Universe} → is-univalent 𝓤 → is-univalent (𝓤 ⊔ 𝓥) → {A : 𝓤 ̇} (P : A → 𝓥 ̇) → weak-funext' P  
+-- univalence-to-weak-funext' {𝓤} {𝓥} isuniv₁ isuniv₂ {A} P P-is-Contr = retract-of-Contr-is-Contr (ψ , (ϕ , (hrefl _))) (α-is-ContrMap id)
+--   where
+--   α : (A → Σ P) → (A → A) 
+--   α = pr₁ ∘_
+--   α-is-ContrMap : isContrMap α
+--   α-is-ContrMap = post-∘-with-pr₁-is-ContrMap' {𝓤} {𝓥} isuniv₁ isuniv₂ P-is-Contr 
+--   ϕ : Π P → fib α id
+--   ϕ f = (λ x → x , f x) , (refl _)
+--   ψ : fib α id → Π P
+--   ψ (g , p) x = transport P (happly p x) (pr₂ (g x))
 
 
-univalence-to-weak-funext' : {𝓤 𝓥 : Universe} → is-univalent (𝓤 ⊔ 𝓥) → {A : 𝓤 ̇} (P : A → 𝓥 ̇) → weak-funext P  
-univalence-to-weak-funext' {𝓤} {𝓥} isuniv {A} P P-is-Contr = retract-of-Contr-is-Contr (ψ , ϕ , hrefl _) (α-is-ContrMap lift)
+univalence-to-weak-funext : (𝓤 𝓥 : Universe) → is-univalent (𝓤 ⊔ 𝓥) → weak-funext 𝓤 𝓥
+univalence-to-weak-funext 𝓤 𝓥 isuniv {A} {P} P-is-Contr = retract-of-Contr-is-Contr (ψ , ϕ , hrefl _) (α-is-ContrMap lift)
   where
   α : (A → Σ P) → (A → Lift 𝓥 A)
   α = (lift ∘ pr₁) ∘_
   α-is-ContrMap : isContrMap α
-  α-is-ContrMap = test.post-∘-with-pr₁-is-ContrMap'' {𝓤} {𝓥} isuniv P-is-Contr 
+  α-is-ContrMap = test.post-∘-with-pr₁-is-ContrMap'' 𝓤 𝓥 isuniv P-is-Contr 
   ϕ : Π P → fib α lift
   ϕ f = (λ x → x , f x) , (refl _)
   ψ : fib α lift → Π P
   ψ (g , p) x = transport P (ap lower (happly p x)) (pr₂ (g x))
 
 
-
 -- Theorem 4.9.5. (Weak function extensionality implies function extensionality)
 
-weak-funext-to-funext : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {f g : Π P} → isequiv (happly {𝓤} {𝓥} {A} {P} {f} {g})
-weak-funext-to-funext = {!!}
+weak-funext-to-funext : (𝓤 𝓥 : Universe) → weak-funext 𝓤 𝓥 → hfunext 𝓤 𝓥
+
+-- First, we show the retract version of theorem 2.15.7:
+
+dep-Σ-UMP' : (X : 𝓤 ̇) (A : X → 𝓥 ̇) (P : (x : X) → A x → 𝓦 ̇) → (Σ g ꞉ Π A , ((x : X) → P x (g x))) ◁ ((x : X) → Σ (P x))
+dep-Σ-UMP' X A P =
+  (λ f → (λ x → pr₁ (f x)) , (λ x → pr₂ (f x))) ,
+  Σ-induction (λ g h x → g x , h x) ,
+  hrefl _
+
+-- Second, we prove theorem 4.9.5:
+
+weak-funext-to-funext 𝓤 𝓥 wfe {A} {P} {f} {g} = fourth g where
+  first : (Σ g ꞉ Π P , f ∼ g) ◁ ((x : A) → Σ u ꞉ P x , f x ≡ u)
+  first = dep-Σ-UMP' A P (λ x u → f x ≡ u)
+  second : isContr (Σ g ꞉ Π P , f ∼ g)
+  second = retract-of-Contr-is-Contr first (wfe (λ x → free-right-endpt-is-Contr (P x) (f x)))
+  tot-happly : (Σ g ꞉ Π P , f ≡ g) → Σ g ꞉ Π P , f ∼ g
+  tot-happly = total (λ g  → happly {𝓤} {𝓥} {A} {P} {f} {g})
+  third : isequiv (tot-happly)
+  third = map-between-Contrs-is-equiv tot-happly (free-right-endpt-is-Contr _ f) second
+  fourth : (g : Π P) → ishae (happly {𝓤} {𝓥} {A} {P} {f} {g})
+  fourth = pr₂ (fiberwise-≃-iff-total-≃.Hae (λ g → happly {𝓤} {𝓥} {A} {P} {f} {g})) third 
+
+
+-- Global univalence implies golbal function extensionality
+
+module _ ⦃ univ : Univalence ⦄ where
+
+  instance
+    global-funext : FunExt
+    FunExt.happly-is-equiv global-funext {𝓤} {𝓥} = weak-funext-to-funext 𝓤 𝓥 (univalence-to-weak-funext 𝓤 𝓥 (idtoeqv-is-equiv ⦃ univ ⦄ {𝓤 ⊔ 𝓥}))

@@ -169,26 +169,37 @@ rcoh : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → has-rinv f → 𝓤 ⊔ �
 rcoh {A = A} f (g , ε) = Σ η ꞉ (g ∘ f ∼ id) , ((x : A) → ap f (η x) ≡ ε (f x))
 
 
+-- Lemma 4.2.11 (Characterization of coherence data in terms of fibers).
+
+module coh-≃-fib {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) where
+
+  fib-to-rcoh : (r : has-rinv f) → ((x : A) → Id (fib f (f x)) (pr₁ r (f x) , pr₂ r (f x)) (x , refl (f x))) →  rcoh f r
+  fib-to-rcoh (g , ε) h = (λ x → pr₁ (k x)) , (λ x → ru _ ∙ pr₂ (k x))
+    where
+    k : (x : A) → Σ p ꞉ g (f x) ≡ x , (ap f p ∙ refl (f x) ≡ ε (f x))
+    k = λ x → pr₁ (path-space-fib _ _) (h x)
+
+  module _ ⦃ fe : FunExt ⦄ where  
+
+    lcoh-≃-fib : (l : has-linv f) → lcoh f l ≃ ((y : B) → Id (fib (pr₁ l) (pr₁ l y)) (f (pr₁ l y) , pr₂ l (pr₁ l y)) (y , refl (pr₁ l y)))
+    lcoh-≃-fib (g , η) = ≃-sym (Π-preserves-family-≃ by-path-space-fib ● choice-fun , dep-Σ-UMP _ _ _)
+      where  
+      by-path-space-fib : (y : B) → (Id (fib g (g y)) (f (g y) , η (g y)) (y , refl (g y))) ≃ (Σ γ ꞉ (f (g y) ≡ y) , (ap g (γ) ≡ η (g y))) 
+      by-path-space-fib y = path-space-fib (f (g y) , η (g y)) (y , refl (g y)) ● Σ-preserves-family-≃ (λ γ → (ru (ap g γ) ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) 
+      choice-fun : Π (λ y → Σ λ γ → ap g γ ≡ η (g y)) → Σ (λ Γ → Π (λ y → ap g (Γ y) ≡ η (g y)))  
+      choice-fun = λ F → (λ y → pr₁ (F y)) , λ y → pr₂ (F y)
+
+    rcoh-≃-fib : (r : has-rinv f) → rcoh f r ≃ ((x : A) → Id (fib f (f x)) (pr₁ r (f x) , pr₂ r (f x)) (x , refl (f x)))
+    rcoh-≃-fib (g , ε) = ≃-sym (Π-preserves-family-≃ by-path-space-fib ● choice-fun , dep-Σ-UMP _ _ _)
+      where  
+      by-path-space-fib : (x : A) → (Id (fib f (f x)) (g (f x) , ε (f x)) (x , refl (f x))) ≃ (Σ γ ꞉ (g (f x) ≡ x) , (ap f (γ) ≡ ε (f x))) 
+      by-path-space-fib x = path-space-fib (g (f x) , ε (f x)) (x , refl (f x)) ● Σ-preserves-family-≃ (λ γ → (ru (ap f γ) ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) 
+      choice-fun : Π (λ x → Σ λ γ → ap f γ ≡ ε (f x)) → Σ (λ Γ → Π (λ x → ap f (Γ x) ≡ ε (f x)))  
+      choice-fun = λ F → (λ x → pr₁ (F x)) , λ x → pr₂ (F x)
+
+open coh-≃-fib public 
+
 module _ ⦃ fe : FunExt ⦄ where
-
-  -- Lemma 4.2.11 (Characterization of coherence data in terms of fibers).
-
-  lcoh-≃-fib : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → (l : has-linv f) → lcoh f l ≃ ((y : B) → Id (fib (pr₁ l) (pr₁ l y)) (f (pr₁ l y) , pr₂ l (pr₁ l y)) (y , refl (pr₁ l y)))
-  lcoh-≃-fib {B = B} f (g , η) = ≃-sym (Π-preserves-family-≃ by-path-space-fib ● choice-fun , dep-Σ-UMP _ _ _)
-    where  
-    by-path-space-fib : (y : B) → (Id (fib g (g y)) (f (g y) , η (g y)) (y , refl (g y))) ≃ (Σ γ ꞉ (f (g y) ≡ y) , (ap g (γ) ≡ η (g y))) 
-    by-path-space-fib y = path-space-fib (f (g y) , η (g y)) (y , refl (g y)) ● Σ-preserves-family-≃ (λ γ → (ru (ap g γ) ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) 
-    choice-fun : Π (λ y → Σ λ γ → ap g γ ≡ η (g y)) → Σ (λ Γ → Π (λ y → ap g (Γ y) ≡ η (g y)))  
-    choice-fun = λ F → (λ y → pr₁ (F y)) , λ y → pr₂ (F y)
-
-  rcoh-≃-fib : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → (r : has-rinv f) → rcoh f r ≃ ((x : A) → Id (fib f (f x)) (pr₁ r (f x) , pr₂ r (f x)) (x , refl (f x)))
-  rcoh-≃-fib {A = A} f (g , ε) = ≃-sym (Π-preserves-family-≃ by-path-space-fib ● choice-fun , dep-Σ-UMP _ _ _)
-    where  
-    by-path-space-fib : (x : A) → (Id (fib f (f x)) (g (f x) , ε (f x)) (x , refl (f x))) ≃ (Σ γ ꞉ (g (f x) ≡ x) , (ap f (γ) ≡ ε (f x))) 
-    by-path-space-fib x = path-space-fib (g (f x) , ε (f x)) (x , refl (f x)) ● Σ-preserves-family-≃ (λ γ → (ru (ap f γ) ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) 
-    choice-fun : Π (λ x → Σ λ γ → ap f γ ≡ ε (f x)) → Σ (λ Γ → Π (λ x → ap f (Γ x) ≡ ε (f x)))  
-    choice-fun = λ F → (λ x → pr₁ (F x)) , λ x → pr₂ (F x)
- 
 
   -- Lemma 4.2.12 (Right coherence-data of haes is contractible)
 
