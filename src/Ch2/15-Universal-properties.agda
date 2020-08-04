@@ -62,5 +62,19 @@ GCCAdj A B C = curry , qinv-to-isequiv (
 pb : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} → (A → C) → (B → C) → (𝓤 ⊔ 𝓥 ⊔ 𝓦) ̇
 pb {𝓤} {𝓥} {𝓦} {A} {B} {C} f g = Σ (λ a → Σ (λ b → f a ≡ g b))
 
+module pb {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → C) (g : B → C) where
+
+  pb₁ : pb f g → A
+  pb₁ (a , b , p) = a
+
+  pb₂ : pb f g → B
+  pb₂ (a , b , p) = b
+
+  pb-comm : f ∘ pb₁ ∼ g ∘ pb₂
+  pb-comm (a , b , p) = p
+
+open pb public
+
 _×⟨_⟩_ : (A : 𝓤 ̇) (C : 𝓦 ̇) (B : 𝓥 ̇) → (A → C) → (B → C) → (𝓤 ⊔ 𝓥 ⊔ 𝓦) ̇
 (A ×⟨ C ⟩ B) f g = pb f g
+

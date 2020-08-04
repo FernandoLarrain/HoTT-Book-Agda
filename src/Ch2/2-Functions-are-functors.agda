@@ -36,6 +36,7 @@ ap-∘ f g (refl x) = refl (refl (g (f x)))
 ap-id : {A : 𝓤 ̇} {x y : A} (p : x ≡ y) → ap id p ≡ p
 ap-id (refl x) = refl (refl x)
 
-
+ap-const-fun : {A : 𝓤 ̇} {B : 𝓥 ̇} {x y : A} (b : B) (p : x ≡ y) → ap (λ - → b) p ≡ refl b
+ap-const-fun b (refl _) = refl _
 
 

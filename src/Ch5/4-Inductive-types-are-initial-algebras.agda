@@ -38,7 +38,7 @@ C ℕAlg-≅ D = Σ f ꞉ ℕHom C D , Σ g ꞉ ℕHom D C , (ℕHom-comp D C D 
 ℕAlg-≅-to-≃ ((f , f-is-hom) , (g , g-is-hom) , p , q) with dpr-≡ p | dpr-≡ q
 ... | (p' , p-etc) | (q' , q-etc) = f , qinv-to-isequiv (g , (happly p' , happly q'))
 
-ℕAlg-≅-to-≡ : {C D : ℕAlg 𝓤} → C ℕAlg-≅ D → C ≡ D
+ℕAlg-≅-to-≡ : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ {C D : ℕAlg 𝓤} → C ℕAlg-≅ D → C ≡ D
 ℕAlg-≅-to-≡ {𝓤} {C , c₀ , cs} {D , d₀ , ds} ((f , p , α) , (g , q , β) , p' , q') = dpair-≡ (carrier-≡ , (transport-pair id (λ X → X → X) carrier-≡ (c₀ , cs) ∙ pair-≡ (zero-≡ , succ-≡))) where
   carrier-≃ : C ≃ D
   carrier-≃ = ℕAlg-≅-to-≃ ((f , p , α) , (g , q , β) , p' , q')
@@ -55,7 +55,7 @@ C ℕAlg-≅ D = Σ f ꞉ ℕHom C D , Σ g ꞉ ℕHom D C , (ℕHom-comp D C D 
 isHinit-ℕ : ℕAlg 𝓤 → 𝓤 ⁺ ̇
 isHinit-ℕ {𝓤} I = (C : ℕAlg 𝓤) → isContr (ℕHom I C) 
 
-isHinit-ℕ-is-Prop : (I : ℕAlg 𝓤) → isProp (isHinit-ℕ I)
+isHinit-ℕ-is-Prop : ⦃ fe : FunExt ⦄ (I : ℕAlg 𝓤) → isProp (isHinit-ℕ I)
 isHinit-ℕ-is-Prop I = Π-preserves-Props _ (λ C → isContr-is-Prop _)
 
 Hinit-ℕAlg : (𝓤 : Universe) → 𝓤 ⁺ ̇
@@ -64,15 +64,15 @@ Hinit-ℕAlg 𝓤 = Σ C ꞉ ℕAlg 𝓤 , isHinit-ℕ C
 
 -- Theorem 5.4.4 (h-inital ℕ-algebras are equal).
 
-Hinit-ℕAlg-is-Prop : isProp (Hinit-ℕAlg 𝓤)
+Hinit-ℕAlg-is-Prop : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → isProp (Hinit-ℕAlg 𝓤)
 Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
   let I = (UI , i₀ , is)
       J = (UJ , j₀ , js)
   in Σ-over-predicate isHinit-ℕ-is-Prop _ _ (ℕAlg-≅-to-≡ (
   pr₁ (i J) ,
   pr₁ (j I) ,
-  pr₂ (pr₁ (isContr-iff-is-inhabited-Prop (ℕHom J J)) (j J)) _ _ ,
-  pr₂ (pr₁ (isContr-iff-is-inhabited-Prop (ℕHom I I)) (i I)) _ _
+  pr₂ (pr₁ isContr-iff-is-inhabited-Prop  (j J)) _ _ ,
+  pr₂ (pr₁ isContr-iff-is-inhabited-Prop (i I)) _ _
   ))
 
 

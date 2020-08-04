@@ -65,6 +65,9 @@ open import Ch3.4-Classical-vs-intuitionistic-logic public
 open import Ch3.5-Subsets-and-prop-resizing public
 open import Ch3.6-The-logic-of-mere-props public
 open import Ch3.7-Propositional-truncation public
+-- infix 0 ∥_∥
+-- infixl 20 _∨_
+-- infixr -1 -∃
 open import Ch3.9-The-pple-of-unique-choice public
 open import Ch3.11-Contractibility public
 open import Ch3.Exercises public
@@ -81,12 +84,12 @@ open import Ch4.7-Closure-properties-of-equivalences public
 open import Ch4.8-The-object-classifier public
 open import Ch4.9-Univalence-implies-funext public
 
--- -- Chapter 5
+-- Chapter 5
 
--- open import Ch5.1-Introduction-to-inductive-types public
--- open import Ch5.3-W-types public
--- open import Ch5.4-Inductive-types-are-initial-algebras public
--- open import Ch5.8-Id-types-and-id-systems public
+open import Ch5.1-Introduction-to-inductive-types public
+open import Ch5.3-W-types public
+open import Ch5.4-Inductive-types-are-initial-algebras public
+open import Ch5.8-Id-types-and-id-systems public
 
 
 -- -- Chapter 6
@@ -102,6 +105,6 @@ open import Ch4.9-Univalence-implies-funext public
 
 -- -- Chapter 7
 
--- open import Ch7.1-Definition-of-n-types public
+open import Ch7.1-Definition-of-n-types public
 -- open import Ch7.2-UIP-and-Hedberg's-theorem public
 -- open import Ch7.3-Truncations public

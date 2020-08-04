@@ -17,15 +17,15 @@ isContr A = Σ a ꞉ A , (Π x ꞉ A , (a ≡ x))
 
 -- Lemma 3.11.3 (Contractible iff inhabited proposition iff 𝟙).
 
-isContr-iff-is-inhabited-Prop : (A : 𝓤 ̇ ) → (isContr A → A × isProp A) × (A × isProp A → isContr A)
-isContr-iff-is-inhabited-Prop A = sufficiency , necessity where
+isContr-iff-is-inhabited-Prop : {A : 𝓤 ̇} → (isContr A ⇔ (A × isProp A))
+isContr-iff-is-inhabited-Prop {𝓤} {A} = sufficiency , necessity where
   sufficiency : isContr A → A × isProp A
   sufficiency (a , c) = a , λ x y → c x ⁻¹ ∙ c y
   necessity : A × isProp A → isContr A
   necessity (a , i) = a , λ x → i a x
 
-is-inhabited-Prop-iff-is-𝟙 : (A : 𝓤 ̇ ) → (A × isProp A → A ≃ 𝟙) × (A ≃ 𝟙 → A × isProp A)
-is-inhabited-Prop-iff-is-𝟙 A = sufficiency , necessity where
+is-inhabited-Prop-iff-is-𝟙 : {A : 𝓤 ̇} → ((A × isProp A) ⇔ (A ≃ 𝟙))
+is-inhabited-Prop-iff-is-𝟙 {𝓤} {A} = sufficiency , necessity where
   sufficiency : A × isProp A → A ≃ 𝟙
   sufficiency (a , i) = inhabited-Prop-is-𝟙 i a
   necessity : A ≃ 𝟙 → A × isProp A
@@ -41,47 +41,47 @@ is-inhabited-Prop-iff-is-𝟙 A = sufficiency , necessity where
         ≡⟨ α y ⟩
       y ∎
 
-isContr-iff-is-𝟙 : (A : 𝓤 ̇) → (isContr A → A ≃ 𝟙) × (A ≃ 𝟙 → isContr A)
-isContr-iff-is-𝟙 A = sufficiency , necessity where
-  sufficiency = pr₁ (is-inhabited-Prop-iff-is-𝟙 A) ∘ pr₁ (isContr-iff-is-inhabited-Prop A)
-  necessity =  pr₂ (isContr-iff-is-inhabited-Prop A) ∘ pr₂ (is-inhabited-Prop-iff-is-𝟙 A)
+isContr-iff-is-𝟙 : {A : 𝓤 ̇} → (isContr A ⇔ (A ≃ 𝟙))
+isContr-iff-is-𝟙 {𝓤} {A} = sufficiency , necessity where
+  sufficiency = pr₁ is-inhabited-Prop-iff-is-𝟙 ∘ pr₁ isContr-iff-is-inhabited-Prop
+  necessity =  pr₂ isContr-iff-is-inhabited-Prop ∘ pr₂ is-inhabited-Prop-iff-is-𝟙
 
 -- Corollary
 
 ≃-of-Contr-types : (A : 𝓤 ̇) (B : 𝓥 ̇) → isContr A → isContr B → A ≃ B
-≃-of-Contr-types A B A-is-Contr B-is-Contr = pr₁ (isContr-iff-is-𝟙 A) A-is-Contr ● ≃-sym (pr₁ (isContr-iff-is-𝟙 B) B-is-Contr)
+≃-of-Contr-types A B A-is-Contr B-is-Contr = pr₁ isContr-iff-is-𝟙 A-is-Contr ● ≃-sym (pr₁ isContr-iff-is-𝟙 B-is-Contr)
 
 -- Related result: every map between contractible types is an equivalence.
 
 map-between-Contrs-is-equiv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContr A → isContr B → isequiv f
-map-between-Contrs-is-equiv f (a , i) (b , j) = qinv-to-isequiv ((λ y → a) , (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop _) (b , j)) (f a)) , i)
+map-between-Contrs-is-equiv f (a , i) (b , j) = qinv-to-isequiv ((λ y → a) , (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (b , j)) (f a)) , i)
 
 
 module _ ⦃ fe : FunExt ⦄ where
 
   -- Lemma 3.11.4 (isContr is a proposition).
 
-  isContr-is-Prop : (A : 𝓤 ̇ ) → isProp (isContr A)
+  isContr-is-Prop : (A : 𝓤 ̇) → isProp (isContr A)
   isContr-is-Prop A (a , p) (a' , p') =
     dpair-≡ ((p a') ,
     Π-preserves-Props (λ - → a' ≡ -) (Ids-are-Props a') _ p')
     where
       A-is-Prop : isProp A
-      A-is-Prop = pr₂ (pr₁ (isContr-iff-is-inhabited-Prop A) (a , p))
+      A-is-Prop = pr₂ (pr₁ isContr-iff-is-inhabited-Prop (a , p))
       Ids-are-Props : (x y : A) → isProp (x ≡ y)
       Ids-are-Props x y = Props-are-Sets A A-is-Prop x y
 
 
   -- Corollary 3.11.5 (isContr is contractible when predicated of a contractible type).
 
-  isContr-of-Contr-is-Contr : (A : 𝓤 ̇ ) → isContr A → isContr (isContr A)
-  isContr-of-Contr-is-Contr A c = pr₂ (isContr-iff-is-inhabited-Prop (isContr A)) (c , (isContr-is-Prop A))
+  isContr-of-Contr-is-Contr : (A : 𝓤 ̇) → isContr A → isContr (isContr A)
+  isContr-of-Contr-is-Contr A c = pr₂ isContr-iff-is-inhabited-Prop (c , (isContr-is-Prop A))
 
 
   -- Lemma 3.11.6 (Π preserves contractibility).
 
-  Π-preserves-Contr : {A : 𝓤 ̇ } (P : A → 𝓥 ̇ ) → ((x : A) → isContr (P x)) → isContr (Π P)
-  Π-preserves-Contr P i =  pr₂ (isContr-iff-is-inhabited-Prop (Π P)) ((λ x → pr₁ (i x)) , (Π-preserves-Props P (λ x → pr₂ (pr₁ (isContr-iff-is-inhabited-Prop (P x)) (i x)))))
+  Π-preserves-Contr : {A : 𝓤 ̇} (P : A → 𝓥 ̇) → ((x : A) → isContr (P x)) → isContr (Π P)
+  Π-preserves-Contr P i =  pr₂ isContr-iff-is-inhabited-Prop ((λ x → pr₁ (i x)) , (Π-preserves-Props P (λ x → pr₂ (pr₁ isContr-iff-is-inhabited-Prop (i x)))))
 
   -- Corollary (→)
 
@@ -118,16 +118,15 @@ retraction-eqn (r , s , α) = α
 -- Remark
 
 ≃-to-◁ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → B ◁ A
-≃-to-◁ (f , i) = f , qinv₁ q , qinv₂ q where
-  q = isequiv-to-qinv i
+≃-to-◁ (f , i) = let q = isequiv-to-qinv i in f , qinv₁ q , qinv₂ q
 
 
 -- Lemma 3.11.7 (Retractions preserve contractibility).
 
-retract-of-Contr-is-Contr : {B : 𝓥 ̇ } {A : 𝓤 ̇} → B ◁ A → isContr A → isContr B
-retract-of-Contr-is-Contr (r , (s , ε)) (a₀ , c) = center , centrality where
+retract-of-Contr-is-Contr : {B : 𝓥 ̇} {A : 𝓤 ̇} → B ◁ A → isContr A → isContr B
+retract-of-Contr-is-Contr (r , (s , ε)) (a₀ , c) = center , contraction where
   center = r a₀
-  centrality = λ b →
+  contraction = λ b →
     r a₀
       ≡⟨ ap r (c (s b)) ⟩
     r (s b)
@@ -137,29 +136,29 @@ retract-of-Contr-is-Contr (r , (s , ε)) (a₀ , c) = center , centrality where
 
 -- Lemma 3.11.8 (The subtype of points equal to a given point is contractible).
 
-free-right-endpt-is-Contr : (A : 𝓤 ̇ ) (a : A) → isContr (Σ x ꞉ A , (a ≡ x))
-free-right-endpt-is-Contr A a = center , centrality
+free-right-endpt-is-Contr : (A : 𝓤 ̇) (a : A) → isContr (Σ x ꞉ A , (a ≡ x))
+free-right-endpt-is-Contr A a = center , contraction
   where
   center = (a , (refl a))
-  centrality =  λ z → dpair-≡ (pr₂ z , (transport-post-∙ (pr₂ z) (refl a) ∙ (lu _ ⁻¹)))
+  contraction =  λ z → dpair-≡ (pr₂ z , (transport-post-∙ (pr₂ z) (refl a) ∙ (lu _ ⁻¹)))
 
-free-left-endpt-is-Contr : (A : 𝓤 ̇ ) (a : A) → isContr (Σ x ꞉ A , (x ≡ a))
-free-left-endpt-is-Contr A a = center , centrality 
+free-left-endpt-is-Contr : (A : 𝓤 ̇) (a : A) → isContr (Σ x ꞉ A , (x ≡ a))
+free-left-endpt-is-Contr A a = center , contraction 
   where
   center = (a , (refl a)) 
-  centrality = λ z → dpair-≡ ((pr₂ z ⁻¹) , (transport-pre-∙ ((pr₂ z) ⁻¹) (refl a) ∙ ((ru _ ⁻¹) ∙ ⁻¹-invol (pr₂ z))))
+  contraction = λ z → dpair-≡ ((pr₂ z ⁻¹) , (transport-pre-∙ ((pr₂ z) ⁻¹) (refl a) ∙ ((ru _ ⁻¹) ∙ ⁻¹-invol (pr₂ z))))
 
 
 -- Lemma 3.11.9.
 
 -- (i) The sum of a contractible family of types is the index type.
 
-Σ-of-Contr-family-is-base : (A : 𝓤 ̇)  (P : A → 𝓥 ̇ ) → ((x : A) → isContr (P x)) → Σ P ≃ A
+Σ-of-Contr-family-is-base : (A : 𝓤 ̇)  (P : A → 𝓥 ̇) → ((x : A) → isContr (P x)) → Σ P ≃ A
 Σ-of-Contr-family-is-base A P c = pr₁ , (qinv-to-isequiv ((λ x → x , pr₁ (c x)) , (refl , λ z → dpair-≡ (refl _ , pr₂ (c (pr₁ z)) (pr₂ z)))))
 
 -- (ii) The sum over a contractible base is the fiber at the center of the base.
 
-Σ-over-Contr-base-is-fib : (A : 𝓤 ̇) (P : A → 𝓥 ̇ ) → (c : isContr A) → Σ P ≃ P (pr₁ c)
+Σ-over-Contr-base-is-fib : (A : 𝓤 ̇) (P : A → 𝓥 ̇) → (c : isContr A) → Σ P ≃ P (pr₁ c)
 Σ-over-Contr-base-is-fib A P (a , i) = f , (qinv-to-isequiv (f⁻¹ , (α , β))) where
   f : Σ P → P a
   f (x , y) = transport P (i x ⁻¹) y
@@ -169,7 +168,7 @@ free-left-endpt-is-Contr A a = center , centrality
   α y = ap (λ - → transport P - y) (A-is-Set a a (i a ⁻¹) (refl _))
     where
     A-is-Set : isSet A
-    A-is-Set = Props-are-Sets A (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop A) (a , i)))
+    A-is-Set = Props-are-Sets A (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (a , i)))
   β : f⁻¹ ∘ f ∼ id
   β (x , y) = dpair-≡ (i x , (
     transport P (i x) (transport P (i x ⁻¹) y)
@@ -188,11 +187,11 @@ free-left-endpt-is-Contr A a = center , centrality
     )
   where
   A-is-Set : isSet A
-  A-is-Set = Props-are-Sets A (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop A) (a , i)))
+  A-is-Set = Props-are-Sets A (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (a , i)))
   
 -- (iii) Corollaries
 
-Σ-preserves-Contr : (A : 𝓤 ̇) (P : A → 𝓥 ̇ ) → isContr A → ((x : A) → isContr (P x)) → isContr (Σ P)
+Σ-preserves-Contr : (A : 𝓤 ̇) (P : A → 𝓥 ̇) → isContr A → ((x : A) → isContr (P x)) → isContr (Σ P)
 Σ-preserves-Contr A P A-is-Contr P-is-Contr = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (Σ-of-Contr-family-is-base A P P-is-Contr))) A-is-Contr 
 
 ×-preserves-Contr : (A : 𝓤 ̇) (B : 𝓥 ̇) → isContr A → isContr B → isContr (A × B)
@@ -201,7 +200,7 @@ free-left-endpt-is-Contr A a = center , centrality
 
 -- Lemma 3.11.10 (A type is a proposition iff its path-space is contractible).
 
-Prop-iff-Contr-≡ : (A : 𝓤 ̇ ) → (isProp A → ((x y : A) → isContr (x ≡ y))) × (((x y : A) → isContr (x ≡ y)) → isProp A)
+Prop-iff-Contr-≡ : (A : 𝓤 ̇) → (isProp A ⇔ ((x y : A) → isContr (x ≡ y)))
 Prop-iff-Contr-≡ A = sufficiency , necessity where
   sufficiency : isProp A → (x y : A) → isContr (x ≡ y)
   sufficiency i x y = (i x y) , ((Props-are-Sets A i) x y (i x y))

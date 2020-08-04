@@ -94,13 +94,13 @@ qinv-𝑖𝑑 A = 𝑖𝑑 A , refl , refl
 -- Example 2.4.8 (Pre- and post-concatenation are quasi-invertible).
 
 qinv-pre-∙ : {A : 𝓤 ̇} {x y : A} (z : A) (p : x ≡ y) → qinv (λ (q : y ≡ z) → p ∙ q)
-qinv-pre-∙ {x = x} {y = y} z p =
+qinv-pre-∙ {𝓤} {A} {x} {y} z p =
   (p ⁻¹ ∙_) ,
   (λ x₁ → ∙-assoc _ _ _ ∙ (ap (_∙ x₁) (rinv p) ∙ lu _ ⁻¹)) ,
   λ x₁ → ∙-assoc _ _ _ ∙ (ap (_∙ x₁) (linv p) ∙ lu _ ⁻¹)
 
 qinv-post-∙ : {A : 𝓤 ̇} {x y : A} (z : A) (p : x ≡ y)  → qinv (λ (q : z ≡ x) → q ∙ p)
-qinv-post-∙ {x = x} {y = y} z p =
+qinv-post-∙ {𝓤} {A} {x} {y} z p =
   (_∙ p ⁻¹) ,
   (λ x₁ → ∙-assoc _ _ _ ⁻¹ ∙ (ap (x₁ ∙_) (linv p) ∙ ru _ ⁻¹)) ,
   λ x₁ → ∙-assoc _ _ _ ⁻¹ ∙ (ap (x₁ ∙_) (rinv p) ∙ ru _ ⁻¹)

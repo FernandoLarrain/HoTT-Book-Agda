@@ -25,7 +25,7 @@ id-system {𝓤} (A , a₀) = Σ R ꞉ pted-pred (A , a₀) , is-id-system R
 
 -- Theorem 5.8.2
 
-module thm582 (A' : 𝓤 ⊙) (R' : pted-pred A') where
+module thm582 ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (R' : pted-pred A') where
 
   -- Unfold the pointed type and predicate
 

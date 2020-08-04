@@ -8,17 +8,16 @@ open import Ch4.4-Contractible-fibers
 
 module Ch4.6-Surjections-and-embeddings where
 
-module surjections (pt : propositional-truncations-exist) where
+open PropTrunc ⦃ ... ⦄
 
-  open basic-truncation-development pt
-  
-  -- Definition 4.6.1 (Surjections and embeddings)
 
-  is-surjective : {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → 𝓤 ⊔ 𝓥 ̇
-  is-surjective {A = A} {B = B} f = (b : B) → ∃ a ꞉ A , (f a ≡ b)
+-- Definition 4.6.1 (Surjections and embeddings)
 
-  is-surjective-is-Prop : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (is-surjective f)
-  is-surjective-is-Prop f = Π-preserves-Props _ λ y → ∃-is-Prop 
+is-surjective : ⦃ pt : PropTrunc ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → 𝓤 ⊔ 𝓥 ̇
+is-surjective {A = A} {B = B} f = (b : B) → ∃ a ꞉ A , (f a ≡ b)
+
+is-surjective-is-Prop : ⦃ fe : FunExt ⦄ ⦃ pt : PropTrunc ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (is-surjective f)
+is-surjective-is-Prop f = Π-preserves-Props _ λ y → ∃-is-Prop 
 
 is-embedding : {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → 𝓤 ⊔ 𝓥 ̇
 is-embedding {A = A} f = (x y : A) → isequiv (ap f {x} {y})  
@@ -48,19 +47,14 @@ module _ ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} where
       )
 
 
-module isequiv-≃-is-surjective-embedding (pt : propositional-truncations-exist) where 
+-- Theorem 4.6.3 / Corollary 4.6.4 (Equivalences are surjective embeddings)
 
-  open basic-truncation-development pt
-  open surjections pt
-
-  -- Theorem 4.6.3 / Corollary 4.6.4 (Equivalences are surjective embeddings)
-
-  isequiv-≃-is-surjective-embedding :  ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isequiv f ≃ (is-surjective f × is-embedding f)
-  isequiv-≃-is-surjective-embedding f = ⇔-to-≃ (ishae-is-Prop _) (×-preserves-Props _ _ (is-surjective-is-Prop _) (is-embedding-is-Prop _)) (sufficiency , necessity) where
-    sufficiency :  isequiv f → is-surjective f × is-embedding f
-    sufficiency f-is-equiv = (λ b → ∣ (pr₁ (ishae-to-isContrMap _ f-is-equiv b)) ∣) , ap-of-equiv-is-equiv f-is-equiv
-    necessity : is-surjective f × is-embedding f → isequiv f
-    necessity (f-is-surjective , f-is-embedding) = isContrMap-to-ishae f (λ b → ∃-recursion (isContr-is-Prop _) (λ a u → pr₂ (isContr-iff-is-inhabited-Prop _) ((a , u) , (Σ-induction λ x p → Σ-induction λ y q → inv (path-space-fib _ _) ((isequiv₁ (f-is-embedding x y) (p ∙ q ⁻¹)) , ((isequiv₃ (f-is-embedding x y) (p ∙ q ⁻¹) ∙ᵣ q) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (p ∙ₗ linv q) ∙ ru p ⁻¹ ))))) (f-is-surjective b))
+isequiv-≃-is-surjective-embedding : ⦃ fe : FunExt ⦄ ⦃ pt : PropTrunc ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isequiv f ≃ (is-surjective f × is-embedding f)
+isequiv-≃-is-surjective-embedding f = ⇔-to-≃ (ishae-is-Prop _) (×-preserves-Props _ _ (is-surjective-is-Prop _) (is-embedding-is-Prop _)) (sufficiency , necessity) where
+  sufficiency :  isequiv f → is-surjective f × is-embedding f
+  sufficiency f-is-equiv = (λ b → ∣ (pr₁ (ishae-to-isContrMap _ f-is-equiv b)) ∣) , ap-of-equiv-is-equiv f-is-equiv
+  necessity : is-surjective f × is-embedding f → isequiv f
+  necessity (f-is-surjective , f-is-embedding) = isContrMap-to-ishae f (λ b → ∃-recursion (isContr-is-Prop _) (λ a u → pr₂ isContr-iff-is-inhabited-Prop ((a , u) , (Σ-induction λ x p → Σ-induction λ y q → inv (path-space-fib _ _) ((isequiv₁ (f-is-embedding x y) (p ∙ q ⁻¹)) , ((isequiv₃ (f-is-embedding x y) (p ∙ q ⁻¹) ∙ᵣ q) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (p ∙ₗ linv q) ∙ ru p ⁻¹ ))))) (f-is-surjective b))
   
 
   

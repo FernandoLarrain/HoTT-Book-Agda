@@ -12,25 +12,27 @@ module Ch4.2-Half-adjoint-equivalences where
 ishae : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
 ishae {A = A} {B} f = Σ g ꞉ (B → A) , Σ η ꞉ g ∘ f ∼ id , Σ ε ꞉ f ∘ g ∼ id , ((x : A) → ap f (η x) ≡ ε (f x))
 
-ishae₁ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → ishae f → B → A
-ishae₁ (g , η , ε , τ) = g
+module ishae {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} where
 
-ishae₂ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → (h : ishae f) → ishae₁ h ∘ f ∼ id
-ishae₂ (g , η , ε , τ) = η
+  ishae₁ : ishae f → B → A
+  ishae₁ (g , η , ε , τ) = g
 
-ishae₃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → (h : ishae f) → f ∘ ishae₁ h ∼ id
-ishae₃ (g , η , ε , τ) = ε
+  ishae₂ : (h : ishae f) → ishae₁ h ∘ f ∼ id
+  ishae₂ (g , η , ε , τ) = η
 
-ishae₄ : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → (h : ishae f) → (x : A) → ap f (ishae₂ h x) ≡ ishae₃ h (f x)
-ishae₄ (g , η , ε , τ) = τ
+  ishae₃ : (h : ishae f) → f ∘ ishae₁ h ∼ id
+  ishae₃ (g , η , ε , τ) = ε
+
+  ishae₄ : (h : ishae f) → (x : A) → ap f (ishae₂ h x) ≡ ishae₃ h (f x)
+  ishae₄ (g , η , ε , τ) = τ
 
 ishae' : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
-ishae' {A = A} {B} f = Σ g ꞉ (B → A) , Σ η ꞉ g ∘ f ∼ id , Σ ε ꞉ f ∘ g ∼ id , ((y : B) → ap g (ε y) ≡ η (g y))
+ishae' {𝓤} {𝓥} {A} {B} f = Σ g ꞉ (B → A) , Σ η ꞉ g ∘ f ∼ id , Σ ε ꞉ f ∘ g ∼ id , ((y : B) → ap g (ε y) ≡ η (g y))
 
 
 -- Lemma 4.2.2 (Coherence conditions of ishae and ishae' are logically equivalent).
 
-ishae-iff-ishae' : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (g : B → A) (η : g ∘ f ∼ id) (ε : f ∘ g ∼ id) → (((x : A) → ap f (η x) ≡ ε (f x)) → ((y : B) → ap g (ε y) ≡ η (g y))) × (((y : B) → ap g (ε y) ≡ η (g y)) → ((x : A) → ap f (η x) ≡ ε (f x))) 
+ishae-iff-ishae' : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (g : B → A) (η : g ∘ f ∼ id) (ε : f ∘ g ∼ id) → (((x : A) → ap f (η x) ≡ ε (f x)) ⇔ ((y : B) → ap g (ε y) ≡ η (g y)))
 ishae-iff-ishae' {A = A} {B} f g η ε = sufficiency , necessity where
 
   sufficiency : ((x : A) → ap f (η x) ≡ ε (f x)) → ((y : B) → ap g (ε y) ≡ η (g y))
@@ -84,6 +86,9 @@ qinv-to-ishae {A = A} {f = f} (g , ε , η) =
 --     ap-id _
 --     ) ⁻¹
 
+
+-- "Forgetful" map from half-adjoint equivalences to quasi-inverses.
+
 ishae-to-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → ishae f → qinv f
 ishae-to-qinv (g , η , ε , τ) = (g , ε , η)
 
@@ -97,18 +102,24 @@ fib {𝓤} {𝓥} {A} {B} f y = Σ x ꞉ A , (f x ≡ y)
 -- Lemma 4.2.5 (Path space of fibers).
 
 path-space-fib : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} {y : B} → (w w' : fib f y) → (w ≡ w') ≃ (Σ γ ꞉ (pr₁ w ≡ pr₁ w') , (ap f γ ∙ pr₂ w' ≡ pr₂ w))
-path-space-fib {A = A} {f = f} {y} (x , p) (x' , p') =
-  Σ-≡-equiv ●
-  Σ-preserves-family-≃ (
-    λ γ → ((λ r → bpi x' γ ⁻¹ ∙ r) , (qinv-to-isequiv (qinv-pre-∙ _ (bpi x' γ ⁻¹)))) ●
-    (ap f γ ∙ₗ_) , qinv-to-isequiv (qinv-∙ₗ _ _ _) ●
-    (λ x₁ → lu _ ∙ ap (_∙ p) (rinv _ ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ x₁) , (qinv-to-isequiv (qinv-pre-∙ _ _)) ●
-    _⁻¹ , (qinv-to-isequiv (qinv-⁻¹ p (ap f γ ∙ p')))
-  )
-  where
-  bpi : (x' : A) (γ : x ≡ x') → transport (λ x₁ → f x₁ ≡ y) γ p ≡ (ap f γ ⁻¹ ∙ p)
-  bpi x' (refl .x') = lu _ -- maybe we can just use transport-funval-≡ with a constant function
-  -- bpi stands for based path-induction. Change name!
+path-space-fib {𝓤} {𝓥} {A} {B} {f} {y} (x , p) (x' , p') = Σ-≡-equiv ● Σ-preserves-family-≃ family-≃ where
+  family-≃ : (γ : x ≡ x') → (transport (λ - → f - ≡ y) γ p ≡ p') ≃ (ap f γ ∙ p' ≡ p)
+  family-≃ γ =
+    (transport (λ - → f - ≡ y) γ p ≡ p')
+      ≃⟨ (lhs-≡₁ ⁻¹ ∙_) , qinv-to-isequiv (qinv-pre-∙ _ _) ⟩
+    (ap f γ ⁻¹ ∙ p ≡ p')
+      ≃⟨ (ap f γ ∙ₗ_) , qinv-to-isequiv (qinv-∙ₗ _ _ _) ⟩
+    (ap f γ ∙ (ap f γ ⁻¹ ∙ p) ≡ ap f γ ∙ p')
+      ≃⟨ (lhs-≡₂ ∙_) , qinv-to-isequiv (qinv-pre-∙ _ _) ⟩
+    (p ≡ ap f γ ∙ p')
+      ≃⟨ _⁻¹ , (qinv-to-isequiv (qinv-⁻¹ p (ap f γ ∙ p'))) ⟩
+    ((ap f γ ∙ p' ≡ p) ■)
+    where
+    lhs-≡₁ : transport (λ - → f - ≡ y) γ p ≡ ap f γ ⁻¹ ∙ p
+    lhs-≡₁ = transport-funval-≡ f (λ a → y) γ p ∙ ap (ap f γ ⁻¹ ∙ p ∙_) (ap-const-fun y γ) ∙ ru _ ⁻¹
+    lhs-≡₂ : p ≡ ap f γ ∙ (ap f γ ⁻¹ ∙ p)
+    lhs-≡₂ = lu p ∙ ap (_∙ p) (rinv (ap f γ) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹
+  
 
 -- Theorem 4.2.6 (Haes are contractible maps (see Def. 4.1.1 in Ch4.4-Contractible-fibers)).
 
@@ -133,7 +144,7 @@ has-linv {A = A} {B} f = Σ g ꞉ (B → A) , g ∘ f ∼ 𝑖𝑑 A
 has-rinv : {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → 𝓤 ⊔ 𝓥 ̇   
 has-rinv {A = A} {B} f = Σ g ꞉ (B → A) , f ∘ g ∼ 𝑖𝑑 B
 
-{- has-rinv and has-section are definitionally the same and can be used interchangeably. -}
+{- has-rinv and has-section are definitionally equal. -}
 
 
 -- Lemma 4.2.8: Copied to Ch2.Exercises. It is useful in problem 2.17 and does not require later results.
@@ -144,7 +155,7 @@ has-rinv {A = A} {B} f = Σ g ꞉ (B → A) , f ∘ g ∼ 𝑖𝑑 B
 module _ ⦃ fe : FunExt ⦄ where 
 
   has-rinv-of-qinv-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → qinv f → isContr (has-rinv f)  
-  has-rinv-of-qinv-is-Contr {A = A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
+  has-rinv-of-qinv-is-Contr {𝓤} {𝓥} {A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
     where
     by-funext : fib (λ g → f ∘ g) id ≃ has-rinv f
     by-funext = Σ-preserves-family-≃ (λ g → happly , happly-is-equiv)
@@ -152,7 +163,7 @@ module _ ⦃ fe : FunExt ⦄ where
     fiber-of-post-∘-is-Contr = ishae-to-isContrMap (λ g → f ∘ g) (qinv-to-ishae (post-∘-by-qinv-is-qinv B f q))  
 
   has-linv-of-qinv-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → qinv f → isContr (has-linv f)  
-  has-linv-of-qinv-is-Contr {A = A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
+  has-linv-of-qinv-is-Contr {𝓤} {𝓥} {A} {B} f q = retract-of-Contr-is-Contr (≃-to-◁ by-funext) (fiber-of-post-∘-is-Contr id)
     where
     by-funext : fib (λ g → g ∘ f) id ≃ has-linv f
     by-funext = Σ-preserves-family-≃ (λ g → happly , happly-is-equiv)
@@ -204,16 +215,16 @@ module _ ⦃ fe : FunExt ⦄ where
   -- Lemma 4.2.12 (Right coherence-data of haes is contractible)
 
   rcoh-of-hae-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → ishae f → (r : has-rinv f) → isContr (rcoh f r)
-  rcoh-of-hae-is-Contr f h (g , ε) = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (rcoh-≃-fib f (g , ε)))) (Π-preserves-Contr _ λ x → pr₁ (Prop-iff-Contr-≡ _) (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop (fib f (f x))) (ishae-to-isContrMap f h (f x)))) _ _)
+  rcoh-of-hae-is-Contr f h (g , ε) = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (rcoh-≃-fib f (g , ε)))) (Π-preserves-Contr _ λ x → pr₁ (Prop-iff-Contr-≡ _) (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (ishae-to-isContrMap f h (f x)))) _ _)
 
 
   -- Theorem 4.2.13 (ishae is a proposition).
 
   ishae-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (ishae f)
-  ishae-is-Prop {A = A} {B} f = suffices λ h → retract-of-Contr-is-Contr (≃-to-◁ equivalence) (Σ-preserves-Contr _ _ (has-rinv-of-qinv-is-Contr f (ishae-to-qinv h)) (rcoh-of-hae-is-Contr f h))
+  ishae-is-Prop {𝓤} {𝓥} {A} {B} f = suffices λ h → retract-of-Contr-is-Contr (≃-to-◁ equivalence) (Σ-preserves-Contr _ _ (has-rinv-of-qinv-is-Contr f (ishae-to-qinv h)) (rcoh-of-hae-is-Contr f h))
     where
     suffices : (ishae f → isContr (ishae f)) → isProp (ishae f)
-    suffices = inv (isProp-≃-inhabited→isContr (ishae f))
+    suffices = inv (isProp-≃-inhabited-to-isContr (ishae f))
     equivalence : Σ (λ (u : has-rinv f) → rcoh f u) ≃ ishae f
     equivalence =
       Σ (λ (u : has-rinv f) → rcoh f u)

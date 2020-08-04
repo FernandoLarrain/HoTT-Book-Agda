@@ -80,7 +80,7 @@ dom-section g f (ρ , etc) = section ρ
 -- Lemma 4.7.3 (Retractions of maps induce retractions of fibers).
 
 retraction-of-maps-to-fiberwise-retraction : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} {X : 𝓦 ̇} {Y : 𝓣 ̇} (g : A → B) (f : X → Y) → (ρ : g is-retract-of f) → (b : B) → fib g b ◁ fib f (codom-section _ _ ρ b)
-retraction-of-maps-to-fiberwise-retraction {A = A} {B} g f ((r , s , R) , (r' , s' , R') , L , K , H) b = (ψ b) , ((ϕ b) , (retraction-equation b))
+retraction-of-maps-to-fiberwise-retraction {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {X} {Y} g f ((r , s , R) , (r' , s' , R') , L , K , H) b = (ψ b) , ((ϕ b) , (retraction-equation b))
 
   where 
 
@@ -120,7 +120,7 @@ total f (x , u) = x , (f x u)
 -- Theorem 4.7.6 (Equivalence of fibers)
 
 total-fib-≃ : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 𝓦 ̇} (f : Π (λ x → P x → Q x)) (x : A) (v : Q x) → fib (total f) (x , v) ≃ fib (f x) v
-total-fib-≃ {A = A} {P} {Q} f x v =
+total-fib-≃ {𝓤} {𝓥} {𝓦} {A} {P} {Q} f x v =
   fib (total f) (x , v)
     ≃⟨ ≃-sym (Σ-assoc A P _) ⟩
   (Σ a ꞉ A , Σ u ꞉ P a , (a , f a u) ≡ (x , v))

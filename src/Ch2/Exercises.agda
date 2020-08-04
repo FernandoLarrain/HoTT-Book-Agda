@@ -9,6 +9,7 @@ open import Ch2.6-Cartesian-product-types
 open import Ch2.7-Σ-types
 open import Ch2.9-Π-types-and-funext
 open import Ch2.10-Universes-and-univalence
+open import Ch2.15-Universal-properties
 
 module Ch2.Exercises where
 
@@ -121,6 +122,22 @@ module higher-paths where
 
       term-agreement : (b : Bndry 1 A) (p : Path 1 b) (u : P (left-basept b)) → coe (type-agreement b p u) (transport' 0 P p u) ≡ transport P p u 
       term-agreement (b , x , .x) (refl .x) u = refl _
+
+
+-- Exercise 2.11 (Commutative square ; pullback square).
+
+module pb-sq ⦃ fe : FunExt ⦄ {𝓤 𝓥 𝓦 : Universe} {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → C) (g : B → C) where
+
+  comm-sq : (P : 𝓣 ̇) → (𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣) ̇
+  comm-sq P = Σ h ꞉ (P → A) , Σ k ꞉ (P → B) , f ∘ h ∼ g ∘ k
+
+  pb-UMP : (X : 𝓣 ̇) → isequiv {_} {_} {X → pb f g} {comm-sq X} (λ u → pb₁ f g ∘ u , pb₂ f g ∘ u , pb-comm f g ∘ u)
+  pb-UMP X = qinv-to-isequiv (
+    (Σ-induction λ h → Σ-induction λ k α x → h x , k x , α x) ,
+    (Σ-induction (λ h → Σ-induction λ k α → refl _)) ,
+    λ u → refl _
+    )
+  
 
 
 -- Exercise 2.10 (Dependent pairing is associative).

@@ -42,22 +42,22 @@ module _ ⦃ fe : FunExt ⦄ where
   isContrMap-≃-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f ≃ biinv f
   isContrMap-≃-biinv f = (isContrMap-≃-ishae f) ● (≃-sym (biinv-≃-ishae f))
 
-  isContrMap-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → biinv f
-  isContrMap-to-biinv f = pr₁ (isContrMap-≃-biinv f)
+isContrMap-to-biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContrMap f → biinv f
+isContrMap-to-biinv f = ishae-to-biinv f ∘ isContrMap-to-ishae f
 
-  biinv-to-isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f → isContrMap f
-  biinv-to-isContrMap f = inv (isContrMap-≃-biinv f)
+biinv-to-isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → biinv f → isContrMap f
+biinv-to-isContrMap f = ishae-to-isContrMap f ∘ biinv-to-ishae f
 
 
 -- Corollary 4.4.6 (Can assume inhabited codomain).
 
 module inhabited-codom-assum {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) where
 
-  Contr : (B → isContrMap f) → isContrMap f
-  Contr e y = e y y
+  ContrMap : (B → isContrMap f) → isContrMap f
+  ContrMap e y = e y y
 
   Hae : ⦃ fe : FunExt ⦄ → (B → ishae f) → ishae f
-  Hae e = isContrMap-to-ishae f (Contr (λ y → ishae-to-isContrMap f (e y)))
+  Hae e = isContrMap-to-ishae f (ContrMap (λ y → ishae-to-isContrMap f (e y)))
 
   Biinv : ⦃ fe : FunExt ⦄ → (B → biinv f) → biinv f
-  Biinv e = isContrMap-to-biinv f (Contr (λ y → biinv-to-isContrMap f (e y)))
+  Biinv e = isContrMap-to-biinv f (ContrMap (λ y → biinv-to-isContrMap f (e y)))

@@ -61,6 +61,7 @@ module not-DNE∞ ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
       transport (λ - → ¬ (¬ -) → -) p (dne 𝟚) 𝟚-is-nonempty 
         ≡⟨ happly (apd dne p) 𝟚-is-nonempty  ⟩
       x ∎
+      
   -- (iii) The theorem:
   
   not-DNE∞ : ¬ (DNE∞ 𝓤₀)
