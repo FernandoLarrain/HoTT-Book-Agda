@@ -3,58 +3,10 @@
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
+open import Rewrite
 
 module Ch6.2-Induction-pples-and-dependent-paths where
-
-
--- Equation 6.2.2 (New notation for the type of dependent paths between two points, a.k.a. "PathOvers").
-
-{- Note: up to this point in the book, no official definition of PathOver was required; transport and _≡_ sufficed. -} 
-
-PathOver : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {x y : X} (p : x ≡ y) (u : P x) (v : P y) → 𝓥 ̇
-PathOver P p u v = transport P p u ≡ v
-
-infix 0 PathOver
-
-syntax PathOver P p u v = u ≡ v [ P ↓ p ]
-
-module PathOver'-1-is-PathOver where
-
-  open higher-paths
-
-  BndryOver-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 1 X) → BndryOver 1 P b ≡ P (lhs b) × P (rhs b)
-  BndryOver-agreement P b = ua (pr₂ , qinv-to-isequiv ((lift ⋆ ,_) , (refl , β)))
-    where
-    β :  (lift ⋆ ,_) ∘ pr₂ ∼ id
-    β (lift ⋆ , w) = dpair-≡ ((refl _) , (refl _))
-
-  BndryOver-agreement' : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 1 X) → BndryOver 1 P b ≃ P (lhs b) × P (rhs b)
-  BndryOver-agreement' P b = (pr₂ , qinv-to-isequiv ((lift ⋆ ,_) , (refl , β)))
-    where
-    β :  (lift ⋆ ,_) ∘ pr₂ ∼ id
-    β (lift ⋆ , w) = dpair-≡ ((refl _) , (refl _))
-
-  {- Alternatively, use Σ-over-Contr-base-is-fib -}
-
-  PathOver-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {b : Bndry 1 X} (p : Path 1 b) (b' : BndryOver 1 P b) → PathOver' 1 P {b} p b' ≡ PathOver P p (pr₁ (pr₂ b')) (pr₂ (pr₂ b')) 
-  PathOver-agreement P (refl _) b' = refl _
-
-  PathOver-agreement' : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {b : Bndry 1 X} (p : Path 1 b) (b' : BndryOver 1 P b) → PathOver' 1 P {b} p b' ≃ PathOver P p (pr₁ (pr₂ b')) (pr₂ (pr₂ b')) 
-  PathOver-agreement' P p b' = idtoeqv (PathOver-agreement P p b')
   
-
--- The rewrite relation _↦_.
-
-{- Agda has no native support for HITs, so we have to postulate them. To obtain definitonal equality for point constructors, we extend Agda's evaluation relation with new computation rules defined via _↦_ -}
-
-postulate
-
-  _↦_ : {A : 𝓤 ̇} → A → A → 𝓤 ̇
-
-infix 0 _↦_
-
-{-# BUILTIN REWRITE _↦_ #-} 
-
 
 -- The Circle, 𝕊¹.
 
@@ -121,7 +73,7 @@ module _ {A : 𝓤 ̇} (a : A) (p : a ≡ a) where
 
 -- Lemma 6.2.9 (UMP of 𝕊¹).
 
-UMP-𝕊¹ : (A : 𝓤 ̇) → (𝕊¹ → A) ≃ (Σ x ꞉ A , x ≡ x)
+UMP-𝕊¹ : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) → (𝕊¹ → A) ≃ (Σ x ꞉ A , x ≡ x)
 UMP-𝕊¹ A =
   (λ f → (f base₁ , ap f loop₁)) ,
   (qinv-to-isequiv (
@@ -132,7 +84,28 @@ UMP-𝕊¹ A =
   )
 
 
-    
+-- End of chapter. What follows is a continuation of Exercise 2.4.
 
-  
+module PathOver'-1-is-PathOver ⦃ univ : Univalence ⦄ where
 
+  open higher-paths
+
+  BndryOver-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 1 X) → BndryOver 1 P b ≡ P (lhs b) × P (rhs b)
+  BndryOver-agreement P b = ua (pr₂ , qinv-to-isequiv ((lift ⋆ ,_) , (refl , β)))
+    where
+    β :  (lift ⋆ ,_) ∘ pr₂ ∼ id
+    β (lift ⋆ , w) = dpair-≡ ((refl _) , (refl _))
+
+  BndryOver-agreement' : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 1 X) → BndryOver 1 P b ≃ P (lhs b) × P (rhs b)
+  BndryOver-agreement' P b = (pr₂ , qinv-to-isequiv ((lift ⋆ ,_) , (refl , β)))
+    where
+    β :  (lift ⋆ ,_) ∘ pr₂ ∼ id
+    β (lift ⋆ , w) = dpair-≡ ((refl _) , (refl _))
+
+  {- Alternatively, use Σ-over-Contr-base-is-fib -}
+
+  PathOver-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {b : Bndry 1 X} (p : Path 1 b) (b' : BndryOver 1 P b) → PathOver' 1 P {b} p b' ≡ PathOver P p (pr₁ (pr₂ b')) (pr₂ (pr₂ b')) 
+  PathOver-agreement P (refl _) b' = refl _
+
+  PathOver-agreement' : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {b : Bndry 1 X} (p : Path 1 b) (b' : BndryOver 1 P b) → PathOver' 1 P {b} p b' ≃ PathOver P p (pr₁ (pr₂ b')) (pr₂ (pr₂ b')) 
+  PathOver-agreement' P p b' = idtoeqv (PathOver-agreement P p b')

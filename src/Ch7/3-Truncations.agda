@@ -4,14 +4,13 @@ open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
+open import Rewrite
 open import Ch6.2-Induction-pples-and-dependent-paths
 open import Ch6.5-Suspensions
 open import Ch7.1-Definition-of-n-types
 open import Ch7.2-UIP-and-Hedberg's-theorem
 
-module Ch7.3-Truncations where
-
-module truncations-as-HITs where
+module Ch7.3-Truncations ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 
 -- Definition of n-truncation of a type.
 
@@ -77,7 +76,7 @@ Trunc-ind-comp n A P g d x = refl _
 
 Tlevel-of-Trunc : (n : Tlevel) (A : 𝓤 ̇) → is n type (Trunc n A)
 Tlevel-of-Trunc ⟨-2⟩ A = hub , spoke ⟨-2⟩
-Tlevel-of-Trunc (S n) A = pr₁ (≃-sym (Tlevel-in-terms-of-Map⊙ n (Trunc (S n) A))) (λ b → ((λ x → b) , (refl b)) , (Σ-induction λ r p → (dpair-≡ (q r b p , (transport-fun-ap (base (to-ℕ n)) b (q r b p) p ∙ (ap (λ - → - ⁻¹ ∙ p) (happly-β (λ x → spoke (S n) r x ∙ spoke (S n) r (base (to-ℕ n)) ⁻¹ ∙ p) (base (to-ℕ n)) ∙ (rinv _ ∙ᵣ p) ∙ lu _ ⁻¹) ∙ linv p)))) ⁻¹)) where
+Tlevel-of-Trunc (S n) A = pr₁ (≃-sym (Tlevel-in-terms-of-Map⊙ n (Trunc (S n) A))) (λ b → ((λ x → b) , (refl b)) , (Σ-induction λ r p → (dpair-≡ (q r b p , (transport-funval-≡' (base (to-ℕ n)) b (q r b p) p ∙ (ap (λ - → - ⁻¹ ∙ p) (happly-β (λ x → spoke (S n) r x ∙ spoke (S n) r (base (to-ℕ n)) ⁻¹ ∙ p) (base (to-ℕ n)) ∙ (rinv _ ∙ᵣ p) ∙ lu _ ⁻¹) ∙ linv p)))) ⁻¹)) where
   q : (r : Sphere (to-ℕ n) → Trunc (S n) A) (b : Trunc (S n) A) (p : r (base (to-ℕ n)) ≡ b) → r ≡ λ x → b
   q r b p = funext λ x → spoke (S n) r x ∙ spoke (S n) r (base (to-ℕ n)) ⁻¹ ∙ p
 
@@ -87,7 +86,7 @@ Tlevel-of-Trunc (S n) A = pr₁ (≃-sym (Tlevel-in-terms-of-Map⊙ n (Trunc (S 
 Trunc-ind' : {n : Tlevel} {A : 𝓤 ̇} (P : Trunc n A → 𝓥 ̇) → ((x : Trunc n A) → is n type (P x)) → Π (P ∘ [_]) → Π P
 Trunc-ind' {𝓤} {𝓥} {⟨-2⟩} {A} P i g = Trunc-ind {𝓤} {𝓥} {⟨-2⟩} {A} P g (
   (pr₁ (i hub)) ,
-  (λ x u → pr₂ (pr₁ (isContr-iff-is-inhabited-Prop _) (i x)) _ _)
+  (λ x u → pr₂ (pr₁ isContr-iff-is-inhabited-Prop (i x)) _ _)
   )
 Trunc-ind' {𝓤} {𝓥} {S n} {A} P i g = Trunc-ind {𝓤} {𝓥} {S n} {A} P g (u , v)
   where

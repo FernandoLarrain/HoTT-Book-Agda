@@ -1,0 +1,18 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.2-Half-adjoint-equivalences
+
+module Ch4.Exercises where
+
+
+-- Exercise 4.4 (The unstable octahedral axiom).
+
+module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B → C) (b : B) where
+
+  -- Natural map
+  
+  ϕ : fib (g ∘ f) (g b) → fib g (g b)
+  ϕ = ? 

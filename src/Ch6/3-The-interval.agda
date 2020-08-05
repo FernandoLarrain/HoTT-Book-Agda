@@ -3,7 +3,7 @@
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
-open import Ch6.2-Induction-pples-and-dependent-paths
+open import Rewrite
 
 module Ch6.3-The-interval where
 

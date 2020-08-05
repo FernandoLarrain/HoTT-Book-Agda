@@ -4,6 +4,7 @@ open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.2-Half-adjoint-equivalences
+open import Ch4.7-Closure-properties-of-equivalences
 
 module Ch4.8-The-object-classifier where
 
@@ -51,30 +52,46 @@ module thm-4-8-3 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) whe
   χ-is-equiv : isequiv χ
   χ-is-equiv = qinv-to-isequiv χ-has-qinv
 
-open thm-4-8-3 using (χ ; χ-has-qinv ; χ-is-equiv)
+--open thm-4-8-3 using (χ ; χ-has-qinv ; χ-is-equiv)
 
 
 -- Theorem 4.8.4 (Object classifier).
 
 module object-classifier ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ {A B : 𝓤 ̇} (f : A → B) where
 
+  open module M = thm-4-8-3 B using (χ)
+
   ϑ : A → 𝓤 ⊙
   ϑ a = (fib f (f a)) , (a , (refl (f a)))
 
-  object-≃ : A ≃ (B ×⟨ 𝓤 ̇ ⟩ (𝓤 ⊙)) (χ B (A , f)) pr₁
+  π₁ : 𝓤 ⊙ → 𝓤 ̇
+  π₁ = pr₁
+
+  pb-square : comm-sq (χ (A , f)) π₁ A
+  pb-square = f , ϑ , hrefl _
+
+  object-≃ : A ≃ (B ×⟨ 𝓤 ̇ ⟩ (𝓤 ⊙)) (χ (A , f)) π₁
   object-≃ =
     A
       ≃⟨ ≃-sym (dom-is-sum-of-fibs f) ⟩
     (Σ b ꞉ B , fib f b)
       ≃⟨ Σ-preserves-family-≃ (λ b → ≃-sym (Σ-over-Contr-base-is-fib _ _ (free-right-endpt-is-Contr _ _))) ⟩
     (Σ b ꞉ B , Σ w ꞉ (Σ X ꞉ 𝓤 ̇ , fib f b ≡ X) , pr₁ w)
-      ≃⟨ {!!} ⟩
-    {!!}
-      ≃⟨ {!!} ⟩
-    {!!}
-      ≃⟨ {!!} ⟩
-    {!!}
+      ≃⟨ (Σ-preserves-family-≃ λ b → ≃-sym (Σ-assoc _ _ _)) ⟩
+    (Σ b ꞉ B , Σ X ꞉ 𝓤 ̇ , (fib f b ≡ X) × X)
+      ≃⟨ (Σ-preserves-family-≃ λ b → Σ-preserves-family-≃ λ X → ×-swap _ _) ⟩
+    (Σ b ꞉ B , Σ X ꞉ 𝓤 ̇ , X × (fib f b ≡ X))
+      ≃⟨ (Σ-preserves-family-≃ λ b → Σ-assoc _ _ _) ⟩
+    (Σ b ꞉ B , Σ Y ꞉ (𝓤 ⊙) , (fib f b ≡ π₁ Y))
+      ≃⟨ ≃-refl _ ⟩
+    ((B ×⟨ 𝓤 ̇ ⟩ (𝓤 ⊙)) (χ (A , f)) π₁) ■
 
-  -- Show equivalence as in the book. Then show that the equivalence commutes with the projections. Show in Ch2.Exercises that this means that A satisfies pb-UMP. 
+  _ : (a : A) → pr₁ object-≃ a ≡ f a , (fib f (f a) , a , refl (f a)) , refl (fib f (f a))
+  _ = hrefl _
 
+  _ : (ϑ ∼ pb₂ (χ (A , f)) π₁ ∘ pr₁ object-≃) × (f ∼ pb₁ (χ (A , f)) π₁ ∘ pr₁ object-≃)
+  _ = (hrefl _) , (hrefl _)
+ 
+  UMP-of-pb-square : (X : 𝓣 ̇) → isequiv {_} {_} {X → A} {comm-sq (χ (A , f)) π₁ X} (λ u → f ∘ u , ϑ ∘ u , hrefl (π₁ ∘ ϑ) ∘ u)
+  UMP-of-pb-square X = 2-out-of-3.-∘ (pr₁ object-≃ ∘_) (λ u → pb₁ (χ (A , f)) π₁ ∘ u , pb₂ (χ (A , f)) π₁ ∘ u , pb-comm (χ (A , f)) π₁ ∘ u) (pr₂ (→-preserves-codom-≃ X object-≃)) (pb-UMP (χ (A , f)) π₁ X)
 

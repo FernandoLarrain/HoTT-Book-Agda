@@ -1,9 +1,10 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch5.1-Introduction-to-inductive-types
+open import Ch5.3-W-types
 
 module Ch5.4-Inductive-types-are-initial-algebras where
 
@@ -16,17 +17,31 @@ module Ch5.4-Inductive-types-are-initial-algebras where
 
 -- Definition 5.4.2 (ℕ-homomorphism).
 
-is-ℕAlg-homomorphism : (C D : ℕAlg 𝓤) → (pr₁ C → pr₁ D) → 𝓤 ̇
+is-ℕAlg-homomorphism : (C : ℕAlg 𝓤) (D : ℕAlg 𝓥) → (pr₁ C → pr₁ D) → 𝓤 ⊔ 𝓥 ̇
 is-ℕAlg-homomorphism {𝓤} (C , c₀ , cs) (D , d₀ , ds) h = (h c₀ ≡ d₀) × (h ∘ cs ∼ ds ∘ h)
 
-ℕHom : ℕAlg 𝓤 → ℕAlg 𝓤 → 𝓤 ̇
+ℕHom : ℕAlg 𝓤 → ℕAlg 𝓥 → 𝓤 ⊔ 𝓥 ̇
 ℕHom C D = Σ h ꞉ (pr₁ C → pr₁ D) , is-ℕAlg-homomorphism C D h
 
-ℕHom-comp : (C D E : ℕAlg 𝓤) → ℕHom D E → ℕHom C D → ℕHom C E
+ℕHom-comp : (C : ℕAlg 𝓤) (D : ℕAlg 𝓤) (E : ℕAlg 𝓤) → ℕHom D E → ℕHom C D → ℕHom C E
 ℕHom-comp C D E (g , q , β) (f , p , α) = (g ∘ f) , (ap g p ∙ q) , λ x → ap g (α x) ∙ β (f x)
 
 ℕAlg-id : (C : ℕAlg 𝓤) → ℕHom C C
 ℕAlg-id (C , c₀ , cs) = id , (refl c₀) , hrefl cs
+
+
+-- Identity type of ℕ-homomorphisms
+
+module ℕHom-≡ ⦃ fe : FunExt ⦄  (C : 𝓤 ̇) (D : 𝓤 ̇) (cs : C → C) (ds : D → D) where
+
+  P : (C → D) → 𝓤 ̇
+  P h = h ∘ cs ∼ ds ∘ h 
+
+  transport-lemma' : {f g : C → D} (p : f ≡ g) (α : f ∘ cs ∼ ds ∘ f) (c : C) → transport P p α c ≡ happly p (cs c) ⁻¹ ∙ α c ∙ ap ds (happly p c)   
+  transport-lemma' (refl _) α c = lu _ ∙ ru _
+
+  transport-lemma : {f g : C → D} (γ : f ∼ g) (α : f ∘ cs ∼ ds ∘ f) (c : C) → transport P (funext γ) α c ≡ γ (cs c) ⁻¹ ∙ α c ∙ ap ds (γ c)   
+  transport-lemma γ α c = transport-lemma' (funext γ) α c ∙ ((ap _⁻¹ (happly-β γ (cs c)) ∙ᵣ α c) ⋆' ap (ap ds) (happly-β γ c))
 
 
 -- Isomorphic ℕ-algebras are equal.
@@ -78,28 +93,120 @@ Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
 
 -- Theorem 5.4.5 ((ℕ , 0 , succ) is h-initial)
 
--- Need to characterize equality of ℕHom (being a homomorphism is a property, so the uniqueness thm 5.1.1 suffices by Lemma 3.5.1).
+ℕ-is-h-initial : ⦃ fe : FunExt ⦄ → isHinit-ℕ (ℕ , 0 , succ)
+ℕ-is-h-initial (C , c₀ , cs) = (f , p , α) , contraction where
 
--- Is being an ℕHom a property? 
+  -- Center of contraction
+  
+  f : ℕ → C
+  f zero = c₀
+  f (succ n) = cs (f n)
+  p : f 0 ≡ c₀
+  p = refl _
+  α : f ∘ succ ∼ cs ∘ f
+  α zero = refl _
+  α (succ n) = ap cs (α n)
 
--- ℕ-is-h-initial : isHinit-ℕ (ℕ , 0 , succ)
--- ℕ-is-h-initial (C , c₀ , cs) =
---   (f , p , α) ,
---   contraction
---   where
---   f : ℕ → C
---   f = ℕ-recursion C c₀ (λ n → cs)
---   p : f 0 ≡ c₀
---   p = refl _
---   α : f ∘ succ ∼ cs ∘ f
---   α zero = refl _
---   α (succ n) = ap cs (α n) 
---   contraction : Π (_≡_ (f , p , α))
---   contraction (g , q , β) = let fun-≡ = ℕ-η (λ - → C) c₀ (λ n → cs) f g p α q β
---     in dpair-≡ (
---       fun-≡ ,
---       (transport-pair {𝓤₀} {𝓤₀} {ℕ → C} (λ h → h 0 ≡ c₀) (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ (p , α) ∙ pair-≡ (
---         {!!} , 
---         {!!}  -- non-trivial... maybe we should do 5.8 first, because the book is really sketchy in the parts involving homomorphisms.
---         ))
---       )
+  -- Contraction
+  
+  contraction : Π (λ (h : ℕHom (ℕ , 0 , succ) (C , c₀ , cs)) → (f , p , α) ≡ h)
+  contraction (g , q , β) = dpair-≡ (fun-≡ , (transport-pair (λ h → h 0 ≡ c₀) (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ (p , α) ∙ pair-≡ (path-≡ , htpy-≡) )) where
+
+    fun-∼ : f ∼ g
+    fun-∼ = ℕ-uniqueness-pple' (λ - → C) c₀ (λ n → cs) f g p α q β
+    fun-≡ : f ≡ g 
+    fun-≡ = ℕ-uniqueness-pple (λ - → C) c₀ (λ n → cs) f g p α q β
+
+    path-≡ : transport (λ h → h 0 ≡ c₀) fun-≡ p ≡ q
+    path-≡ = transport-funval-≡' 0 c₀ fun-≡ p ∙ (ap (λ - → - ⁻¹ ∙ p) (happly-β fun-∼ 0) ∙ ru _ ⁻¹ ∙ distr _ _ ∙ ru _ ⁻¹ ∙ ⁻¹-invol q)
+
+    htpy-∼ : transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α ∼ β
+   
+    -- Base case
+    
+    htpy-∼ zero =
+      transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α 0
+        ≡⟨ ℕHom-≡.transport-lemma ℕ C succ cs fun-∼ α 0 ⟩
+      (refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ∙ β 0 ⁻¹) ⁻¹ ∙ refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹)
+        ≡⟨ aux-path  ⟩
+      (β 0) ∎
+
+      where
+
+      aux-path : (refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ∙ β 0 ⁻¹) ⁻¹ ∙ refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ≡ β 0
+      aux-path rewrite  
+        lu (q ⁻¹) ⁻¹ |
+        lu (ap cs (q ⁻¹)) ⁻¹ |
+        distr (ap cs (q ⁻¹)) (β 0 ⁻¹) |
+        ru ((β 0 ⁻¹) ⁻¹ ∙ ap cs (q ⁻¹) ⁻¹) ⁻¹ |
+        ∙-assoc ((β 0 ⁻¹) ⁻¹) (ap cs (q ⁻¹) ⁻¹) (ap cs (q ⁻¹)) ⁻¹ |
+        linv (ap cs (q ⁻¹)) |
+        ru ((β 0 ⁻¹) ⁻¹) ⁻¹ |
+        ⁻¹-invol (β 0)
+        = refl _
+
+    -- Inductive step
+   
+    htpy-∼ (succ n) =
+      transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α (succ n)
+        ≡⟨ ℕHom-≡.transport-lemma ℕ C succ cs fun-∼ α (succ n) ⟩
+      fun-∼ (succ (succ n)) ⁻¹ ∙ ap cs (α n) ∙ ap cs (fun-∼ (succ n))
+        ≡⟨ refl _ ⟩
+      (α (succ n) ∙ ap cs (fun-∼ (succ n)) ∙ β (succ n) ⁻¹) ⁻¹ ∙ α (succ n) ∙ ap cs (fun-∼ (succ n))
+        ≡⟨ path-aux ⟩
+      β (succ n) ∎
+
+      where
+      p₁ =  α (succ n)
+      p₂ = ap cs (fun-∼ (succ n))
+      p₃ = β (succ n)
+      path-aux : (p₁ ∙ p₂ ∙ p₃ ⁻¹) ⁻¹ ∙ p₁ ∙ p₂ ≡ p₃
+      path-aux rewrite
+        distr (p₁ ∙ p₂) (p₃ ⁻¹) |
+        ∙-assoc ((p₃ ⁻¹) ⁻¹) ((p₁ ∙ p₂) ⁻¹) p₁ ⁻¹ |
+        distr p₁ p₂ |
+        ∙-assoc (p₂ ⁻¹) (p₁ ⁻¹) p₁ ⁻¹ |
+        linv p₁ |
+        ru (p₂ ⁻¹) ⁻¹ |
+        ∙-assoc ((p₃ ⁻¹) ⁻¹) (p₂ ⁻¹) p₂ ⁻¹ |
+        linv p₂ |
+        ru ((p₃ ⁻¹) ⁻¹) ⁻¹ |
+        ⁻¹-invol p₃        
+        = refl _
+
+    htpy-≡ : transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α ≡ β
+    htpy-≡ = funext htpy-∼
+
+
+module WAlg {A : 𝓤 ̇} (B : A → 𝓥 ̇) where
+
+  -- Equation 5.4.6 (Polynomial functor).
+
+  𝓟₀ : 𝓦 ̇ → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ̇
+  𝓟₀ X = Σ x ꞉ A , (B x → X)
+
+  𝓟₁ : {X : 𝓦 ̇} {Y : 𝓣 ̇} (f : X → Y) → 𝓟₀ X → 𝓟₀ Y
+  𝓟₁ f (x , y) = x , (f ∘ y)
+
+  -- Definition (W-Algebras / P-algebras).
+
+  WAlg : (𝓦 : Universe) → 𝓤 ⊔ 𝓥 ⊔ (𝓦 ⁺) ̇
+  WAlg 𝓦 = Σ C ꞉ 𝓦 ̇ , (𝓟₀ C → C)   
+
+
+  -- Definition (W-homomorphism / P-homomorphisms).
+
+  WHom : WAlg 𝓦 → WAlg 𝓣 → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇
+  WHom (C , sc) (D , sd) = Σ f ꞉ (C → D) , (f ∘ sc ∼ sd ∘ 𝓟₁ f)
+
+  -- Definition (homotopy-initial W-algebras / P-algebras).
+
+  isHinit-W : WAlg 𝓦 → 𝓤 ⊔ 𝓥 ⊔ (𝓦 ⁺) ̇
+  isHinit-W {𝓦} I = (C : WAlg 𝓦) → isContr (WHom I C)
+
+  -- -- Theorem 5.4.7 ((W A B , sup) is homotopy-initial).
+
+  -- W-is-h-initial : ⦃ fe : FunExt ⦄ → isHinit-W (W A B , Σ-induction sup)
+  -- W-is-h-initial = {!!} -- redefine sup, redefine 𝓟, or neither?
+
+  

@@ -15,4 +15,4 @@ open import Ch4.6-Surjections-and-embeddings public
 open import Ch4.7-Closure-properties-of-equivalences public
 open import Ch4.8-The-object-classifier public
 open import Ch4.9-Univalence-implies-funext public
-
+open import Ch4.Exercises public

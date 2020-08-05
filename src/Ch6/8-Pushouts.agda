@@ -4,7 +4,7 @@ open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
-open import Ch6.2-Induction-pples-and-dependent-paths
+open import Rewrite
 
 module Ch6.8-Pushouts where
 
@@ -74,10 +74,10 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
 
   -- (vii) Uniqueness principle
 
-  po-η' : {D : 𝓣 ̇} (s : po f g → D) → po-rec D (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) ≡ s
+  po-η' : ⦃ fe : FunExt ⦄ {D : 𝓣 ̇} (s : po f g → D) → po-rec D (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) ≡ s
   po-η' s = funext (po-ind _ (λ a → refl _) (λ b → refl _) λ c → transport-funval-≡ _ _ (glue c) (refl _) ∙ (((ru _ ⁻¹ ∙  ap _⁻¹ (γ-β' _ (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) c)) ∙ᵣ ap s (glue c)) ∙ linv _))
 
-  po-uniqueness-pple : {D : 𝓣 ̇} (s s' : po f g → D) (α : s ∘ inlₚ ∼ s' ∘ inlₚ) (β : s ∘ inrₚ ∼ s' ∘ inrₚ) → ((c : C) → α (f c) ∙ ap s' (glue c) ≡ ap s (glue c) ∙ β (g c)) → s ≡ s'   
+  po-uniqueness-pple : ⦃ fe : FunExt ⦄ {D : 𝓣 ̇} (s s' : po f g → D) (α : s ∘ inlₚ ∼ s' ∘ inlₚ) (β : s ∘ inrₚ ∼ s' ∘ inrₚ) → ((c : C) → α (f c) ∙ ap s' (glue c) ≡ ap s (glue c) ∙ β (g c)) → s ≡ s'   
   po-uniqueness-pple {𝓣} {D} s s' α β θ = funext (po-ind _ α β (λ c → transport-funval-≡ s s' (glue c) (α (f c)) ∙ (∙-assoc _ _ _ ⁻¹ ∙ ((ap s (glue c) ⁻¹ ∙ₗ (θ c)) ∙ ∙-assoc _ _ _ ∙ (linv _ ∙ᵣ β (g c)) ∙ lu _ ⁻¹))))
 
 
@@ -89,7 +89,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
 
   -- Lemma 6.8.2 (UMP of pushout)
 
-  module po-UMP (E : 𝓣 ̇) where
+  module po-UMP ⦃ fe : FunExt ⦄ (E : 𝓣 ̇) where
 
     c⊔ : (po f g → E) → cocone E
     c⊔ t = t ∘ inlₚ , t ∘ inrₚ , λ c → ap t (glue c) 

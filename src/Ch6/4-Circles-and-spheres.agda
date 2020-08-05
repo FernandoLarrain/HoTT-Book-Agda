@@ -4,6 +4,7 @@ open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
+open import Rewrite
 open import Ch6.2-Induction-pples-and-dependent-paths
 
 module Ch6.4-Circles-and-spheres where
@@ -11,7 +12,7 @@ module Ch6.4-Circles-and-spheres where
 
 -- Lemma 6.4.1 (The circle is non-trivial).
 
-𝕊¹-is-non-trivial : ¬ (loop₁ ≡ refl base₁)
+𝕊¹-is-non-trivial : ⦃ univ : Univalence ⦄ → ¬ (loop₁ ≡ refl base₁)
 𝕊¹-is-non-trivial s = 𝓤₀-is-not-Set λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
 
 
@@ -104,7 +105,7 @@ syntax PathOver² P r h k = h ≡ k [ P ⇊ r ]
 PathOver²-≡-PathOver-PathOver : {A : 𝓤 ̇} (P : A → 𝓥 ̇) {x y : A} {p q : x ≡ y} (r : p ≡ q) {u : P x} {v : P y} (h : u ≡ v [ P ↓ p ]) (k : u ≡ v [ P ↓ q ]) → (h ≡ k [ P ⇊ r ]) ≡ (h ≡ k [ (λ (- : x ≡ y) → u ≡ v [ P ↓ - ]) ↓ r ])
 PathOver²-≡-PathOver-PathOver P {x} {.x} {.(refl x)} {.(refl x)} (refl (refl x)) h (refl u) = refl _
 
-module PathOver'-2-is-PathOver² where
+module PathOver'-2-is-PathOver² ⦃ univ : Univalence ⦄ where
 
   open higher-paths
   open PathOver'-1-is-PathOver

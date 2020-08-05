@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -19,13 +19,13 @@ ppmap (A , a₀) (R , r₀) (S , s₀) = Σ g ꞉ Π (λ a → R a → S a) , g 
 is-id-system : {A : 𝓤 ⊙} → pted-pred A → 𝓤 ⁺ ̇
 is-id-system {𝓤} {A , a₀} (R , r₀) = (D : (a : A) → R a → 𝓤 ̇) (d : D a₀ r₀) → Σ f ꞉ ((a : A) (r : R a) → D a r) , f a₀ r₀ ≡ d
 
-id-system : (A : 𝓤 ⊙) → 𝓤 ⁺ ̇
-id-system {𝓤} (A , a₀) = Σ R ꞉ pted-pred (A , a₀) , is-id-system R
+--id-system : (A : 𝓤 ⊙) → 𝓤 ⁺ ̇
+--id-system {𝓤} (A , a₀) = Σ R ꞉ pted-pred (A , a₀) , is-id-system R
 
 
 -- Theorem 5.8.2
 
-module thm582 ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (R' : pted-pred A') where
+module thm-5-8-2 ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (R' : pted-pred A') where
 
   -- Unfold the pointed type and predicate
 
@@ -54,27 +54,27 @@ module thm582 ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (R' : pted-pred A') where
 
   -- -- Proof of the logical equivalences
 
-  -- aux : (X : 𝓤 ̇) (Y Z : X → 𝓥 ̇) (f g : (x : X) → Y x → Z x) (p : f ≡ g) (x : X) (y : Y x) (z : Z x) (q : f x y ≡ z) → transport (λ - → - x y ≡ z) p q ≡ (happly (f x) (g x) (happly f g p x) y) ⁻¹ ∙ q
+  -- aux : (X : 𝓤 ̇) (Y Z : X → 𝓥 ̇) (f g : (x : X) → Y x → Z x) (p : f ≡ g) (x : X) (y : Y x) (z : Z x) (q : f x y ≡ z) → transport (λ - → - x y ≡ z) p q ≡ (happly (happly p x) y) ⁻¹ ∙ q
   -- aux X Y Z f .f (refl .f) x y .(f x y) (refl .(f x y)) = refl _
 
   -- -- Maybe we can just use transport in fibers...
 
   -- i-to-ii : i → ii
-  -- i-to-ii R'-is-id-system (S , s₀) = pr₂ (isContr-iff-is-inhabited-Prop _) (
+  -- i-to-ii R'-is-id-system (S , s₀) = pr₂ isContr-iff-is-inhabited-Prop (
   --   (R'-is-id-system (λ a r → S a) s₀) ,
   --   Σ-induction (λ f fr → Σ-induction λ g gr → dpair-≡ (
-  --     (funext _ _ λ a → funext _ _ λ r → pr₁ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹)) a r) ,
-  --     (aux _ _ _ f g (funext _ _ λ a → funext _ _ λ r → pr₁ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹)) a r) a₀ r₀ s₀ fr ∙ (ap (λ - → happly (f a₀) (g a₀) - r₀ ⁻¹ ∙ fr) (happly-β _ _ _ a₀) ∙ (ap (λ - → - ⁻¹ ∙ fr) (happly-β _ _ _ r₀ ∙ pr₂ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹))) ∙ ((distr fr (gr ⁻¹) ∙ᵣ fr) ∙ ∙-assoc _ _ _ ⁻¹ ∙ ap ((gr ⁻¹) ⁻¹ ∙_) (linv _) ∙ ru _ ⁻¹ ∙ ⁻¹-invol _ ))))
+  --     (funext λ a → funext λ r → pr₁ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹)) a r) ,
+  --     (aux _ _ _ f g (funext λ a → funext λ r → pr₁ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹)) a r) a₀ r₀ s₀ fr ∙ (ap (λ - → happly - r₀ ⁻¹ ∙ fr) (happly-β _ a₀) ∙ (ap (λ - → - ⁻¹ ∙ fr) (happly-β _ r₀ ∙ pr₂ (R'-is-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹))) ∙ ((distr fr (gr ⁻¹) ∙ᵣ fr) ∙ ∙-assoc _ _ _ ⁻¹ ∙ ap ((gr ⁻¹) ⁻¹ ∙_) (linv _) ∙ ru _ ⁻¹ ∙ ⁻¹-invol _ ))))
   --     ))
   --   )
 
-  -- ii-to-iii : ii → iii
-  -- ii-to-iii ppmap-is-Contr a = {!!}
+  -- -- ii-to-iii : ii → iii
+  -- -- ii-to-iii ppmap-is-Contr a = {!!}
   
-  -- iii-to-iv : iii → iv
-  -- iii-to-iv = {!!}
+  -- -- iii-to-iv : iii → iv
+  -- -- iii-to-iv = {!!}
 
-  -- iv-to-i : iv → i
-  -- iv-to-i = {!!}
+  -- -- iv-to-i : iv → i
+  -- -- iv-to-i = {!!}
   
   

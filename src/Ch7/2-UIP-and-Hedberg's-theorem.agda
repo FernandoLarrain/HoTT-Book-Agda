@@ -14,26 +14,28 @@ module Ch7.2-UIP-and-Hedberg's-theorem where
 Axiom-K : (X : 𝓤 ̇) → 𝓤 ̇
 Axiom-K X = (x : X) (p : x ≡ x) → p ≡ refl x
 
-isSet-≃-Axiom-K : (X : 𝓤 ̇) → isSet X ≃ Axiom-K X
-isSet-≃-Axiom-K X = retraction-of-Prop-to-≃ (isSet-is-Prop _) (sufficiency , necessity , α)
-  where
-  sufficiency : isSet X → Axiom-K X
-  sufficiency f x p = f x x p (refl x)
-  necessity : (Axiom-K X → isSet X)
-  necessity k x .x p (refl .x) = k x p
-  α : sufficiency ∘ necessity ∼ id
-  α k = funext λ x → funext λ p → Sets-are-⟨1⟩-types _ (necessity k) _ _ _ _ _ _
+module _ ⦃ fe : FunExt ⦄ where
 
-Axiom-K-is-Prop : (X : 𝓤 ̇) → isProp (Axiom-K X)
-Axiom-K-is-Prop X = ≃-preserves-Props _ _ (isSet-≃-Axiom-K X) (isSet-is-Prop X)
+  isSet-≃-Axiom-K : (X : 𝓤 ̇) → isSet X ≃ Axiom-K X
+  isSet-≃-Axiom-K X = retraction-of-Prop-to-≃ (isSet-is-Prop _) (sufficiency , necessity , α)
+    where
+    sufficiency : isSet X → Axiom-K X
+    sufficiency f x p = f x x p (refl x)
+    necessity : (Axiom-K X → isSet X)
+    necessity k x .x p (refl .x) = k x p
+    α : sufficiency ∘ necessity ∼ id
+    α k = funext λ x → funext λ p → Sets-are-⟨1⟩-types _ (necessity k) _ _ _ _ _ _
 
-Axiom-K-≃-Contr-Ω : (X : 𝓤 ̇) → Axiom-K X ≃ ((x : X) → isContr (x ≡ x))
-Axiom-K-≃-Contr-Ω X = ⇔-to-≃ (Axiom-K-is-Prop _) (Π-preserves-Props _ λ x → isContr-is-Prop _) ((λ k x → refl x , λ p → k x p ⁻¹) , λ c x p → (pr₂ (c x) p) ⁻¹ ∙ pr₂ (c x) (refl x))
+  Axiom-K-is-Prop : (X : 𝓤 ̇) → isProp (Axiom-K X)
+  Axiom-K-is-Prop X = ≃-preserves-Props _ _ (isSet-≃-Axiom-K X) (isSet-is-Prop X)
+
+  Axiom-K-≃-Contr-Ω : (X : 𝓤 ̇) → Axiom-K X ≃ ((x : X) → isContr (x ≡ x))
+  Axiom-K-≃-Contr-Ω X = ⇔-to-≃ (Axiom-K-is-Prop _) (Π-preserves-Props _ λ x → isContr-is-Prop _) ((λ k x → refl x , λ p → k x p ⁻¹) , λ c x p → (pr₂ (c x) p) ⁻¹ ∙ pr₂ (c x) (refl x))
     
 
 -- Theorem 7.2.2 (A useful way to prove "sethood").
 
-module least-reflexive-rel (X : 𝓤 ̇) (R : X → X → 𝓤 ̇) ( mere-rel : (x y : X) → isProp (R x y)) (ρ : (x : X) → R x x) (f : (x y : X) → R x y → x ≡ y) where
+module least-reflexive-rel ⦃ fe : FunExt ⦄ (X : 𝓤 ̇) (R : X → X → 𝓤 ̇) ( mere-rel : (x y : X) → isProp (R x y)) (ρ : (x : X) → R x x) (f : (x y : X) → R x y → x ≡ y) where
 
   implies-is-Set : isSet X
   implies-is-Set = pr₁ (≃-sym (isSet-≃-Axiom-K X)) (λ x p → ∙ₗ-inv (f x x (ρ x)) _ _ (firstly x p (ρ x) ∙ (ru _))) where
@@ -60,7 +62,7 @@ module least-reflexive-rel (X : 𝓤 ̇) (R : X → X → 𝓤 ̇) ( mere-rel : 
 
 -- Corollary 7.2.3 (DNE for _≡_ implies sethood).
 
-dne-≡-to-isSet : (X : 𝓤 ̇) → ((x y : X) → ¬ (¬ (x ≡ y)) → x ≡ y) → isSet X
+dne-≡-to-isSet : ⦃ fe : FunExt ⦄ (X : 𝓤 ̇) → ((x y : X) → ¬ (¬ (x ≡ y)) → x ≡ y) → isSet X
 dne-≡-to-isSet X dne = least-reflexive-rel.implies-is-Set X (λ x y → ¬ (¬ (x ≡ y))) (λ x y u v → funext λ z → !𝟘 _ (u z)) (λ x u → u (refl x)) dne
 
 
@@ -73,7 +75,7 @@ lem-to-dne A (inr x) = λ y → !𝟘 _ (y x)
 
 -- Theorem 7.2.5 (Hedberg).
 
-decidable-equality-implies-isSet : (X : 𝓤 ̇) → decidable-equality X → isSet X
+decidable-equality-implies-isSet : ⦃ fe : FunExt ⦄ (X : 𝓤 ̇) → decidable-equality X → isSet X
 decidable-equality-implies-isSet X de = dne-≡-to-isSet X λ x y → lem-to-dne _ (de x y)
 
 
@@ -88,7 +90,7 @@ decidable-equality-implies-isSet X de = dne-≡-to-isSet X λ x y → lem-to-dne
 
 -- Theorem 7.2.7 (characterization of truncation level in terms of loop spaces).
 
-Tlevel-in-terms-of-Ω : (n : Tlevel) (X : 𝓤 ̇) → is S (S n) type X ≃ ((x : X) → is S n type (x ≡ x))
+Tlevel-in-terms-of-Ω : ⦃ fe : FunExt ⦄ (n : Tlevel) (X : 𝓤 ̇) → is S (S n) type X ≃ ((x : X) → is S n type (x ≡ x))
 
 -- (i) Lemma 7.2.8 (can assume type is inhabited to show it is S n type.)
 
@@ -106,7 +108,7 @@ Tlevel-in-terms-of-Ω n X = ⇔-to-≃ (Tlevel-is-predicate _ _) (Π-preserves-P
 
 -- Quantification over constant predicate
 
-∀-over-constant-pred : {A : 𝓤 ̇} {B : 𝓥 ̇} → A → isProp B → (∀ (a : A) → B) ≃ B
+∀-over-constant-pred : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} → A → isProp B → (∀ (a : A) → B) ≃ B
 ∀-over-constant-pred a₀ B-is-Prop = (λ f → f a₀) , (qinv-to-isequiv (
   (λ b a → b) ,
   (λ b → refl b) ,
@@ -114,53 +116,51 @@ Tlevel-in-terms-of-Ω n X = ⇔-to-≃ (Tlevel-is-predicate _ _) (Π-preserves-P
   ))
 
 
--- Theorem 7.2.9 (generalized Axiom K).
+module _ ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 
-generalized-Axiom-K : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A ≃ ((a : A) → isContr (pr₁ (Ω^ (to-ℕ n) (A , a))))
-generalized-Axiom-K ⟨-2⟩ A = ≃-sym (isProp-≃-is-⟨-1⟩-type A) ● isProp-≃-inhabited→isContr A 
-generalized-Axiom-K (S ⟨-2⟩) A = ≃-sym (isSet-≃-is-⟨0⟩-type A) ● (isSet-≃-Axiom-K A ● Axiom-K-≃-Contr-Ω A)
-generalized-Axiom-K (S (S n)) A =
-  is S (S (S n)) type A
-    ≃⟨ Tlevel-in-terms-of-Ω _ _ ⟩
-  ((a : A) → is S (S n) type (a ≡ a))
-    ≃⟨ Π-preserves-family-≃ (λ a → generalized-Axiom-K (S n) (a ≡ a)) ⟩
-  ((a : A) (p : a ≡ a) → isContr (pr₁ (Ω^ (to-ℕ (S n)) ((a ≡ a) , p))))
-    ≃⟨ Π-preserves-family-≃ (λ a → Π-preserves-family-≃ λ p → idtoeqv (ap (λ - → isContr (pr₁ (Ω^ (to-ℕ n) -))) (identity a p))) ⟩
-  ((a : A) (p : a ≡ a) → isContr (pr₁ (Ω^ (to-ℕ n) ((refl a ≡ refl a) , refl (refl a)))))
-    ≃⟨ ((Π-preserves-family-≃ λ a → ∀-over-constant-pred (refl a) (isContr-is-Prop _))) ⟩
-  ((a : A) → isContr (pr₁ (Ω^ (to-ℕ n) ((refl a ≡ refl a) , refl (refl a))))) ■
-  where
-    identity : (a : A) (p : a ≡ a) → Ω ((a ≡ a) , p) ≡ Ω^ 2 (A , a)
-    identity a p = dpair-≡ (
-      ua (
-        (ap (λ r → r ∙ p ⁻¹) {p} {p}) , ap-of-equiv-is-equiv (qinv-to-isequiv (qinv-post-∙ a (p ⁻¹))) p p  ●
-        (_∙ rinv p) , qinv-to-isequiv (qinv-post-∙ _ (rinv p)) ●
-        (rinv p ⁻¹ ∙_) , qinv-to-isequiv (qinv-pre-∙ _ (rinv p ⁻¹))
-      ) ,
-      (idtoeqv-β _ (refl p) ∙ (ap (rinv p ⁻¹ ∙_) (lu (rinv p)) ⁻¹ ∙ linv (rinv p)))
-      )
+  -- Theorem 7.2.9 (generalized Axiom K).
 
-
--- Corollary
-
-Tlevel-in-terms-of-Map⊙ : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A ≃ ((a : A) → isContr (Map⊙ (Sphere⊙ (to-ℕ n)) (A , a)))
-Tlevel-in-terms-of-Map⊙ n A = generalized-Axiom-K n A ● Π-preserves-family-≃ (λ a → isContr-preserves-≃ (≃-sym (Sphere-UMP (to-ℕ n) _)))
-
-hub-and-spokes : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A → (l : Sphere (to-ℕ n) → A) → Σ h ꞉ A , l ∼ (λ x → h)
-hub-and-spokes n A i l = h , s where
-  m : ℕ
-  m = to-ℕ n
-  h : A
-  h = l (base m)
-  cₕ : Map⊙ (Sphere⊙ m) (A , h)
-  cₕ = (λ x → h) , refl h
-  l' : Map⊙ (Sphere⊙ m) (A , h)
-  l' = l , refl h
-  contr-loops : isContr (Map⊙ (Sphere⊙ m) (A , h))
-  contr-loops = pr₁ (Tlevel-in-terms-of-Map⊙ n A) i h
-  s : (x : Sphere m) → l x ≡ h
-  s = happly (ap pr₁ (pr₂ (pr₁ (isContr-iff-is-inhabited-Prop _) contr-loops) l' cₕ))
+  generalized-Axiom-K : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A ≃ ((a : A) → isContr (pr₁ (Ω^ (to-ℕ n) (A , a))))
+  generalized-Axiom-K ⟨-2⟩ A = ≃-sym (isProp-≃-is-⟨-1⟩-type A) ● isProp-≃-inhabited-to-isContr A 
+  generalized-Axiom-K (S ⟨-2⟩) A = ≃-sym (isSet-≃-is-⟨0⟩-type A) ● (isSet-≃-Axiom-K A ● Axiom-K-≃-Contr-Ω A)
+  generalized-Axiom-K (S (S n)) A =
+    is S (S (S n)) type A
+      ≃⟨ Tlevel-in-terms-of-Ω _ _ ⟩
+    ((a : A) → is S (S n) type (a ≡ a))
+      ≃⟨ Π-preserves-family-≃ (λ a → generalized-Axiom-K (S n) (a ≡ a)) ⟩
+    ((a : A) (p : a ≡ a) → isContr (pr₁ (Ω^ (to-ℕ (S n)) ((a ≡ a) , p))))
+      ≃⟨ Π-preserves-family-≃ (λ a → Π-preserves-family-≃ λ p → idtoeqv (ap (λ - → isContr (pr₁ (Ω^ (to-ℕ n) -))) (identity a p))) ⟩
+    ((a : A) (p : a ≡ a) → isContr (pr₁ (Ω^ (to-ℕ n) ((refl a ≡ refl a) , refl (refl a)))))
+      ≃⟨ ((Π-preserves-family-≃ λ a → ∀-over-constant-pred (refl a) (isContr-is-Prop _))) ⟩
+    ((a : A) → isContr (pr₁ (Ω^ (to-ℕ n) ((refl a ≡ refl a) , refl (refl a))))) ■
+    where
+      identity : (a : A) (p : a ≡ a) → Ω ((a ≡ a) , p) ≡ Ω^ 2 (A , a)
+      identity a p = dpair-≡ (
+        ua (
+          (ap (λ r → r ∙ p ⁻¹) {p} {p}) , ap-of-equiv-is-equiv (qinv-to-isequiv (qinv-post-∙ a (p ⁻¹))) p p  ●
+          (_∙ rinv p) , qinv-to-isequiv (qinv-post-∙ _ (rinv p)) ●
+          (rinv p ⁻¹ ∙_) , qinv-to-isequiv (qinv-pre-∙ _ (rinv p ⁻¹))
+        ) ,
+        (idtoeqv-β _ (refl p) ∙ (ap (rinv p ⁻¹ ∙_) (lu (rinv p)) ⁻¹ ∙ linv (rinv p)))
+        )
 
 
+  -- Corollary
 
+  Tlevel-in-terms-of-Map⊙ : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A ≃ ((a : A) → isContr (Map⊙ (Sphere⊙ (to-ℕ n)) (A , a)))
+  Tlevel-in-terms-of-Map⊙ n A = generalized-Axiom-K n A ● Π-preserves-family-≃ (λ a → isContr-preserves-≃ (≃-sym (Sphere-UMP (to-ℕ n) _)))
 
+  hub-and-spokes : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A → (l : Sphere (to-ℕ n) → A) → Σ h ꞉ A , l ∼ (λ x → h)
+  hub-and-spokes n A i l = h , s where
+    m : ℕ
+    m = to-ℕ n
+    h : A
+    h = l (base m)
+    cₕ : Map⊙ (Sphere⊙ m) (A , h)
+    cₕ = (λ x → h) , refl h
+    l' : Map⊙ (Sphere⊙ m) (A , h)
+    l' = l , refl h
+    contr-loops : isContr (Map⊙ (Sphere⊙ m) (A , h))
+    contr-loops = pr₁ (Tlevel-in-terms-of-Map⊙ n A) i h
+    s : (x : Sphere m) → l x ≡ h
+    s = happly (ap pr₁ (pr₂ (pr₁ isContr-iff-is-inhabited-Prop contr-loops) l' cₕ))

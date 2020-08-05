@@ -137,7 +137,8 @@ module pb-sq ⦃ fe : FunExt ⦄ {𝓤 𝓥 𝓦 : Universe} {A : 𝓤 ̇} {B : 
     (Σ-induction (λ h → Σ-induction λ k α → refl _)) ,
     λ u → refl _
     )
-  
+
+open pb-sq public
 
 
 -- Exercise 2.10 (Dependent pairing is associative).

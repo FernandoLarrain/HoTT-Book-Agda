@@ -4,7 +4,8 @@ open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
-open import Ch6.2-Induction-pples-and-dependent-paths
+open import Rewrite
+--open import Ch6.2-Induction-pples-and-dependent-paths
 
 module Ch6.5-Suspensions where
 
@@ -96,16 +97,9 @@ _₊ : (A : 𝓤 ̇) → 𝓤 ⊙
 A ₊ = ((A + 𝟙) , inr ⋆)
 
 
--- Transport of function application along function equality.
-
-transport-fun-ap : {X : 𝓤 ̇} {Y : 𝓥 ̇} (x₀ : X) (y₀ : Y) {f g : X → Y} (q : f ≡ g) (p : f x₀ ≡ y₀) → transport (λ (f : X → Y) → f x₀ ≡ y₀) q p ≡ happly q x₀ ⁻¹ ∙ p
-transport-fun-ap x₀ y₀ (refl f) p = lu p
-
-
-
 -- Lemma 6.5.3.
 
-module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
+module based-maps-≃-unbased-maps ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
 
   B = pr₁ B'
   b₀ = pr₂ B'
@@ -124,7 +118,7 @@ module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
       q ,
       (
       transport (λ - → - (inr ⋆) ≡ b₀) q (refl b₀)
-        ≡⟨ transport-fun-ap (inr ⋆) b₀ q (refl b₀) ⟩
+        ≡⟨ transport-funval-≡' (inr ⋆) b₀ q (refl b₀) ⟩
       happly q (inr ⋆) ⁻¹ ∙ refl b₀
         ≡⟨ ru _ ⁻¹ ⟩
       happly q (inr ⋆) ⁻¹
@@ -143,13 +137,13 @@ module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
 
 -- Points of a type
 
-points-of-a-type : (A : 𝓤 ̇) → (𝟙 → A) ≃ A
+points-of-a-type : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) → (𝟙 → A) ≃ A
 points-of-a-type A = (λ f → f ⋆) , qinv-to-isequiv ((λ a u → a) , (refl , λ f → funext (𝟙-induction _ (refl (f ⋆))))) 
 
 
 -- Exercise 6.11 (UMP of Susp).
 
-module Susp-UMP (A : 𝓤 ̇) (B : 𝓥 ̇) where 
+module Susp-UMP ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B : 𝓥 ̇) where 
 
   ϕ : (Susp A → B) → (Σ bₙ ꞉ B , Σ bₛ ꞉ B , (A → bₙ ≡ bₛ)) 
   ϕ f = f north , f south , ap f ∘ merid 
@@ -183,7 +177,7 @@ module Susp-UMP (A : 𝓤 ̇) (B : 𝓥 ̇) where
 
 -- Lemma 6.5.4 (Susp ⊣ Ω)
 
-module Susp⊣Ω (A' : 𝓤 ⊙) (B' : 𝓥 ⊙) where
+module Susp⊣Ω ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (B' : 𝓥 ⊙) where
 
   A = pr₁ A'
   a₀ = pr₂ A'
@@ -227,7 +221,7 @@ module Susp⊣Ω (A' : 𝓤 ⊙) (B' : 𝓥 ⊙) where
 
 -- Corollary (UMP of n-sphere).
 
-Sphere-UMP : {𝓤 : Universe} (n : ℕ) (B : 𝓤 ⊙) → Map⊙ (Sphere⊙ n) B ≃ pr₁ (Ω^ n B)
+Sphere-UMP : ⦃ fe : FunExt ⦄ {𝓤 : Universe} (n : ℕ) (B : 𝓤 ⊙) → Map⊙ (Sphere⊙ n) B ≃ pr₁ (Ω^ n B)
 Sphere-UMP zero B = based-maps-≃-unbased-maps.equivalence 𝟙 B ● points-of-a-type (pr₁ B)
 Sphere-UMP (succ n) B = (Susp⊣Ω.equivalence (Sphere⊙ n) B) ● Sphere-UMP n (Ω B)
 

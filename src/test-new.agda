@@ -38,6 +38,7 @@ open import Ch2.1-Types-are-higher-groupoids public
 -- infix 30 _∙ₗ_
 open import Ch2.2-Functions-are-functors public
 open import Ch2.3-Type-families-are-fibrations public
+-- infix 0 PathOver
 open import Ch2.4-Homotopies-and-equivalences public
 -- infix 0 _∼_
 -- infix 10 _≃_
@@ -83,6 +84,7 @@ open import Ch4.6-Surjections-and-embeddings public
 open import Ch4.7-Closure-properties-of-equivalences public
 open import Ch4.8-The-object-classifier public
 open import Ch4.9-Univalence-implies-funext public
+open import Ch4.Exercises public
 
 -- Chapter 5
 
@@ -92,19 +94,21 @@ open import Ch5.4-Inductive-types-are-initial-algebras public
 open import Ch5.8-Id-types-and-id-systems public
 
 
--- -- Chapter 6
+-- Chapter 6
 
--- open import Ch6.2-Induction-pples-and-dependent-paths public
--- open import Ch6.3-The-interval public public
--- open import Ch6.4-Circles-and-spheres public
--- open import Ch6.5-Suspensions public
--- open import Ch6.8-Pushouts public
--- open import Ch6.9-Truncations public
--- open import Ch6.10-Quotients public
--- open import Ch6.Exercises public
+open import Rewrite public
 
--- -- Chapter 7
+open import Ch6.2-Induction-pples-and-dependent-paths public
+open import Ch6.3-The-interval public public
+open import Ch6.4-Circles-and-spheres public
+open import Ch6.5-Suspensions public
+open import Ch6.8-Pushouts public
+open import Ch6.9-Truncations public
+open import Ch6.10-Quotients public
+open import Ch6.Exercises public
+
+-- Chapter 7
 
 open import Ch7.1-Definition-of-n-types public
--- open import Ch7.2-UIP-and-Hedberg's-theorem public
--- open import Ch7.3-Truncations public
+open import Ch7.2-UIP-and-Hedberg's-theorem public
+open import Ch7.3-Truncations public
