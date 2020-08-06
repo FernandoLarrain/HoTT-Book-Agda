@@ -67,8 +67,10 @@ C ℕAlg-≅ D = Σ f ꞉ ℕHom C D , Σ g ꞉ ℕHom D C , (ℕHom-comp D C D 
 
 -- Definition 5.4.3 (homotopy-initial ℕ-algebra).
 
+{- Note: We are restricting the definition to a single universe to be able to use univalence in 5.4.4. -}
+
 isHinit-ℕ : ℕAlg 𝓤 → 𝓤 ⁺ ̇
-isHinit-ℕ {𝓤} I = (C : ℕAlg 𝓤) → isContr (ℕHom I C) 
+isHinit-ℕ {𝓤} I = (C : ℕAlg 𝓤) → isContr (ℕHom I C)
 
 isHinit-ℕ-is-Prop : ⦃ fe : FunExt ⦄ (I : ℕAlg 𝓤) → isProp (isHinit-ℕ I)
 isHinit-ℕ-is-Prop I = Π-preserves-Props _ (λ C → isContr-is-Prop _)
@@ -153,15 +155,16 @@ Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
       fun-∼ (succ (succ n)) ⁻¹ ∙ ap cs (α n) ∙ ap cs (fun-∼ (succ n))
         ≡⟨ refl _ ⟩
       (α (succ n) ∙ ap cs (fun-∼ (succ n)) ∙ β (succ n) ⁻¹) ⁻¹ ∙ α (succ n) ∙ ap cs (fun-∼ (succ n))
-        ≡⟨ path-aux ⟩
+        ≡⟨ aux-path ⟩
       β (succ n) ∎
 
       where
+      
       p₁ =  α (succ n)
       p₂ = ap cs (fun-∼ (succ n))
       p₃ = β (succ n)
-      path-aux : (p₁ ∙ p₂ ∙ p₃ ⁻¹) ⁻¹ ∙ p₁ ∙ p₂ ≡ p₃
-      path-aux rewrite
+      aux-path : (p₁ ∙ p₂ ∙ p₃ ⁻¹) ⁻¹ ∙ p₁ ∙ p₂ ≡ p₃
+      aux-path rewrite
         distr (p₁ ∙ p₂) (p₃ ⁻¹) |
         ∙-assoc ((p₃ ⁻¹) ⁻¹) ((p₁ ∙ p₂) ⁻¹) p₁ ⁻¹ |
         distr p₁ p₂ |
@@ -176,37 +179,4 @@ Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
 
     htpy-≡ : transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α ≡ β
     htpy-≡ = funext htpy-∼
-
-
-module WAlg {A : 𝓤 ̇} (B : A → 𝓥 ̇) where
-
-  -- Equation 5.4.6 (Polynomial functor).
-
-  𝓟₀ : 𝓦 ̇ → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ̇
-  𝓟₀ X = Σ x ꞉ A , (B x → X)
-
-  𝓟₁ : {X : 𝓦 ̇} {Y : 𝓣 ̇} (f : X → Y) → 𝓟₀ X → 𝓟₀ Y
-  𝓟₁ f (x , y) = x , (f ∘ y)
-
-  -- Definition (W-Algebras / P-algebras).
-
-  WAlg : (𝓦 : Universe) → 𝓤 ⊔ 𝓥 ⊔ (𝓦 ⁺) ̇
-  WAlg 𝓦 = Σ C ꞉ 𝓦 ̇ , (𝓟₀ C → C)   
-
-
-  -- Definition (W-homomorphism / P-homomorphisms).
-
-  WHom : WAlg 𝓦 → WAlg 𝓣 → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣 ̇
-  WHom (C , sc) (D , sd) = Σ f ꞉ (C → D) , (f ∘ sc ∼ sd ∘ 𝓟₁ f)
-
-  -- Definition (homotopy-initial W-algebras / P-algebras).
-
-  isHinit-W : WAlg 𝓦 → 𝓤 ⊔ 𝓥 ⊔ (𝓦 ⁺) ̇
-  isHinit-W {𝓦} I = (C : WAlg 𝓦) → isContr (WHom I C)
-
-  -- -- Theorem 5.4.7 ((W A B , sup) is homotopy-initial).
-
-  -- W-is-h-initial : ⦃ fe : FunExt ⦄ → isHinit-W (W A B , Σ-induction sup)
-  -- W-is-h-initial = {!!} -- redefine sup, redefine 𝓟, or neither?
-
   

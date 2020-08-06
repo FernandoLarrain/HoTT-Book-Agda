@@ -176,8 +176,6 @@ module _ ⦃ fe : FunExt ⦄ where
   isSet-≃-is-⟨0⟩-type : (A : 𝓤 ̇) → isSet A ≃ is ⟨0⟩ type A
   isSet-≃-is-⟨0⟩-type A = ⇔-to-≃ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) ((λ A-is-Set x y → pr₁ (isProp-≃-is-⟨-1⟩-type _) (A-is-Set x y)) , λ A-is-⟨0⟩-type x y → pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type _)) (A-is-⟨0⟩-type x y))
 
-≃-preserves-Contr : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isContr A → isContr B
-≃-preserves-Contr = ≃-preserves-Tlevel ⟨-2⟩ 
 
 module _ ⦃ fe : FunExt ⦄ where
 

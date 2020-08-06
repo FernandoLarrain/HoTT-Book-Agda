@@ -138,23 +138,25 @@ total-fib-≃ {𝓤} {𝓥} {𝓦} {A} {P} {Q} f x v =
 
 -- Theorem 4.7.7 (Fiberwise equivalence iff total equivalence).
 
+{- Note : one direction is just that Σ preserves fiberwise equivalences, i.e. Σ-preserves-family-≃. -}
+
 module fiberwise-≃-iff-total-≃ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 𝓦 ̇} (f : Π (λ x → P x → Q x)) where
 
-  Contr : (((x : A) → isContrMap (f x)) → isContrMap (total f)) × (isContrMap (total f) → ((x : A) → isContrMap (f x)))
+  Contr : ((x : A) → isContrMap (f x)) ⇔ isContrMap (total f)
   Contr = sufficiency , necessity where
     sufficiency : ((x : A) → isContrMap (f x)) → isContrMap (total f)
     sufficiency f-is-Contr (x , v) = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (total-fib-≃ f x v))) (f-is-Contr x v)
     necessity : isContrMap (total f) → ((x : A) → isContrMap (f x))
     necessity t-is-Contr x v = retract-of-Contr-is-Contr (≃-to-◁ (total-fib-≃ f x v)) (t-is-Contr (x , v))
 
-  Hae : (((x : A) → ishae (f x)) → ishae (total f)) × (ishae (total f) → ((x : A) → ishae (f x)))
+  Hae : ((x : A) → ishae (f x)) ⇔ ishae (total f)
   Hae = sufficiency , necessity where
     sufficiency : ((x : A) → ishae (f x)) → ishae (total f)
     sufficiency f-is-hae = isContrMap-to-ishae (total f) (pr₁ Contr (λ x → ishae-to-isContrMap (f x) (f-is-hae x)))
     necessity : ishae (total f) → ((x : A) → ishae (f x))
     necessity t-is-hae x = isContrMap-to-ishae (f x) (pr₂ Contr (ishae-to-isContrMap (total f) t-is-hae) x)
 
-  Biinv : ⦃ fe : FunExt ⦄ → (((x : A) → biinv (f x)) → biinv (total f)) × (biinv (total f) → ((x : A) → biinv (f x)))
+  Biinv : ⦃ fe : FunExt ⦄ → (((x : A) → biinv (f x)) ⇔ biinv (total f))
   Biinv = sufficiency , necessity where
     sufficiency : ((x : A) → biinv (f x)) → biinv (total f)
     sufficiency f-is-hae = isContrMap-to-biinv (total f) (pr₁ Contr (λ x → biinv-to-isContrMap (f x) (f-is-hae x)))

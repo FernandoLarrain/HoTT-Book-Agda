@@ -161,7 +161,7 @@ The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences fro
 
 * Modules with equivalence: .equiv
 
-* Finish / fix 2.14
+* Finish / fix 2.14 (maybe change to magmas; the full associativity proof is in M. Escardo's notes.
 
 * Define equivalence with old 1-type definition
 
@@ -171,10 +171,5 @@ The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences fro
 
 * Change where-lemmas to sublemmas
 
-* Change inhabited prop by pted prop
+* Generalize constructions that restrict to a single universe when possible. Restrict theorem hypotheses, not definitions (unless multiverse definitions don't make sense).
 
-* Rename idtoeqv-beta
-
-* Prove function extensionality using universe lifting instead of bootstrapping.
-
-* Solve issue with type inference in corollary-4-9-3' with argument isuniv : is-univalent (U \lub V).

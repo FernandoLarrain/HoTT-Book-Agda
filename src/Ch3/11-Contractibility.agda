@@ -133,6 +133,9 @@ retract-of-Contr-is-Contr (r , (s , ε)) (a₀ , c) = center , contraction where
       ≡⟨ ε b ⟩
     b ∎
 
+≃-preserves-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → isContr A → isContr B
+≃-preserves-Contr e A-is-Contr = retract-of-Contr-is-Contr (≃-to-◁ e) A-is-Contr
+
 
 -- Lemma 3.11.8 (The subtype of points equal to a given point is contractible).
 
