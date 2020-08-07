@@ -44,7 +44,7 @@ infix 0 _≡_
 ℍ' : {X : 𝓤 ̇ } (x : X) (B : (y : X) → x ≡ y → 𝓥 ̇) → B x (refl x) →
  (y : X) (p : x ≡ y) → B y p
 ℍ' {𝓤} {𝓥} {X} x B b y p =
-  let D : (x y : X) (p : x ≡ y) → 𝓤 ⊔ 𝓥 ⁺ ̇
+  let D : (x y : X) → x ≡ y → 𝓤 ⊔ 𝓥 ⁺ ̇
       D x y p = (C : (z : X) → x ≡ z → 𝓥 ̇) → C x (refl x) → C y p 
   in 𝕁 X D (λ z C c → c) x y p B b
 
