@@ -85,7 +85,7 @@ Hinit-ℕAlg-is-Prop : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → isProp 
 Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
   let I = (UI , i₀ , is)
       J = (UJ , j₀ , js)
-  in Σ-over-predicate isHinit-ℕ-is-Prop _ _ (ℕAlg-≅-to-≡ (
+  in Σ-over-predicate isHinit-ℕ-is-Prop (ℕAlg-≅-to-≡ (
   pr₁ (i J) ,
   pr₁ (j I) ,
   pr₂ (pr₁ isContr-iff-is-inhabited-Prop  (j J)) _ _ ,

@@ -10,7 +10,7 @@ open import Ch2.9-Π-types-and-funext
 module Ch2.11-Identity-type where
 
 
--- Theorem 2.11.1 (The action on paths of an equivalence is an equivalence).
+-- Theorem 2.11.1 (The action on paths of an equivalence is an equivalence / Id preserves equivalence).
 
 {- The proof is not hard; it is just a very long and detailed example of equational reasoning. It is easier to use the rewrite construct. -}
 
@@ -87,6 +87,15 @@ ap-of-equiv-is-equiv {𝓤} {𝓥} {A} {B} {f} e a a' with isequiv-to-qinv e
       ≡⟨ lu _ ⁻¹ ∙ ap-id _ ⟩
     p ∎
   ))
+
+
+-- Example : ap lift and ap lower are equivalences.
+
+ap-lift-is-equiv : {𝓥 : Universe} {A : 𝓤 ̇} {x y : A} → isequiv (ap (lift {𝓤} {𝓥} {A}) {x} {y})
+ap-lift-is-equiv = ap-of-equiv-is-equiv (qinv-to-isequiv qinv-lift) _ _
+
+ap-lower-is-equiv : {𝓥 : Universe} {A : 𝓤 ̇} {x y : Lift 𝓥 A} → isequiv (ap (lower {𝓤} {𝓥} {A}) {x} {y})
+ap-lower-is-equiv = ap-of-equiv-is-equiv (qinv-to-isequiv qinv-lower) _ _
 
 
 -- Lemma 2.11.2 (Transport of paths along equality of endpts).

@@ -325,6 +325,8 @@ module _ ⦃ fe : FunExt ⦄ where
 +-preserves-≃ (f , i) (g , j) with isequiv-to-qinv i | isequiv-to-qinv j
 ... | (finv , α , β) | (ginv , γ , δ) = +-recursion (inl ∘ f) (inr ∘ g) , qinv-to-isequiv (+-recursion (inl ∘ finv) (inr ∘ ginv) , +-induction _ (λ c → ap inl (α c)) (λ d → ap inr (γ d)) , +-induction _ (λ a → ap inl (β a)) (λ b → ap inr (δ b)))
 
+-- (vi) Id preserves ≃ : there are ways to formulate this, but they essentially reduce to ap-of-equiv-is-equiv in Ch2.11-Identity-type.
+
 
 private {- The following results are experimental / exploratory. -}
 

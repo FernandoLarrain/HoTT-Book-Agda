@@ -21,7 +21,6 @@ module single-universe where
   is-based-id-system : {A : 𝓤 ⊙} → pted-pred A  → 𝓤 ⁺ ̇
   is-based-id-system {𝓤} {A , a₀} (R , r₀) = (D : (a : A) → R a → 𝓤 ̇) (d : D a₀ r₀) → Σ f ꞉ ((a : A) (r : R a) → D a r) , f a₀ r₀ ≡ d
 
-
   -- Composition of pointed families of maps
 
   ppmap-comp : (A : 𝓤 ⊙) (R S T : pted-pred A) → ppmap A R S → ppmap A S T → ppmap A R T
@@ -143,28 +142,34 @@ module multiple-universes where
   pted-pred : 𝓤 ⊙ → (𝓥 : Universe) → 𝓤 ⊔ 𝓥 ⁺ ̇
   pted-pred {𝓤} (A , a₀) 𝓥 = Σ R ꞉ (A → 𝓥 ̇) , R a₀
 
-  ppmap : (A : 𝓤 ⊙) → pted-pred A 𝓥 → pted-pred A 𝓦 → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ̇
-  ppmap (A , a₀) (R , r₀) (S , s₀) = Σ g ꞉ Π (λ a → R a → S a) , g a₀ r₀ ≡ s₀ 
+  ppmap : {A : 𝓤 ⊙} → pted-pred A 𝓥 → pted-pred A 𝓦 → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ̇
+  ppmap {𝓤} {𝓥} {𝓦} {A , a₀} (R , r₀) (S , s₀) = Σ g ꞉ Π (λ a → R a → S a) , g a₀ r₀ ≡ s₀ 
 
   is-based-id-system : {A : 𝓤 ⊙} → pted-pred A 𝓥 → 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⁺ ̇ 
   is-based-id-system {𝓤} {𝓥} {𝓦} {A , a₀} (R , r₀) = (D : (a : A) → R a → 𝓦 ̇) (d : D a₀ r₀) → Σ f ꞉ ((a : A) (r : R a) → D a r) , f a₀ r₀ ≡ d
 
 
+  -- Identity is a pointed predicate
+
+  Id⊙ : (A : 𝓤 ⊙) → pted-pred A 𝓤
+  Id⊙ (A , a₀) = (Id A a₀) , (refl a₀)
+  
+
   -- Composition of pointed families of maps
 
-  ppmap-comp : (A : 𝓤 ⊙) (R : pted-pred A 𝓥) (S : pted-pred A 𝓦) (T : pted-pred A 𝓣) → ppmap A R S → ppmap A S T → ppmap A R T
-  ppmap-comp (A , a₀) (R , r₀) (S , s₀) (T , t₀) (f , fr) (g , gr) = (λ a → g a ∘ f a) , (ap (g a₀) fr ∙ gr)
+  _∘pp_ : {A : 𝓤 ⊙} {R : pted-pred A 𝓥} {S : pted-pred A 𝓦} {T : pted-pred A 𝓣} → ppmap S T → ppmap R S → ppmap R T
+  _∘pp_ {𝓤} {𝓥} {𝓦} {𝓣} {A , a₀} {R , r₀} {S , s₀} {T , t₀} (g , gr) (f , fr) = (λ a → g a ∘ f a) , (ap (g a₀) fr ∙ gr)
 
 
-  -- Identity pointed family of maps
+  -- Pointed family of identity maps
 
-  ppmap-id : (A : 𝓤 ⊙) (R : pted-pred A 𝓥) → ppmap A R R
+  ppmap-id : (A : 𝓤 ⊙) (R : pted-pred A 𝓥) → ppmap R R
   ppmap-id (A , a₀) (R , r₀) = (λ a → id) , (refl r₀)
 
 
-  -- Identity type of pointed families of maps
+  -- Identity type of pointed families
 
-  ppmap-≡ : ⦃ fe : FunExt ⦄ (A : 𝓤 ⊙) (R : pted-pred A 𝓥) (S : pted-pred A 𝓦) (g h : ppmap A R S) → (g ≡ h) ≃ (Σ α ꞉ ((a : pr₁ A) (r : pr₁ R a) → pr₁ g a r ≡ pr₁ h a r) , (α (pr₂ A) (pr₂ R) ⁻¹ ∙ pr₂ g ≡ pr₂ h))
+  ppmap-≡ : ⦃ fe : FunExt ⦄ (A : 𝓤 ⊙) (R : pted-pred A 𝓥) (S : pted-pred A 𝓦) (g h : ppmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a : pr₁ A) (r : pr₁ R a) → pr₁ g a r ≡ pr₁ h a r) , (α (pr₂ A) (pr₂ R) ⁻¹ ∙ pr₂ g ≡ pr₂ h))
   ppmap-≡ (A , a₀) (R , r₀) (S , s₀) (g , gr) (h , hr) = Σ-≡-equiv ● Σ-preserves-≃ _ _ ((happly , happly-is-equiv) ● Π-preserves-family-≃ (λ a → happly , happly-is-equiv)) λ p → (path p gr ⁻¹ ∙_ ) , (qinv-to-isequiv (qinv-pre-∙ hr (path p gr ⁻¹))) where
      path : {g h : Π λ a → R a → S a} (p : g ≡ h) (gr : g a₀ r₀ ≡ s₀) → transport (λ - → (- a₀ r₀) ≡ s₀) p gr ≡ happly (happly p a₀) r₀ ⁻¹ ∙ gr  
      path (refl _) gr = lu _
@@ -178,16 +183,20 @@ module multiple-universes where
 
     A = pr₁ A'
     a₀ = pr₂ A'
+    
     R = pr₁ R'
     r₀ = pr₂ R'
 
-    -- TFAE
+    -- Statements (the first two are actually "statement schemas" indexed by 𝓦).
 
-    i : 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⁺ ̇
+    i : 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⁺ ̇ 
     i {𝓦} = is-based-id-system {𝓤} {𝓥} {𝓦} R'
+    
     ii : 𝓤 ⊔ 𝓥 ⊔ 𝓦 ⁺ ̇
-    ii {𝓦} = (S' : pted-pred A' 𝓦) → isContr (ppmap A' R' S')
+    ii {𝓦} = (S' : pted-pred A' 𝓦) → isContr (ppmap R' S')
+    
     iii = (a : A) → isequiv (λ (- : a₀ ≡ a) → transport R - r₀)
+    
     iv = isContr (Σ R)
 
     -- The statements are propositions (the proof of i-is-Prop is omitted).
@@ -205,9 +214,9 @@ module multiple-universes where
 
     i-to-ii : i {𝓦} → ii {𝓦}
     i-to-ii R'-is-based-id-system (S , s₀) = pr₂ isContr-iff-is-inhabited-Prop (inhabited , is-Prop) where
-      inhabited : ppmap A' R' (S , s₀)
+      inhabited : ppmap R' (S , s₀)
       inhabited = R'-is-based-id-system (λ a r → S a) s₀
-      is-Prop : isProp (ppmap A' R' (S , s₀))
+      is-Prop : isProp (ppmap R' (S , s₀))
       is-Prop (f , fr) (g , gr) =
         let R'-ind = R'-is-based-id-system (λ a r → f a r ≡ g a r) (fr ∙ gr ⁻¹)
         in inv (ppmap-≡ A' R' (S , s₀) (f , fr) (g , gr)) (
@@ -233,14 +242,14 @@ module multiple-universes where
 
       -- Pointed map from LS' to S
 
-      LS'-to-S' : ppmap A' LS' S'
+      LS'-to-S' : ppmap LS' S'
       LS'-to-S' = (λ a → lower) , refl _
 
       -- Equivalence of ppmap spaces
 
-      Contr : isContr (ppmap A' R' LS')
+      Contr : isContr (ppmap R' LS')
       Contr = R'-is-initial LS'
-      aux-equiv : ppmap A' R' LS' ≃ ppmap A' R' S'
+      aux-equiv : ppmap R' LS' ≃ ppmap R' S'
       aux-equiv = Σ-preserves-≃ _ _ (Π-preserves-family-≃ (λ a → →-preserves-codom-≃ _ (lower , (qinv-to-isequiv (lift , hrefl _ , hrefl _))))) (λ g → ap lower , ap-of-equiv-is-equiv (qinv-to-isequiv (lift , hrefl _  , hrefl _)) _ _)
 
 
@@ -259,7 +268,7 @@ module multiple-universes where
 
       -- Pointed map from LR' to R'
 
-      LR'-to-R' : ppmap A' LR' R'
+      LR'-to-R' : ppmap LR' R'
       LR'-to-R' = (λ a → lower) , refl _
 
       -- Identity is a pointed predicate
@@ -282,37 +291,37 @@ module multiple-universes where
 
       -- Pointed map from LS' to S
 
-      LS'-to-S' : ppmap A' LS' S'
+      LS'-to-S' : ppmap LS' S'
       LS'-to-S' = (λ a → lower) , refl _
 
       -- Inverse pointed family of maps
 
-      Contr₁ : isContr (ppmap A' R' LS')
+      Contr₁ : isContr (ppmap R' LS')
       Contr₁ = R'-is-initial LS'
-      inv-ppmap : ppmap A' R' S' 
-      inv-ppmap = ppmap-comp A' R' LS' S' (pr₁ Contr₁) LS'-to-S'
+      inv-ppmap : ppmap R' S' 
+      inv-ppmap = LS'-to-S' ∘pp (pr₁ Contr₁)
 
       -- Right-invertibility
 
-      Contr₂' : isContr (ppmap A' R' LR')
+      Contr₂' : isContr (ppmap R' LR')
       Contr₂' = R'-is-initial LR'
-      aux-equiv : ppmap A' R' LR' ≃ ppmap A' R' R'
+      aux-equiv : ppmap R' LR' ≃ ppmap R' R'
       aux-equiv = Σ-preserves-≃ _ _ (Π-preserves-family-≃ (λ a → →-preserves-codom-≃ _ (lower , (qinv-to-isequiv (lift , hrefl _ , hrefl _))))) (λ g → ap lower , ap-of-equiv-is-equiv (qinv-to-isequiv (lift , hrefl _  , hrefl _)) _ _)
-      Contr₂ : isContr (ppmap A' R' R')
+      Contr₂ : isContr (ppmap R' R')
       Contr₂ = ≃-preserves-Contr aux-equiv Contr₂'
-      α : ppmap-comp A' R' S' R' inv-ppmap ((λ a p → transport R p r₀) , refl r₀) ≡ ppmap-id A' R'
+      α : ((λ a p → transport R p r₀) , refl r₀) ∘pp inv-ppmap ≡ ppmap-id A' R'
       α = pr₂ (pr₁ isContr-iff-is-inhabited-Prop Contr₂) _ _
       α' : (a : A) (r : R a) → transport R (pr₁ inv-ppmap a r) r₀ ≡ r
-      α' = pr₁ (pr₁ (ppmap-≡ A' R' R' (ppmap-comp A' R' S' R' inv-ppmap ((λ a p → transport R p r₀) , refl r₀)) (ppmap-id A' R')) α)
+      α' = pr₁ (pr₁ (ppmap-≡ A' R' R' (((λ a p → transport R p r₀) , refl r₀) ∘pp inv-ppmap) (ppmap-id A' R')) α)
 
       -- Left-invertibility
 
-      Contr₃ : isContr (ppmap A' S' S')
+      Contr₃ : isContr (ppmap S' S')
       Contr₃ = ppmap-id A' S' , Σ-induction (λ f fr → inv (ppmap-≡ A' S' S' (ppmap-id A' S') (f , fr)) ((ℍ a₀ (λ a p → pr₁ (ppmap-id A' S') a p ≡ f a p) (fr ⁻¹)) , (ru _ ⁻¹ ∙ ⁻¹-invol _)))
-      β : ppmap-comp A' S' R' S' ((λ a p → transport R p r₀) , refl r₀) inv-ppmap ≡ ppmap-id A' S'
+      β : inv-ppmap ∘pp ((λ a p → transport R p r₀) , refl r₀) ≡ ppmap-id A' S'
       β = pr₂ Contr₃ _ ⁻¹
       β' : (a : A) (p : S a) → pr₁ inv-ppmap a (transport R p r₀) ≡ p
-      β' = pr₁ (pr₁ (ppmap-≡ A' S' S' (ppmap-comp A' S' R' S' ((λ a p → transport R p r₀) , refl r₀) inv-ppmap) (ppmap-id A' S')) β)
+      β' = pr₁ (pr₁ (ppmap-≡ A' S' S' (inv-ppmap ∘pp ((λ a p → transport R p r₀) , refl r₀)) (ppmap-id A' S')) β)
 
 
     iii-to-iv : iii → iv
@@ -392,14 +401,15 @@ module multiple-universes where
           happly-β (λ r → α₁ a a r) (r₀ a) 
           = refl _
 
-    -- iii-to-i : iii {𝓦} → i {𝓦}
-    -- iii-to-i Contr D d = {!!} , {!!}
+--     iii-to-i : iii {𝓦} → i {𝓦}
+--     iii-to-i Contr D d = {!!} , {!!}
 
-    -- etc.
+--     ii-to-iv : ii {𝓦} → iv
+--     ii-to-iv R'-is-based-id-system a = {!!}
   
 
--- -- Corollary 5.8.5 (Equivalence induction)
+-- -- -- Corollary 5.8.5 (Equivalence induction)
 
--- 𝕁-≃ : (D : (A B : 𝓤 ̇) (e : A ≃ B) → 𝓥 ̇) ( (A B : 𝓤 ̇) (e : A ≃ B) →  
+-- -- 𝕁-≃ : (D : (A B : 𝓤 ̇) (e : A ≃ B) → 𝓥 ̇) ( (A B : 𝓤 ̇) (e : A ≃ B) →  
 
 

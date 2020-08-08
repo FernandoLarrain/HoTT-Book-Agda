@@ -48,7 +48,7 @@ module least-reflexive-rel ⦃ fe : FunExt ⦄ (X : 𝓤 ̇) (R : X → X → �
     codom-is-Contr : isContr (Σ λ y → x ≡ y)
     codom-is-Contr = free-right-endpt-is-Contr _ _
     dom-is-Contr : isContr (Σ λ y → R x y)
-    dom-is-Contr = (x , (ρ x)) , Σ-induction (λ y H → Σ-over-predicate (mere-rel x) _ _ (f x y H))
+    dom-is-Contr = (x , (ρ x)) , Σ-induction (λ y H → Σ-over-predicate (mere-rel x) (f x y H))
 
 
   equivalence : isSet X ≃ ((x y : X) → R x y ≃ (x ≡ y))

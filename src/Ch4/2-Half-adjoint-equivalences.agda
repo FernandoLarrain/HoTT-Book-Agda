@@ -119,7 +119,33 @@ path-space-fib {𝓤} {𝓥} {A} {B} {f} {y} (x , p) (x' , p') = Σ-≡-equiv �
     lhs-≡₁ = transport-funval-≡ f (λ a → y) γ p ∙ ap (ap f γ ⁻¹ ∙ p ∙_) (ap-const-fun y γ) ∙ ru _ ⁻¹
     lhs-≡₂ : p ≡ ap f γ ∙ (ap f γ ⁻¹ ∙ p)
     lhs-≡₂ = lu p ∙ ap (_∙ p) (rinv (ap f γ) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹
-  
+
+
+-- Path space of fiber f is fiber of ap f.
+
+path-space-fib-is-fib-of-ap : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} {y : B} → (w w' : fib f y) → (w ≡ w') ≃ fib (ap f {pr₁ w} {pr₁ w'}) (pr₂ w ∙ pr₂ w' ⁻¹)
+path-space-fib-is-fib-of-ap {𝓤} {𝓥} {A} {B} {f} {y} (x , p) (x' , q) =
+  ((x , p) ≡ (x' , q))
+    ≃⟨ path-space-fib _ _ ⟩
+  (Σ γ ꞉ x ≡ x' , (ap f γ ∙ q ≡ p))
+    ≃⟨ Σ-preserves-family-≃ (λ γ → aux-equiv γ p q) ⟩
+  fib (ap f {x} {x'}) (p ∙ q ⁻¹) ■
+  where
+  aux-equiv : {x x' : A} (γ : x ≡ x') {y : B} (p : f x ≡ y) (q : f x' ≡ y) → (ap f γ ∙ q ≡ p) ≃ (ap f γ ≡ p ∙ q ⁻¹)
+  aux-equiv (refl _) p (refl .(f _)) = (_∙ ru p) , (qinv-to-isequiv (qinv-post-∙ _ _))
+
+
+-- Fiber of ap f is path space of fiber f
+
+fib-of-ap-is-path-space-fib :  {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} {x x' : A} (p : f x ≡ f x') → fib (ap f {x} {x'}) p ≃ ((x , p) ≡ (x' , refl (f x')))
+fib-of-ap-is-path-space-fib {𝓤} {𝓥} {A} {B} {f} {x} {x'} p = ≃-sym (
+  ((x , p) ≡ (x' , refl (f x')))
+    ≃⟨ path-space-fib-is-fib-of-ap (x , p) (x' , refl (f x')) ⟩
+  fib (ap f {x} {x'}) (p ∙ refl (f x'))
+    ≃⟨ Σ-preserves-family-≃ (λ γ → (_∙ ru p ⁻¹) , (qinv-to-isequiv (qinv-post-∙ _ _))) ⟩
+  fib (ap f {x} {x'}) p ■
+  )
+
 
 -- Theorem 4.2.6 (Haes are contractible maps (see Def. 4.1.1 in Ch4.4-Contractible-fibers)).
 

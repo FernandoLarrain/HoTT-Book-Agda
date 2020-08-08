@@ -106,7 +106,7 @@ qinv-post-∙ {𝓤} {A} {x} {y} z p =
   λ x₁ → ∙-assoc _ _ _ ⁻¹ ∙ (ap (x₁ ∙_) (rinv p) ∙ ru _ ⁻¹)
 
 
--- _⁻¹ is its own quasi-inverse
+-- Example: _⁻¹ is its own quasi-inverse
 
 qinv-⁻¹ : {A : 𝓤 ̇} (x y : A) → qinv (_⁻¹ {x = x} {y})
 qinv-⁻¹ x y =
@@ -115,7 +115,7 @@ qinv-⁻¹ x y =
   ⁻¹-invol
 
 
--- Whiskering operations have quasi-inverses
+-- Example : whiskering operations have quasi-inverses
 
 module _ {A : 𝓤 ̇} {a b c : A} where
 
@@ -168,6 +168,15 @@ qinv-transport P p =
   (transport P (p ⁻¹)) ,
   (λ v → transport-∙ P (p ⁻¹) p v ∙ ap (λ w → transport P w v) (linv p)) ,
   λ u → transport-∙ P p (p ⁻¹) u ∙ ap (λ w → transport P w u) (rinv p)
+
+
+-- Example: lift and lower are quasi-invertible.
+
+qinv-lift : {𝓥 : Universe} {A : 𝓤 ̇} → qinv (lift {𝓤} {𝓥} {A})
+qinv-lift {𝓤} {𝓥} {A} = lower , hrefl _ , hrefl _
+
+qinv-lower : {𝓥 : Universe} {A : 𝓤 ̇} → qinv (lower {𝓤} {𝓥} {A})
+qinv-lower {𝓤} {𝓥} {A} = lift , hrefl _ , hrefl _
 
 
 -- I. Old definition of equivalence (used up to Ch4.5).
@@ -337,3 +346,12 @@ module new-equiv where
   infix 1 _■ 
 
 open new-equiv public
+
+
+-- Example : types are equivalent to their lifts.
+
+Lift-≃ : {𝓥 : Universe} {A : 𝓤 ̇} → Lift 𝓥 A ≃ A
+Lift-≃ {𝓤} {𝓥} {A} = lower , qinv-to-isequiv qinv-lower 
+
+≃-Lift : {𝓥 : Universe} {A : 𝓤 ̇} → A ≃ Lift 𝓥 A
+≃-Lift {𝓤} {𝓥} {A} = lift , qinv-to-isequiv qinv-lift

@@ -52,3 +52,40 @@ module _ ⦃ fe : FunExt ⦄ where
 
 Σ-preserves-≃' : {A : 𝓤 ̇} {B : 𝓥 ̇} (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) (e : A ≃ B) → ((b : B) → P (inv e b) ≃ Q b) → Σ P ≃ Σ Q
 Σ-preserves-≃' P Q e t = Σ-preserves-base-≃' P e ● Σ-preserves-family-≃ t
+
+
+-- Now that we have shown that isequiv is a proposition, it is much simpler to derive groupoid laws for equivalences:
+
+module _ ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} where
+
+  ≃-ru : (e : A ≃ B) → e ● ≃-refl B ≡ e
+  ≃-ru e = Σ-over-predicate (ishae-is-Prop {𝓤} {𝓥} {A} {B}) (refl _)
+
+  ≃-lu : (e : A ≃ B) → ≃-refl A ● e ≡ e 
+  ≃-lu e = Σ-over-predicate (ishae-is-Prop {𝓤} {𝓥} {A} {B}) (refl _)
+
+  ≃-rinv : (e : A ≃ B) → e ● ≃-sym e ≡ ≃-refl A
+  ≃-rinv (f , g , η , ε , τ) = Σ-over-predicate (ishae-is-Prop {𝓤} {𝓤} {A} {A}) (funext η)
+
+  ≃-linv : (e : A ≃ B) → ≃-sym e ● e ≡ ≃-refl B
+  ≃-linv (f , g , η , ε , τ) = Σ-over-predicate (ishae-is-Prop {𝓥} {𝓥} {B} {B}) (funext ε)
+
+  ≃-sym-invol : (e : A ≃ B) → ≃-sym (≃-sym e) ≡ e
+  ≃-sym-invol e = Σ-over-predicate (ishae-is-Prop {𝓤} {𝓥} {A} {B}) (refl _)
+
+●-assoc : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} {D : 𝓣 ̇} (e : A ≃ B) (f : B ≃ C) (g : C ≃ D) → e ● (f ● g) ≡ e ● f ● g
+●-assoc {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {C} {D} e f g = Σ-over-predicate (ishae-is-Prop {𝓤} {𝓣} {A} {D}) (refl _)
+
+-- A related law
+
+≃-distr : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (e : A ≃ B) (f : B ≃ C) → ≃-sym (e ● f) ≡ ≃-sym f ● ≃-sym e
+≃-distr {𝓤} {𝓥} {𝓦} {A} {B} {C} e f = Σ-over-predicate (ishae-is-Prop {𝓦} {𝓤} {C} {A}) (refl _)
+
+
+-- ≃ preserves ≃
+
+≃-preserves-left-≃ : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} (B : 𝓥 ̇) {A' : 𝓦 ̇} → A ≃ A' → (A ≃ B) ≃ (A' ≃ B)
+≃-preserves-left-≃ {𝓤} {𝓥} {𝓦} {A} B {A'} e = (≃-sym e ●_) , qinv-to-isequiv {_} {_} {A ≃ B} {A' ≃ B} {≃-sym e ●_} ((e ●_) , (λ f → ●-assoc (≃-sym e) e f ∙ ap (_● f) (≃-linv e) ∙ ≃-lu f) , λ f → ●-assoc e (≃-sym e) f ∙ ap (_● f) (≃-rinv e) ∙ ≃-lu f)
+
+≃-preserves-right-≃ : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) {B : 𝓥 ̇} {B' : 𝓦 ̇} → B ≃ B' → (A ≃ B) ≃ (A ≃ B')
+≃-preserves-right-≃ {𝓤} {𝓥} {𝓦} A {B} {B'} e = (_● e) , (qinv-to-isequiv {_} {_} {A ≃ B} {A ≃ B'} {_● e} ((_● (≃-sym e)) , (λ f → ●-assoc f (≃-sym e) e ⁻¹ ∙ (ap (f ●_) (≃-linv e) ∙ ≃-ru f)) , λ f → ●-assoc f e (≃-sym e) ⁻¹ ∙ ap (f ●_) (≃-rinv e) ∙ ≃-ru f))

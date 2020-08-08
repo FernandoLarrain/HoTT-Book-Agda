@@ -6,6 +6,8 @@ open import Ch3.Sets-and-logic
 open import Ch4.2-Half-adjoint-equivalences
 open import Ch4.3-Bi-invertible-maps
 open import Ch4.4-Contractible-fibers
+open import Ch4.5-On-the-definition-of-equivalences
+open import Ch4.6-Surjections-and-embeddings
 
 module Ch4.7-Closure-properties-of-equivalences where
 
@@ -161,4 +163,23 @@ module fiberwise-≃-iff-total-≃ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 
     sufficiency : ((x : A) → biinv (f x)) → biinv (total f)
     sufficiency f-is-hae = isContrMap-to-biinv (total f) (pr₁ Contr (λ x → biinv-to-isContrMap (f x) (f-is-hae x)))
     necessity : biinv (total f) → ((x : A) → biinv (f x))
-    necessity t-is-hae x = isContrMap-to-biinv (f x) (pr₂ Contr (biinv-to-isContrMap (total f) t-is-hae) x) 
+    necessity t-is-hae x = isContrMap-to-biinv (f x) (pr₂ Contr (biinv-to-isContrMap (total f) t-is-hae) x)
+
+
+-- Sufficient condition for embedding.
+
+embedding-criterion : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → ((x x' : A) → (f x ≡ f x') ≃ (x ≡ x')) → is-embedding f
+embedding-criterion {𝓤} {𝓥} {A} {B} f e x = pr₂ (fiberwise-≃-iff-total-≃.Hae (λ x' → ap f {x} {x'})) (map-between-Contrs-is-equiv (total (λ x' → ap f)) (free-right-endpt-is-Contr _ x) (≃-preserves-Contr (≃-sym aux-equiv) (free-right-endpt-is-Contr _ x)))
+  where
+  e₁ : (x' : A) → f x ≡ f x' → x ≡ x'
+  e₁ x' = pr₁ (e x x')
+  e₁-is-fiberwise-equiv : (x' : A) → isequiv (e₁ x')
+  e₁-is-fiberwise-equiv x' = pr₂ (e x x')
+  aux-equiv : (Σ x' ꞉ A , f x ≡ f x') ≃ (Σ x' ꞉ A , x ≡ x')
+  aux-equiv = (total e₁) , (pr₁ (fiberwise-≃-iff-total-≃.Hae e₁) e₁-is-fiberwise-equiv)
+
+
+-- Example: Lift is an embedding of one universe into another.
+
+Lift-is-embedding : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → is-embedding (Lift {𝓤} 𝓥)
+Lift-is-embedding {𝓤} {𝓥} = embedding-criterion (Lift 𝓥) (λ A B → (idtoeqv , idtoeqv-is-equiv) ● (≃-preserves-left-≃ (Lift 𝓥 B) Lift-≃ ● ≃-preserves-right-≃ A Lift-≃) ●  ≃-sym (idtoeqv , idtoeqv-is-equiv))

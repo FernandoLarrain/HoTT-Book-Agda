@@ -12,8 +12,8 @@ module Ch3.5-Subsets-and-prop-resizing where
 
 -- Note: "predicates" or "properties" are just families of propositions. Arbitrary families are called "data".
 
-Σ-over-predicate : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isProp (P x)) → (u v : Σ P) → pr₁ u ≡ pr₁ v → u ≡ v
-Σ-over-predicate f u v p = dpair-≡ (p , (f (pr₁ v) _ _))
+Σ-over-predicate : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isProp (P x)) → {u v : Σ P} → pr₁ u ≡ pr₁ v → u ≡ v
+Σ-over-predicate f {u} {v} p = dpair-≡ (p , (f (pr₁ v) _ _))
 
 Σ-over-predicate' : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isProp (P x)) → (u v : Σ P) → (u ≡ v) ≃ (pr₁ u ≡ pr₁ v) 
 Σ-over-predicate' {𝓤} {𝓥} {A} {P} f u v =

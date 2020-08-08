@@ -13,7 +13,7 @@ module Ch6.4-Circles-and-spheres where
 -- Lemma 6.4.1 (The circle is non-trivial).
 
 𝕊¹-is-non-trivial : ⦃ univ : Univalence ⦄ → ¬ (loop₁ ≡ refl base₁)
-𝕊¹-is-non-trivial s = 𝓤₀-is-not-Set λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
+𝕊¹-is-non-trivial s = 𝓤-is-not-Set 𝓤₀ λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
 
 
 -- Lemma 6.4.2 TO DO

@@ -52,8 +52,6 @@ module thm-4-8-3 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) whe
   χ-is-equiv : isequiv χ
   χ-is-equiv = qinv-to-isequiv χ-has-qinv
 
---open thm-4-8-3 using (χ ; χ-has-qinv ; χ-is-equiv)
-
 
 -- Theorem 4.8.4 (Object classifier).
 

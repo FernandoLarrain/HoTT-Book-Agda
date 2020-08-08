@@ -11,8 +11,8 @@ module Ch4.4-Contractible-fibers where
 
 -- Definition 4.4.1 (Contractible maps).
 
-isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
-isContrMap {B = B} f = (y : B) → isContr (fib f y)
+isContrMap : {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → 𝓤 ⊔ 𝓥 ̇
+isContrMap {𝓤} {𝓥} {A} {B} f = (y : B) → isContr (fib f y)
 
 
 -- Theorem 4.4.3 (contractible maps are haes).

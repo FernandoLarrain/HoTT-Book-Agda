@@ -204,7 +204,7 @@ module _ ⦃ fe : FunExt ⦄ where
 -- (ii) ≃-sym is its own quasi-inverse
 
   qinv-≃-sym : (A : 𝓤 ̇) (B : 𝓥 ̇) → qinv (≃-sym {𝓤} {𝓥} {A} {B})
-  qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate ishae-is-Prop _ _ (refl _)) , (λ e → Σ-over-predicate ishae-is-Prop _ _ (refl _))
+  qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate ishae-is-Prop (refl _)) , (λ e → Σ-over-predicate ishae-is-Prop (refl _))
 
 -- (iii) (i) symmetrized
 
