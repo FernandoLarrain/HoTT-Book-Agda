@@ -173,3 +173,4 @@ The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences fro
 
 * Generalize constructions that restrict to a single universe when possible. Restrict theorem hypotheses, not definitions (unless multiverse definitions don't make sense).
 
+* Results about the relation between path spaces in fibers and ap in Ch4.2 and "propositional maps" in Ch4.6 should be postponed until Ch7.
