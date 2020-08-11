@@ -75,7 +75,6 @@ open import Ch3.Exercises public
 
 -- Chapter 4
 
-open import Ch4.1-Quasi-inverses public
 open import Ch4.2-Half-adjoint-equivalences public
 open import Ch4.3-Bi-invertible-maps public
 open import Ch4.4-Contractible-fibers public
@@ -85,6 +84,8 @@ open import Ch4.7-Closure-properties-of-equivalences public
 open import Ch4.8-The-object-classifier public
 open import Ch4.9-Univalence-implies-funext public
 open import Ch4.Exercises public
+open import Ch4.1-Quasi-inverses public
+
 
 -- Chapter 5
 
@@ -92,7 +93,6 @@ open import Ch5.1-Introduction-to-inductive-types public
 open import Ch5.3-W-types public
 open import Ch5.4-Inductive-types-are-initial-algebras public
 open import Ch5.8-Id-types-and-id-systems public
-
 
 -- Chapter 6
 

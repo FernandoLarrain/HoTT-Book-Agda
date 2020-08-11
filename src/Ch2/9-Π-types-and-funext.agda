@@ -78,8 +78,11 @@ transport-fun (refl _) f a = refl (f a)
 
 -- Equation 2.9.5 (Transport of dependent functions).
 
-transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : (x : X) → A x → 𝓥 ̇} {x₁ x₂ : X} (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₁) → transport (λ - → (a : A -) → B - a) p f (transport A p a) ≡ transport (λ - → (Σ-induction B) -) (dpair-≡ (p , refl (transport A p a))) (f a)
+transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : (x : X) → A x → 𝓥 ̇} {x₁ x₂ : X} (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₂) → transport (λ - → (a : A -) → B - a) p f a ≡ transport (λ - → (Σ-induction B) -) (dpair-≡ ((p ⁻¹) , refl (transport A (p ⁻¹) a)) ⁻¹) (f (transport A (p ⁻¹) a))
 transport-dfun (refl _) f a = refl (f a)
+
+transport-dfun' : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : (x : X) → A x → 𝓥 ̇} {x₁ x₂ : X} (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₁) → transport (λ - → (a : A -) → B - a) p f (transport A p a) ≡ transport (λ - → (Σ-induction B) -) (dpair-≡ (p , refl (transport A p a))) (f a)
+transport-dfun' (refl _) f a = refl (f a)
 
 
 -- Lemma 2.9.6 (Function extensionality with respect to dependent paths; equality of parameterized functions).

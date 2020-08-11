@@ -7,8 +7,10 @@ open import Ch2.3-Type-families-are-fibrations
 open import Ch2.4-Homotopies-and-equivalences
 open import Ch2.6-Cartesian-product-types
 open import Ch2.7-Σ-types
+open import Ch2.8-The-unit-type
 open import Ch2.9-Π-types-and-funext
 open import Ch2.10-Universes-and-univalence
+open import Ch2.12-Coproducts
 open import Ch2.15-Universal-properties
 
 module Ch2.Exercises where

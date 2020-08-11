@@ -14,7 +14,7 @@ module Ch2.9-Π-types-and-funext where
 
 -- (i) From equality to homotopy
 
-happly : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} → f ≡ g → f ∼ g
+happly : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → f ≡ g → f ∼ g
 happly (refl f) x = refl (f x)
 
 
@@ -60,13 +60,13 @@ module _ ⦃ fe : FunExt ⦄ where
 
   -- Pointwise characterization of refl, _⁻¹ and _∙_.
 
-  fun-refl : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } (f : Π B) → refl f ≡ funext (λ x → refl (f x))
+  fun-refl : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) → refl f ≡ funext (λ x → refl (f x))
   fun-refl f = (happly-η (refl f)) ⁻¹
 
-  fun-sym : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g : Π B} (α : f ≡ g) → (α ⁻¹) ≡ funext (λ x → (happly α x) ⁻¹)
+  fun-sym : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (α : f ≡ g) → (α ⁻¹) ≡ funext (λ x → (happly α x) ⁻¹)
   fun-sym (refl f) = fun-refl f
 
-  fun-trans : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } {f g h : Π B} (α : f ≡ g) (β : g ≡ h) → (α ∙ β) ≡ funext (λ x → happly α x ∙ happly β x)
+  fun-trans : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g h : Π B} (α : f ≡ g) (β : g ≡ h) → (α ∙ β) ≡ funext (λ x → happly α x ∙ happly β x)
   fun-trans (refl f) (refl f) = fun-refl f
 
 
@@ -78,7 +78,7 @@ transport-fun (refl _) f a = refl (f a)
 
 -- Equation 2.9.5 (Transport of dependent functions).
 
-transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇ } {B : (x : X) → A x → 𝓥 ̇ } {x₁ x₂ : X} (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₁) → transport (λ - → (a : A -) → B - a) p f (transport A p a) ≡ transport (λ - → (Σ-induction B) -) (dpair-≡ (p , refl (transport A p a))) (f a)
+transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : (x : X) → A x → 𝓥 ̇} {x₁ x₂ : X} (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₁) → transport (λ - → (a : A -) → B - a) p f (transport A p a) ≡ transport (λ - → (Σ-induction B) -) (dpair-≡ (p , refl (transport A p a))) (f a)
 transport-dfun (refl _) f a = refl (f a)
 
 

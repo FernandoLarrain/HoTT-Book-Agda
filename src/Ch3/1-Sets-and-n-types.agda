@@ -72,35 +72,35 @@ is-⟨1⟩-type A = (x y : A) (p q : x ≡ y) (r s : p ≡ q) → r ≡ s
 
 module 𝓤-is-not-Set ⦃ univ : Univalence ⦄ (𝓤 : Universe) where
 
-  id-equiv : 𝟚 ≃ 𝟚
-  id-equiv = 𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚)
+  --id-equiv : 𝟚 ≃ 𝟚
+  --id-equiv = 𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚)
 
-  id-equiv' : Lift 𝓤 𝟚 ≃ Lift 𝓤 𝟚
-  id-equiv' = Lift-≃ ● id-equiv ● ≃-Lift
+  ≃-refl-𝟚' : Lift 𝓤 𝟚 ≃ Lift 𝓤 𝟚
+  ≃-refl-𝟚' = Lift-≃ ● ≃-refl 𝟚 ● ≃-Lift
 
-  f : 𝟚 → 𝟚
-  f ₀ = ₁
-  f ₁ = ₀
+  twist : 𝟚 → 𝟚
+  twist ₀ = ₁
+  twist ₁ = ₀
 
-  swap-equiv : 𝟚 ≃ 𝟚
-  swap-equiv =
-    f ,
+  twist-≃ : 𝟚 ≃ 𝟚
+  twist-≃ =
+    twist ,
     qinv-to-isequiv (
-      f ,
+      twist ,
       (𝟚-induction _ (refl _) (refl _)) ,
       (𝟚-induction _ (refl _) (refl _))
       ) 
 
-  swap-equiv' : Lift 𝓤 𝟚 ≃ Lift 𝓤 𝟚
-  swap-equiv' = Lift-≃ ● swap-equiv ● ≃-Lift
+  twist-≃' : Lift 𝓤 𝟚 ≃ Lift 𝓤 𝟚
+  twist-≃' = Lift-≃ ● twist-≃ ● ≃-Lift
 
   ₀-is-not-₁' : ¬ (lift {𝓤₀} {𝓤} ₀ ≡ lift {𝓤₀} {𝓤} ₁)
   ₀-is-not-₁' p = ₀-is-not-₁ (ap lower p)
 
   𝓤-is-not-Set : ¬ (isSet (𝓤 ̇))
   𝓤-is-not-Set g =
-    let p : id-equiv' ≡ swap-equiv'
-        p = idtoeqv-β' id-equiv' ⁻¹ ∙ ap idtoeqv (g (Lift 𝓤 𝟚) (Lift 𝓤 𝟚) (ua id-equiv') (ua swap-equiv')) ∙ idtoeqv-β' (swap-equiv')
+    let p : ≃-refl-𝟚' ≡ twist-≃'
+        p = idtoeqv-β' ≃-refl-𝟚' ⁻¹ ∙ ap idtoeqv (g (Lift 𝓤 𝟚) (Lift 𝓤 𝟚) (ua ≃-refl-𝟚') (ua twist-≃')) ∙ idtoeqv-β' (twist-≃')
     in ₀-is-not-₁' (transport (λ (- : Lift 𝓤 𝟚 → Lift 𝓤 𝟚) → lift ₀ ≡ - (lift ₀)) (ap pr₁ p) (refl (lift ₀)))
 
 open 𝓤-is-not-Set using (𝓤-is-not-Set) public

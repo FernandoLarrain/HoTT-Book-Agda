@@ -27,7 +27,7 @@ module _ ⦃ fe : FunExt ⦄ where
     α k = funext λ x → funext λ p → Sets-are-⟨1⟩-types _ (necessity k) _ _ _ _ _ _
 
   Axiom-K-is-Prop : (X : 𝓤 ̇) → isProp (Axiom-K X)
-  Axiom-K-is-Prop X = ≃-preserves-Props _ _ (isSet-≃-Axiom-K X) (isSet-is-Prop X)
+  Axiom-K-is-Prop X = ≃-preserves-Props (isSet-≃-Axiom-K X) (isSet-is-Prop X)
 
   Axiom-K-≃-Contr-Ω : (X : 𝓤 ̇) → Axiom-K X ≃ ((x : X) → isContr (x ≡ x))
   Axiom-K-≃-Contr-Ω X = ⇔-to-≃ (Axiom-K-is-Prop _) (Π-preserves-Props _ λ x → isContr-is-Prop _) ((λ k x → refl x , λ p → k x p ⁻¹) , λ c x p → (pr₂ (c x) p) ⁻¹ ∙ pr₂ (c x) (refl x))
@@ -57,7 +57,7 @@ module least-reflexive-rel ⦃ fe : FunExt ⦄ (X : 𝓤 ̇) (R : X → X → �
     sufficiency : isSet X → (x y : X) → R x y ≃ (x ≡ y)
     sufficiency X-is-Set x y = ⇔-to-≃ (mere-rel x y) (X-is-Set x y) (f x y , ℍ x (λ y p → R x y) (ρ x) y)
     necessity : ((x y : X) → R x y ≃ (x ≡ y)) → isSet X
-    necessity g x y = ≃-preserves-Props (R x y) _ (g x y) (mere-rel x y)
+    necessity g x y = ≃-preserves-Props (g x y) (mere-rel x y)
 
 
 -- Corollary 7.2.3 (DNE for _≡_ implies sethood).

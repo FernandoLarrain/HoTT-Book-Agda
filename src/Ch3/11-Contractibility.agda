@@ -194,17 +194,17 @@ free-left-endpt-is-Contr A a = center , contraction
   
 -- (iii) Corollaries
 
-Σ-preserves-Contr : (A : 𝓤 ̇) (P : A → 𝓥 ̇) → isContr A → ((x : A) → isContr (P x)) → isContr (Σ P)
-Σ-preserves-Contr A P A-is-Contr P-is-Contr = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (Σ-of-Contr-family-is-base A P P-is-Contr))) A-is-Contr 
+Σ-preserves-Contr : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → isContr A → ((x : A) → isContr (P x)) → isContr (Σ P)
+Σ-preserves-Contr A-is-Contr P-is-Contr-family = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (Σ-of-Contr-family-is-base _ _ P-is-Contr-family))) A-is-Contr 
 
 ×-preserves-Contr : (A : 𝓤 ̇) (B : 𝓥 ̇) → isContr A → isContr B → isContr (A × B)
-×-preserves-Contr A B A-is-Contr B-is-Contr = Σ-preserves-Contr A (λ a → B) A-is-Contr (λ a → B-is-Contr)
+×-preserves-Contr A B A-is-Contr B-is-Contr = Σ-preserves-Contr A-is-Contr (λ a → B-is-Contr)
 
 
 -- Lemma 3.11.10 (A type is a proposition iff its path-space is contractible).
 
-Prop-iff-Contr-≡ : (A : 𝓤 ̇) → (isProp A ⇔ ((x y : A) → isContr (x ≡ y)))
-Prop-iff-Contr-≡ A = sufficiency , necessity where
+Prop-iff-Contr-≡ : {A : 𝓤 ̇} → (isProp A ⇔ ((x y : A) → isContr (x ≡ y)))
+Prop-iff-Contr-≡ {𝓤} {A} = sufficiency , necessity where
   sufficiency : isProp A → (x y : A) → isContr (x ≡ y)
   sufficiency i x y = (i x y) , ((Props-are-Sets A i) x y (i x y))
   necessity : ((x y : A) → isContr (x ≡ y)) → isProp A

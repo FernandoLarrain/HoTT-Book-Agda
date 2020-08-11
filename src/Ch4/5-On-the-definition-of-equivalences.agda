@@ -89,3 +89,29 @@ module _ ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} where
 
 ≃-preserves-right-≃ : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) {B : 𝓥 ̇} {B' : 𝓦 ̇} → B ≃ B' → (A ≃ B) ≃ (A ≃ B')
 ≃-preserves-right-≃ {𝓤} {𝓥} {𝓦} A {B} {B'} e = (_● e) , (qinv-to-isequiv {_} {_} {A ≃ B} {A ≃ B'} {_● e} ((_● (≃-sym e)) , (λ f → ●-assoc f (≃-sym e) e ⁻¹ ∙ (ap (f ●_) (≃-linv e) ∙ ≃-ru f)) , λ f → ●-assoc f e (≃-sym e) ⁻¹ ∙ ap (f ●_) (≃-rinv e) ∙ ≃-ru f))
+
+
+-- ≃-sym is its own quasi-inverse
+
+qinv-≃-sym : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B : 𝓥 ̇) → qinv (≃-sym {𝓤} {𝓥} {A} {B})
+qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate ishae-is-Prop (refl _)) , (λ e → Σ-over-predicate ishae-is-Prop (refl _))
+
+
+-- Lemma 3.3.3 continued (logically equivalent propositions are equivalent).
+
+module _ ⦃ fe : FunExt ⦄ where
+
+-- (i) Equivalence to a proposition is a proposition
+
+  ≃-to-Prop-is-Prop : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp Q → isProp (P ≃ Q)
+  ≃-to-Prop-is-Prop P Q Q-is-Prop = Σ-preserves-Props (→-preserves-Props _ _ Q-is-Prop) (λ f → ishae-is-Prop f )
+
+-- (ii) (i) symmetrized
+
+  ≃-to-Prop-is-Prop' : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp P → isProp (P ≃ Q)
+  ≃-to-Prop-is-Prop' P Q P-is-Prop = ≃-preserves-Props (≃-sym , qinv-to-isequiv (qinv-≃-sym _ _)) (≃-to-Prop-is-Prop _ _ P-is-Prop)
+
+-- (iii) The lemma
+
+  biimplication-of-Props-is-≃ : {P : 𝓤 ̇} {Q : 𝓥 ̇} → isProp P → isProp Q → (P ⇔ Q) ≃ (P ≃ Q)
+  biimplication-of-Props-is-≃ P-is-Prop Q-is-Prop = ⇔-to-≃ (×-preserves-Props _ _ (→-preserves-Props _ _ Q-is-Prop) (→-preserves-Props _ _ P-is-Prop)) (≃-to-Prop-is-Prop _ _ Q-is-Prop) (⇔-to-≃ P-is-Prop Q-is-Prop , ≃-to-⇔)

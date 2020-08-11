@@ -23,37 +23,37 @@ module not-DNE∞ ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 
   -- (ii) Define autoequivalence of 𝟚 with no fixed point
 
-  f : 𝟚 → 𝟚
-  f ₀ = ₁
-  f ₁ = ₀
+  twist : 𝟚 → 𝟚
+  twist ₀ = ₁
+  twist ₁ = ₀
 
-  f-has-no-fixed-pt : (x : 𝟚) → ¬ (f x ≡ x)
-  f-has-no-fixed-pt ₀ c = ₀-is-not-₁ (c ⁻¹)
-  f-has-no-fixed-pt ₁ c = ₀-is-not-₁ c
+  twist-has-no-fixed-pt : (x : 𝟚) → ¬ (twist x ≡ x)
+  twist-has-no-fixed-pt ₀ c = ₀-is-not-₁ (c ⁻¹)
+  twist-has-no-fixed-pt ₁ c = ₀-is-not-₁ c
 
-  swap-equiv : 𝟚 ≃ 𝟚
-  swap-equiv =
-    f ,
+  twist-≃ : 𝟚 ≃ 𝟚
+  twist-≃ =
+    twist ,
     qinv-to-isequiv (
-      f ,
+      twist ,
       (𝟚-induction _ (refl _) (refl _)) ,
       (𝟚-induction _ (refl _) (refl _))
       ) 
 
   -- (iii) DNE∞ gives fixed point
 
-  DNE∞-gives-fixed-pt : DNE∞ 𝓤₀ → Σ x ꞉ 𝟚 , f x ≡ x
+  DNE∞-gives-fixed-pt : DNE∞ 𝓤₀ → Σ x ꞉ 𝟚 , twist x ≡ x
   DNE∞-gives-fixed-pt dne = x , x-is-fixed-pt where
     p : 𝟚 ≡ 𝟚
-    p = ua swap-equiv
+    p = ua twist-≃
     x : 𝟚
     x = dne 𝟚 𝟚-is-nonempty
     y : 𝟚
     y = dne 𝟚 (transport (λ - → ¬ (¬ -)) (p ⁻¹) 𝟚-is-nonempty)
-    x-is-fixed-pt : f x ≡ x
+    x-is-fixed-pt : twist x ≡ x
     x-is-fixed-pt =
-      f x
-        ≡⟨ idtoeqv-β swap-equiv x ⁻¹ ⟩
+      twist x
+        ≡⟨ idtoeqv-β twist-≃ x ⁻¹ ⟩
       coe p x
         ≡⟨ ap (coe p ∘ dne 𝟚) (¬¬𝟚-is-Prop _ _) ⟩
       coe p y
@@ -66,7 +66,7 @@ module not-DNE∞ ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
   
   not-DNE∞ : ¬ (DNE∞ 𝓤₀)
   not-DNE∞ dne with DNE∞-gives-fixed-pt dne
-  ... | (x , x-is-fixed-pt) = f-has-no-fixed-pt x x-is-fixed-pt
+  ... | (x , x-is-fixed-pt) = twist-has-no-fixed-pt x x-is-fixed-pt
 
 open not-DNE∞ using (not-DNE∞)
 

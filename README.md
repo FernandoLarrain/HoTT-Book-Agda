@@ -2,7 +2,7 @@
 
 ## The library
 
-The structure of the library follows closely that of the book. The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else) and `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types). The following files are ordered lexicographically, first, by dependence, and second, by numbering.
+The structure of the library follows closely that of the book. The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else), `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types) and `Ch4.1` on `Ch4.Exercises`. The following files are ordered lexicographically, first, by dependence, and second, by numbering.
 
 #### Chapter 1 (src\Ch1)
 
@@ -56,12 +56,15 @@ The file `Sets-and-logic` imports `Ch3`.
 
 #### Chapter 4 (src\Ch4)
 
-1. `1-Quasi-inverses`
-2. `2-Half-adjoint-equivalences`
-3. `3-Bi-invertible-maps`
-4. `4-Contractible-fibers`
-5. `6-Surjections-and-embeddings`
-6. `7-Closure-properties-of-equivalences`
+1. `2-Half-adjoint-equivalences`
+2. `3-Bi-invertible-maps`
+3. `4-Contractible-fibers`
+4. `6-Surjections-and-embeddings`
+5. `7-Closure-properties-of-equivalences`
+6. `8-The-object-classifier`
+7. `9-Univalence-implies-funext`
+6. `Exercises`
+7. `1-Quasi-inverses`
 
 The file `Equivalences` imports `Ch4`.
 
@@ -71,6 +74,8 @@ The file `Equivalences` imports `Ch4`.
 2. `3-W-types`
 3. `4-Inductive-types-are-initial-algebras`
 4. `8-Id-types-and-id-systems`
+
+The file `Induction` imports `Ch4`. 
 
 #### Chapter 6 (src\Ch6)
 
@@ -171,6 +176,6 @@ The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences fro
 
 * Change where-lemmas to sublemmas
 
-* Generalize constructions that restrict to a single universe when possible. Restrict theorem hypotheses, not definitions (unless multiverse definitions don't make sense).
+* Generalize constructions that restrict to a single universe when possible. Restrict theorem hypotheses, not definitions (unless multiverse definitions don't make sense). E.g. N-Algebras in Ch5.
 
 * Results about the relation between path spaces in fibers and ap in Ch4.2 and "propositional maps" in Ch4.6 should be postponed until Ch7.

@@ -6,7 +6,6 @@ open import Ch3.Sets-and-logic
 
 module Ch4.Equivalences where
 
-open import Ch4.1-Quasi-inverses public
 open import Ch4.2-Half-adjoint-equivalences public
 open import Ch4.3-Bi-invertible-maps public
 open import Ch4.4-Contractible-fibers public
@@ -16,3 +15,4 @@ open import Ch4.7-Closure-properties-of-equivalences public
 open import Ch4.8-The-object-classifier public
 open import Ch4.9-Univalence-implies-funext public
 open import Ch4.Exercises public
+-- open import Ch4.1-Quasi-inverses public

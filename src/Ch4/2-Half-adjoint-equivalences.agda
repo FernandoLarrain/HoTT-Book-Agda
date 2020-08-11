@@ -241,13 +241,13 @@ module _ ⦃ fe : FunExt ⦄ where
   -- Lemma 4.2.12 (Right coherence-data of haes is contractible)
 
   rcoh-of-hae-is-Contr : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → ishae f → (r : has-rinv f) → isContr (rcoh f r)
-  rcoh-of-hae-is-Contr f h (g , ε) = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (rcoh-≃-fib f (g , ε)))) (Π-preserves-Contr _ λ x → pr₁ (Prop-iff-Contr-≡ _) (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (ishae-to-isContrMap f h (f x)))) _ _)
+  rcoh-of-hae-is-Contr f h (g , ε) = retract-of-Contr-is-Contr (≃-to-◁ (≃-sym (rcoh-≃-fib f (g , ε)))) (Π-preserves-Contr _ λ x → pr₁ Prop-iff-Contr-≡ (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (ishae-to-isContrMap f h (f x)))) _ _)
 
 
   -- Theorem 4.2.13 (ishae is a proposition).
 
   ishae-is-Prop : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (ishae f)
-  ishae-is-Prop {𝓤} {𝓥} {A} {B} f = suffices λ h → retract-of-Contr-is-Contr (≃-to-◁ equivalence) (Σ-preserves-Contr _ _ (has-rinv-of-qinv-is-Contr f (ishae-to-qinv h)) (rcoh-of-hae-is-Contr f h))
+  ishae-is-Prop {𝓤} {𝓥} {A} {B} f = suffices λ h → retract-of-Contr-is-Contr (≃-to-◁ equivalence) (Σ-preserves-Contr (has-rinv-of-qinv-is-Contr f (ishae-to-qinv h)) (rcoh-of-hae-is-Contr f h))
     where
     suffices : (ishae f → isContr (ishae f)) → isProp (ishae f)
     suffices = inv (isProp-≃-inhabited-to-isContr (ishae f))

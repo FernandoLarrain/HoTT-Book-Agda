@@ -20,6 +20,9 @@ data Tlevel : 𝓤₀ ̇ where
 ⟨0⟩ : Tlevel
 ⟨0⟩ = S ⟨-1⟩
 
+⟨1⟩ : Tlevel
+⟨1⟩ = S ⟨0⟩
+
 
 -- Tlevel is equivalent to ℕ
 
@@ -41,6 +44,9 @@ from-ℕ-to-ℕ-is-id (succ m) = ap succ (from-ℕ-to-ℕ-is-id m)
 
 Tlevel-≃-ℕ : Tlevel ≃ ℕ
 Tlevel-≃-ℕ = to-ℕ , (qinv-to-isequiv (from-ℕ , (from-ℕ-to-ℕ-is-id , to-ℕ-from-ℕ-is-id)))
+
+Tlevel-is-Set : isSet Tlevel
+Tlevel-is-Set = ≃-preserves-Sets (≃-sym Tlevel-≃-ℕ) ℕ-is-Set
 
 
 -- Inclusion of ℕ in Tlevel
@@ -91,7 +97,7 @@ cumulativity-of-Tlevels (S n) X X-is-Sn-type x x' = cumulativity-of-Tlevels n _ 
 -- Theorem 7.1.8 (Σ preserves truncation level of sumands).
 
 Σ-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : A → 𝓥 ̇) → is n type A → ((a : A) → is n type (B a)) → is n type (Σ B)
-Σ-preserves-Tlevel ⟨-2⟩ = Σ-preserves-Contr 
+Σ-preserves-Tlevel ⟨-2⟩ A B = Σ-preserves-Contr 
 Σ-preserves-Tlevel (S n) A B A-is-Sn-type B-is-Sn-family (a , b) (a' , b') = ≃-preserves-Tlevel n _ _ (≃-sym Σ-≡-equiv) (Σ-preserves-Tlevel n _ _ (A-is-Sn-type _ _) λ p → B-is-Sn-family _ _ _)
 
 
@@ -158,7 +164,7 @@ module _  ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
     is-inhabited : X ≃ X'
     is-inhabited = pr₁ isContr-iff-is-𝟙 p ● ≃-sym (pr₁ isContr-iff-is-𝟙 p')
     is-Prop : isProp (X ≃ X')
-    is-Prop = (pr₂ (Prop-iff-Contr-≡ (X ≃ X')) (embedding-pulls-back-Tlevel ⟨-2⟩ (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (cumulativity-of-Tlevels ⟨-2⟩ _ p'))))
+    is-Prop = (pr₂ Prop-iff-Contr-≡ (embedding-pulls-back-Tlevel ⟨-2⟩ (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (cumulativity-of-Tlevels ⟨-2⟩ _ p'))))
 
   Tlevel-Type-is-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S n) (X ≃ X') _ (≃-sym (irrelevance-of-Tdata (S n) _ _)) (embedding-pulls-back-Tlevel n (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S n) X X' p'))
 
@@ -171,57 +177,25 @@ isContr-≃-is-⟨-2⟩-type A = idtoeqv (refl _)
 module _ ⦃ fe : FunExt ⦄ where
 
   isProp-≃-is-⟨-1⟩-type : (A : 𝓤 ̇) → isProp A ≃ is ⟨-1⟩ type A
-  isProp-≃-is-⟨-1⟩-type A = ⇔-to-≃ (isProp-is-Prop _) (Tlevel-is-predicate ⟨-1⟩ A ) (pr₁ (Prop-iff-Contr-≡ _) , pr₂ (Prop-iff-Contr-≡ _))
+  isProp-≃-is-⟨-1⟩-type A = ⇔-to-≃ (isProp-is-Prop _) (Tlevel-is-predicate ⟨-1⟩ A ) Prop-iff-Contr-≡
 
   isSet-≃-is-⟨0⟩-type : (A : 𝓤 ̇) → isSet A ≃ is ⟨0⟩ type A
   isSet-≃-is-⟨0⟩-type A = ⇔-to-≃ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) ((λ A-is-Set x y → pr₁ (isProp-≃-is-⟨-1⟩-type _) (A-is-Set x y)) , λ A-is-⟨0⟩-type x y → pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type _)) (A-is-⟨0⟩-type x y))
 
-
-module _ ⦃ fe : FunExt ⦄ where
+  -- Retractions preserve propositions
 
   retractions-preserve-Props : (A : 𝓤 ̇) (B : 𝓥 ̇) → B ◁ A → isProp A → isProp B
-  retractions-preserve-Props A B ρ = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type B)) ∘ retractions-preserve-Tlevel ⟨-1⟩ B A ρ ∘ pr₁ (isProp-≃-is-⟨-1⟩-type A) 
+  retractions-preserve-Props A B ρ = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type B)) ∘ retractions-preserve-Tlevel ⟨-1⟩ B A ρ ∘ pr₁ (isProp-≃-is-⟨-1⟩-type A)
 
-  ≃-preserves-Props : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isProp A → isProp B
-  ≃-preserves-Props A B e = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type B)) ∘ ≃-preserves-Tlevel ⟨-1⟩ A B e ∘ pr₁ (isProp-≃-is-⟨-1⟩-type A) 
-
-  ≃-preserves-Set : (A : 𝓤 ̇) (B : 𝓥 ̇) → A ≃ B → isSet A → isSet B
-  ≃-preserves-Set A B e = pr₁ (≃-sym (isSet-≃-is-⟨0⟩-type B)) ∘ ≃-preserves-Tlevel ⟨0⟩ A B e ∘ pr₁ (isSet-≃-is-⟨0⟩-type A)
-
-  -- Corollary: Tlevel is a set
-
-  Tlevel-is-Set : isSet Tlevel
-  Tlevel-is-Set = ≃-preserves-Set ℕ Tlevel (≃-sym Tlevel-≃-ℕ) ℕ-is-Set
-
-
--- Lemma 3.3.3 continued (logically equivalent propositions are equivalent).
-
--- (i) Equivalence to a proposition is a proposition
-
-  ≃-to-Prop-is-Prop : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp Q → isProp (P ≃ Q)
-  ≃-to-Prop-is-Prop P Q Q-is-Prop = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type _)) (Σ-preserves-Tlevel _ _ _ (pr₁ (isProp-≃-is-⟨-1⟩-type _) (→-preserves-Props _ _ Q-is-Prop)) (λ f → pr₁ (isProp-≃-is-⟨-1⟩-type _) (ishae-is-Prop f) ))
-
--- (ii) ≃-sym is its own quasi-inverse
-
-  qinv-≃-sym : (A : 𝓤 ̇) (B : 𝓥 ̇) → qinv (≃-sym {𝓤} {𝓥} {A} {B})
-  qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate ishae-is-Prop (refl _)) , (λ e → Σ-over-predicate ishae-is-Prop (refl _))
-
--- (iii) (i) symmetrized
-
-  ≃-to-Prop-is-Prop' : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp P → isProp (P ≃ Q)
-  ≃-to-Prop-is-Prop' P Q P-is-Prop = ≃-preserves-Props (Q ≃ P) _ (≃-sym , qinv-to-isequiv (qinv-≃-sym _ _)) (≃-to-Prop-is-Prop _ _ P-is-Prop) where
-
--- (iv) The lemma
-
-  biimplication-of-Props-is-≃ : {P : 𝓤 ̇} {Q : 𝓥 ̇} → isProp P → isProp Q → (P ⇔ Q) ≃ (P ≃ Q)
-  biimplication-of-Props-is-≃ P-is-Prop Q-is-Prop = ⇔-to-≃ (×-preserves-Props _ _ (→-preserves-Props _ _ Q-is-Prop) (→-preserves-Props _ _ P-is-Prop)) (≃-to-Prop-is-Prop _ _ Q-is-Prop) (⇔-to-≃ P-is-Prop Q-is-Prop , ≃-to-⇔)
-
--- (v) Corollary : retraction of proposition gives equivalence
+  -- Corollary : retraction of proposition gives equivalence
 
   retraction-of-Prop-to-≃ : {X : 𝓤 ̇} {Y : 𝓥 ̇} → isProp X → Y ◁ X → X ≃ Y
   retraction-of-Prop-to-≃ {𝓤} {𝓥} {X} {Y} X-is-Prop (r , s , α) = ⇔-to-≃ X-is-Prop (retractions-preserve-Props X Y (r , s , α) X-is-Prop) (r , s)
 
--- (vi) Related result: is n type preserves ≃
+
+-- is n type preserves ≃
+
+module _ ⦃ fe : FunExt ⦄ where
 
   Tlevel-preserves-≃ : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → is n type A ≃ is n type B
   Tlevel-preserves-≃ n e = ⇔-to-≃ (Tlevel-is-predicate _ _) (Tlevel-is-predicate _ _) (≃-preserves-Tlevel _ _ _ e , ≃-preserves-Tlevel _ _ _ (≃-sym e))

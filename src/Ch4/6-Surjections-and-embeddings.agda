@@ -61,10 +61,10 @@ isPropMap-is-Prop f = Π-preserves-Props _ (λ y → isProp-is-Prop _)
 -- Propositional maps are precisely embeddings.
 
 isPropMap-to-is-embedding : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isPropMap f → is-embedding f
-isPropMap-to-is-embedding f f-is-Prop x x' = isContrMap-to-ishae _ (λ p → ≃-preserves-Contr (≃-sym (fib-of-ap-is-path-space-fib p)) (pr₁ (Prop-iff-Contr-≡ (fib f (f x'))) (f-is-Prop (f x')) (x , p) (x' , refl (f x')))) 
+isPropMap-to-is-embedding f f-is-Prop x x' = isContrMap-to-ishae _ (λ p → ≃-preserves-Contr (≃-sym (fib-of-ap-is-path-space-fib p)) (pr₁ Prop-iff-Contr-≡ (f-is-Prop (f x')) (x , p) (x' , refl (f x')))) 
 
 is-embedding-to-isPropMap : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → is-embedding f → isPropMap f
-is-embedding-to-isPropMap f f-is-embedding y = pr₂ (Prop-iff-Contr-≡ (fib f y)) (λ w w' → ≃-preserves-Contr (≃-sym (path-space-fib-is-fib-of-ap w w')) (ishae-to-isContrMap _ (f-is-embedding (pr₁ w) (pr₁ w')) _))
+is-embedding-to-isPropMap f f-is-embedding y = pr₂ Prop-iff-Contr-≡ (λ w w' → ≃-preserves-Contr (≃-sym (path-space-fib-is-fib-of-ap w w')) (ishae-to-isContrMap _ (f-is-embedding (pr₁ w) (pr₁ w')) _))
 
 is-embedding-≃-isPropMap : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → is-embedding f ≃ isPropMap f
 is-embedding-≃-isPropMap f = ⇔-to-≃ (is-embedding-is-Prop f) (isPropMap-is-Prop f) (is-embedding-to-isPropMap f , isPropMap-to-is-embedding f)  

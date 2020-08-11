@@ -65,118 +65,119 @@ C ℕAlg-≅ D = Σ f ꞉ ℕHom C D , Σ g ꞉ ℕHom D C , (ℕHom-comp D C D 
   succ-≡ = funext (λ d → transport-fun carrier-≡ cs d ∙ (idtoeqv-β carrier-≃ (cs (coe (carrier-≡ ⁻¹) d)) ∙ (ap (f ∘ cs) (happly (ap coe (type-sym carrier-≃) ∙ funext (idtoeqv-β (≃-sym carrier-≃))) d) ∙ (α (g d) ∙ ap ds (happly (pr₁ (dpr-≡ p')) d)))))
 
 
--- Definition 5.4.3 (homotopy-initial ℕ-algebra).
+module single-universe where
 
-{- Note: We are restricting the definition to a single universe to be able to use univalence in 5.4.4. -}
+  -- Definition 5.4.3 (homotopy-initial ℕ-algebra).
 
-isHinit-ℕ : ℕAlg 𝓤 → 𝓤 ⁺ ̇
-isHinit-ℕ {𝓤} I = (C : ℕAlg 𝓤) → isContr (ℕHom I C)
+  {- Note: We are restricting the definition to a single universe to be able to use univalence in 5.4.4. -}
 
-isHinit-ℕ-is-Prop : ⦃ fe : FunExt ⦄ (I : ℕAlg 𝓤) → isProp (isHinit-ℕ I)
-isHinit-ℕ-is-Prop I = Π-preserves-Props _ (λ C → isContr-is-Prop _)
+  isHinit-ℕ : ℕAlg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
+  isHinit-ℕ {𝓤} {𝓥} I = (C : ℕAlg 𝓥) → isContr (ℕHom I C)
 
-Hinit-ℕAlg : (𝓤 : Universe) → 𝓤 ⁺ ̇
-Hinit-ℕAlg 𝓤 = Σ C ꞉ ℕAlg 𝓤 , isHinit-ℕ C
+  isHinit-ℕ-is-Prop : ⦃ fe : FunExt ⦄ (I : ℕAlg 𝓤) → isProp (isHinit-ℕ {𝓤} {𝓥} I)
+  isHinit-ℕ-is-Prop I = Π-preserves-Props _ (λ C → isContr-is-Prop _)
 
-
--- Theorem 5.4.4 (h-inital ℕ-algebras are equal).
-
-Hinit-ℕAlg-is-Prop : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → isProp (Hinit-ℕAlg 𝓤)
-Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
-  let I = (UI , i₀ , is)
-      J = (UJ , j₀ , js)
-  in Σ-over-predicate isHinit-ℕ-is-Prop (ℕAlg-≅-to-≡ (
-  pr₁ (i J) ,
-  pr₁ (j I) ,
-  pr₂ (pr₁ isContr-iff-is-inhabited-Prop  (j J)) _ _ ,
-  pr₂ (pr₁ isContr-iff-is-inhabited-Prop (i I)) _ _
-  ))
+  Hinit-ℕAlg : (𝓤 𝓥 : Universe) → (𝓤 ⊔ 𝓥) ⁺ ̇
+  Hinit-ℕAlg 𝓤 𝓥 = Σ C ꞉ ℕAlg 𝓤 , isHinit-ℕ {𝓤} {𝓥} C
 
 
--- Theorem 5.4.5 ((ℕ , 0 , succ) is h-initial)
+  -- Theorem 5.4.4 (h-inital ℕ-algebras are equal).
 
-ℕ-is-h-initial : ⦃ fe : FunExt ⦄ → isHinit-ℕ (ℕ , 0 , succ)
-ℕ-is-h-initial (C , c₀ , cs) = (f , p , α) , contraction where
+  Hinit-ℕAlg-is-Prop : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → isProp (Hinit-ℕAlg 𝓤 𝓤)
+  Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
+    let I = (UI , i₀ , is)
+        J = (UJ , j₀ , js)
+    in Σ-over-predicate isHinit-ℕ-is-Prop (ℕAlg-≅-to-≡ (
+    pr₁ (i J) ,
+    pr₁ (j I) ,
+    pr₂ (pr₁ isContr-iff-is-inhabited-Prop  (j J)) _ _ ,
+    pr₂ (pr₁ isContr-iff-is-inhabited-Prop (i I)) _ _
+    ))
 
-  -- Center of contraction
-  
-  f : ℕ → C
-  f zero = c₀
-  f (succ n) = cs (f n)
-  p : f 0 ≡ c₀
-  p = refl _
-  α : f ∘ succ ∼ cs ∘ f
-  α zero = refl _
-  α (succ n) = ap cs (α n)
 
-  -- Contraction
-  
-  contraction : Π (λ (h : ℕHom (ℕ , 0 , succ) (C , c₀ , cs)) → (f , p , α) ≡ h)
-  contraction (g , q , β) = dpair-≡ (fun-≡ , (transport-pair (λ h → h 0 ≡ c₀) (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ (p , α) ∙ pair-≡ (path-≡ , htpy-≡) )) where
+  -- Theorem 5.4.5 ((ℕ , 0 , succ) is h-initial)
 
-    fun-∼ : f ∼ g
-    fun-∼ = ℕ-uniqueness-pple' (λ - → C) c₀ (λ n → cs) f g p α q β
-    fun-≡ : f ≡ g 
-    fun-≡ = ℕ-uniqueness-pple (λ - → C) c₀ (λ n → cs) f g p α q β
+  ℕ-is-h-initial : ⦃ fe : FunExt ⦄ → isHinit-ℕ (ℕ , 0 , succ)
+  ℕ-is-h-initial (C , c₀ , cs) = (f , p , α) , contraction where
 
-    path-≡ : transport (λ h → h 0 ≡ c₀) fun-≡ p ≡ q
-    path-≡ = transport-funval-≡' 0 c₀ fun-≡ p ∙ (ap (λ - → - ⁻¹ ∙ p) (happly-β fun-∼ 0) ∙ ru _ ⁻¹ ∙ distr _ _ ∙ ru _ ⁻¹ ∙ ⁻¹-invol q)
+    -- Center of contraction
 
-    htpy-∼ : transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α ∼ β
-   
-    -- Base case
-    
-    htpy-∼ zero =
-      transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α 0
-        ≡⟨ ℕHom-≡.transport-lemma ℕ C succ cs fun-∼ α 0 ⟩
-      (refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ∙ β 0 ⁻¹) ⁻¹ ∙ refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹)
-        ≡⟨ aux-path  ⟩
-      (β 0) ∎
+    f : ℕ → C
+    f zero = c₀
+    f (succ n) = cs (f n)
+    p : f 0 ≡ c₀
+    p = refl _
+    α : f ∘ succ ∼ cs ∘ f
+    α zero = refl _
+    α (succ n) = ap cs (α n)
 
-      where
+    -- Contraction
 
-      aux-path : (refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ∙ β 0 ⁻¹) ⁻¹ ∙ refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ≡ β 0
-      aux-path rewrite  
-        lu (q ⁻¹) ⁻¹ |
-        lu (ap cs (q ⁻¹)) ⁻¹ |
-        distr (ap cs (q ⁻¹)) (β 0 ⁻¹) |
-        ru ((β 0 ⁻¹) ⁻¹ ∙ ap cs (q ⁻¹) ⁻¹) ⁻¹ |
-        ∙-assoc ((β 0 ⁻¹) ⁻¹) (ap cs (q ⁻¹) ⁻¹) (ap cs (q ⁻¹)) ⁻¹ |
-        linv (ap cs (q ⁻¹)) |
-        ru ((β 0 ⁻¹) ⁻¹) ⁻¹ |
-        ⁻¹-invol (β 0)
-        = refl _
+    contraction : Π (λ (h : ℕHom (ℕ , 0 , succ) (C , c₀ , cs)) → (f , p , α) ≡ h)
+    contraction (g , q , β) = dpair-≡ (fun-≡ , (transport-pair (λ h → h 0 ≡ c₀) (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ (p , α) ∙ pair-≡ (path-≡ , htpy-≡) )) where
 
-    -- Inductive step
-   
-    htpy-∼ (succ n) =
-      transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α (succ n)
-        ≡⟨ ℕHom-≡.transport-lemma ℕ C succ cs fun-∼ α (succ n) ⟩
-      fun-∼ (succ (succ n)) ⁻¹ ∙ ap cs (α n) ∙ ap cs (fun-∼ (succ n))
-        ≡⟨ refl _ ⟩
-      (α (succ n) ∙ ap cs (fun-∼ (succ n)) ∙ β (succ n) ⁻¹) ⁻¹ ∙ α (succ n) ∙ ap cs (fun-∼ (succ n))
-        ≡⟨ aux-path ⟩
-      β (succ n) ∎
+      fun-∼ : f ∼ g
+      fun-∼ = ℕ-uniqueness-pple' (λ - → C) c₀ (λ n → cs) f g p α q β
+      fun-≡ : f ≡ g 
+      fun-≡ = ℕ-uniqueness-pple (λ - → C) c₀ (λ n → cs) f g p α q β
 
-      where
-      
-      p₁ =  α (succ n)
-      p₂ = ap cs (fun-∼ (succ n))
-      p₃ = β (succ n)
-      aux-path : (p₁ ∙ p₂ ∙ p₃ ⁻¹) ⁻¹ ∙ p₁ ∙ p₂ ≡ p₃
-      aux-path rewrite
-        distr (p₁ ∙ p₂) (p₃ ⁻¹) |
-        ∙-assoc ((p₃ ⁻¹) ⁻¹) ((p₁ ∙ p₂) ⁻¹) p₁ ⁻¹ |
-        distr p₁ p₂ |
-        ∙-assoc (p₂ ⁻¹) (p₁ ⁻¹) p₁ ⁻¹ |
-        linv p₁ |
-        ru (p₂ ⁻¹) ⁻¹ |
-        ∙-assoc ((p₃ ⁻¹) ⁻¹) (p₂ ⁻¹) p₂ ⁻¹ |
-        linv p₂ |
-        ru ((p₃ ⁻¹) ⁻¹) ⁻¹ |
-        ⁻¹-invol p₃        
-        = refl _
+      path-≡ : transport (λ h → h 0 ≡ c₀) fun-≡ p ≡ q
+      path-≡ = transport-funval-≡' 0 c₀ fun-≡ p ∙ (ap (λ - → - ⁻¹ ∙ p) (happly-β fun-∼ 0) ∙ ru _ ⁻¹ ∙ distr _ _ ∙ ru _ ⁻¹ ∙ ⁻¹-invol q)
 
-    htpy-≡ : transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α ≡ β
-    htpy-≡ = funext htpy-∼
-  
+      htpy-∼ : transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α ∼ β
+
+      -- Base case
+
+      htpy-∼ zero =
+        transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α 0
+          ≡⟨ ℕHom-≡.transport-lemma ℕ C succ cs fun-∼ α 0 ⟩
+        (refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ∙ β 0 ⁻¹) ⁻¹ ∙ refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹)
+          ≡⟨ aux-path  ⟩
+        (β 0) ∎
+
+        where
+
+        aux-path : (refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ∙ β 0 ⁻¹) ⁻¹ ∙ refl (cs c₀) ∙ ap cs (refl c₀ ∙ q ⁻¹) ≡ β 0
+        aux-path rewrite  
+          lu (q ⁻¹) ⁻¹ |
+          lu (ap cs (q ⁻¹)) ⁻¹ |
+          distr (ap cs (q ⁻¹)) (β 0 ⁻¹) |
+          ru ((β 0 ⁻¹) ⁻¹ ∙ ap cs (q ⁻¹) ⁻¹) ⁻¹ |
+          ∙-assoc ((β 0 ⁻¹) ⁻¹) (ap cs (q ⁻¹) ⁻¹) (ap cs (q ⁻¹)) ⁻¹ |
+          linv (ap cs (q ⁻¹)) |
+          ru ((β 0 ⁻¹) ⁻¹) ⁻¹ |
+          ⁻¹-invol (β 0)
+          = refl _
+
+      -- Inductive step
+
+      htpy-∼ (succ n) =
+        transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α (succ n)
+          ≡⟨ ℕHom-≡.transport-lemma ℕ C succ cs fun-∼ α (succ n) ⟩
+        fun-∼ (succ (succ n)) ⁻¹ ∙ ap cs (α n) ∙ ap cs (fun-∼ (succ n))
+          ≡⟨ refl _ ⟩
+        (α (succ n) ∙ ap cs (fun-∼ (succ n)) ∙ β (succ n) ⁻¹) ⁻¹ ∙ α (succ n) ∙ ap cs (fun-∼ (succ n))
+          ≡⟨ aux-path ⟩
+        β (succ n) ∎
+
+        where
+
+        p₁ =  α (succ n)
+        p₂ = ap cs (fun-∼ (succ n))
+        p₃ = β (succ n)
+        aux-path : (p₁ ∙ p₂ ∙ p₃ ⁻¹) ⁻¹ ∙ p₁ ∙ p₂ ≡ p₃
+        aux-path rewrite
+          distr (p₁ ∙ p₂) (p₃ ⁻¹) |
+          ∙-assoc ((p₃ ⁻¹) ⁻¹) ((p₁ ∙ p₂) ⁻¹) p₁ ⁻¹ |
+          distr p₁ p₂ |
+          ∙-assoc (p₂ ⁻¹) (p₁ ⁻¹) p₁ ⁻¹ |
+          linv p₁ |
+          ru (p₂ ⁻¹) ⁻¹ |
+          ∙-assoc ((p₃ ⁻¹) ⁻¹) (p₂ ⁻¹) p₂ ⁻¹ |
+          linv p₂ |
+          ru ((p₃ ⁻¹) ⁻¹) ⁻¹ |
+          ⁻¹-invol p₃        
+          = refl _
+
+      htpy-≡ : transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α ≡ β
+      htpy-≡ = funext htpy-∼
