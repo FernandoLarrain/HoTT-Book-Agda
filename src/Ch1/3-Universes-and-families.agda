@@ -14,10 +14,8 @@ open import Agda.Primitive public
  )
  using (_⊔_) -- Least upper bound of two universes, e.g. 𝓤₀ ⊔ 𝓤₁ is 𝓤₁
 
-Type = λ ℓ → Set ℓ
-
-_̇   : (𝓤 : Universe) → Type (𝓤 ⁺) -- From universe as term to universe as type
-𝓤 ̇  = Type 𝓤
+_̇   : (𝓤 : Universe) → Set (𝓤 ⁺) -- From universe as term to universe as type
+𝓤 ̇  = Set 𝓤
 
 infix  1 _̇
 

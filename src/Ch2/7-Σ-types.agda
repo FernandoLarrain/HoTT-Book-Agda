@@ -37,24 +37,24 @@ module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {w w' : Σ x ꞉ A , P x} where
 
   -- (iii) Propositional computation rules for equality of dependent pairs
 
-  Σ-≡-β : (r : Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')) → dpr-≡ (dpair-≡ r) ≡ r
-  Σ-≡-β (refl _ , refl _) = refl ((refl _) , (refl _))
+  dpr-≡-β : (r : Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')) → dpr-≡ (dpair-≡ r) ≡ r
+  dpr-≡-β (refl _ , refl _) = refl ((refl _) , (refl _))
 
   dpr₁-≡-β : (p : pr₁ w ≡ pr₁ w') (q : transport P p (pr₂ w) ≡ pr₂ w') → ap pr₁ (dpair-≡ (p , q)) ≡ p
   dpr₁-≡-β (refl _) (refl _) = refl (refl _)
 
   -- (iv) Propositional uniqueness rules for equality of dependent pairs
 
-  Σ-≡-η : (p : w ≡ w') → dpair-≡ (dpr-≡ p) ≡ p
-  Σ-≡-η (refl (x , y)) = refl (refl (x , y))
+  dpr-≡-η : (p : w ≡ w') → dpair-≡ (dpr-≡ p) ≡ p
+  dpr-≡-η (refl (x , y)) = refl (refl (x , y))
 
-  Σ-≡-η' : (p : w ≡ w') → dpair-≡ (dpr-≡' p) ≡ p
-  Σ-≡-η'(refl (x , y)) = refl (refl (x , y))
+  dpr-≡-η' : (p : w ≡ w') → dpair-≡ (dpr-≡' p) ≡ p
+  dpr-≡-η'(refl (x , y)) = refl (refl (x , y))
 
   -- (v) Thm. 2.7.2 proper
 
-  Σ-≡-equiv : (w ≡ w') ≃ (Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w'))
-  Σ-≡-equiv = dpr-≡ , qinv-to-isequiv (dpair-≡ , (Σ-≡-β , Σ-≡-η))
+  Σ-≡-≃ : (w ≡ w') ≃ (Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w'))
+  Σ-≡-≃ = dpr-≡ , qinv-to-isequiv (dpair-≡ , (dpr-≡-β , dpr-≡-η))
 
 -- Corollary 2.7.3 (Propositional uniqueness principle for dependent pairs).
 
@@ -78,6 +78,10 @@ transport-dpair (refl x) u z = refl (u , z)
 module _ {A : 𝓤 ̇} {B : A → 𝓥 ̇} where
 
   dpair-refl : (z : Σ B) → refl z ≡ dpair-≡ (refl (pr₁ z) , refl (pr₂ z))
-  dpair-refl (a , b) = refl (refl (a , b))
+  dpair-refl z = refl (refl z)
 
-  -- TO-DO: _⁻¹ , _∙_
+  dpair-⁻¹ : {z w : Σ B} (p : z ≡ w) → p ⁻¹ ≡ dpair-≡ ((pr₁ (dpr-≡ (p ⁻¹))) , (pr₂ (dpr-≡ (p ⁻¹))))
+  dpair-⁻¹ (refl _) = refl _
+
+  dpair-∙ : {z w v : Σ B} (p : z ≡ w) (q : w ≡ v) → p ∙ q ≡ dpair-≡ ((pr₁ (dpr-≡ p) ∙ pr₁ (dpr-≡ q)) , (transport-∙ B (pr₁ (dpr-≡ p)) (pr₁ (dpr-≡ q)) (pr₂ z) ⁻¹ ∙ ap (transport B (pr₁ (dpr-≡ q))) (pr₂ (dpr-≡ p)) ∙ pr₂ (dpr-≡ q)))
+  dpair-∙ (refl _) (refl _) = refl _

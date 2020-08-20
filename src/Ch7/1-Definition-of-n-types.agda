@@ -24,6 +24,13 @@ data Tlevel : 𝓤₀ ̇ where
 ⟨1⟩ = S ⟨0⟩
 
 
+-- Iterated successor operation
+
+S^ : ℕ → Tlevel → Tlevel
+S^ zero n = n
+S^ (succ k) n = S (S^ k n)
+
+
 -- Tlevel is equivalent to ℕ
 
 to-ℕ : Tlevel → ℕ
@@ -83,22 +90,28 @@ retractions-preserve-Tlevel (S n) Y X (p , s , ε) X-is-Sn-type y y' = retractio
 
 -- Theorem 7.1.6 (Embeddings pull back higher truncation levels).
 
-embedding-pulls-back-Tlevel : (n : Tlevel) → (X : 𝓤 ̇) (Y : 𝓥 ̇) (f : X → Y) → is-embedding f → is S n type Y → is S n type X
-embedding-pulls-back-Tlevel n X Y f emb Y-is-Sn-type x x' = ≃-preserves-Tlevel n (f x ≡ f x') (x ≡ x') (≃-sym (ap f , emb x x')) (Y-is-Sn-type (f x) (f x'))
+embedding-pulls-back-Tlevel : (n : Tlevel) → (X : 𝓤 ̇) (Y : 𝓥 ̇) (f : X ↪ Y) → is S n type Y → is S n type X
+embedding-pulls-back-Tlevel n X Y (f , emb) Y-is-Sn-type x x' = ≃-preserves-Tlevel n (f x ≡ f x') (x ≡ x') (≃-sym (ap f , emb x x')) (Y-is-Sn-type (f x) (f x'))
 
 
 -- Theorem 7.1.7 (n-types are (n + 1)-types).
 
-cumulativity-of-Tlevels : (n : Tlevel) (X : 𝓤 ̇) → is n type X → is S n type X
-cumulativity-of-Tlevels ⟨-2⟩ X (center , centrality) x x' = (centrality x ⁻¹ ∙ centrality x') , (ℍ x (λ x' p → centrality x ⁻¹ ∙ centrality x' ≡ p) (linv _) x')
-cumulativity-of-Tlevels (S n) X X-is-Sn-type x x' = cumulativity-of-Tlevels n _ (X-is-Sn-type x x')
+Tlevel-is-cumulative : {n : Tlevel} {X : 𝓤 ̇} → is n type X → is S n type X
+Tlevel-is-cumulative {𝓤} {⟨-2⟩} {X} (center , contraction) x x' = (contraction x ⁻¹ ∙ contraction x') , (ℍ x (λ x' p → contraction x ⁻¹ ∙ contraction x' ≡ p) (linv _) x')
+Tlevel-is-cumulative {𝓤} {S n} {X} X-is-Sn-type x x' = Tlevel-is-cumulative (X-is-Sn-type x x')
+
+-- Corollary
+
+Tlevel-is-cumulative' : {n : Tlevel} {X : 𝓤 ̇} (k : ℕ) → is n type X → is (S^ k n) type X
+Tlevel-is-cumulative' zero = id
+Tlevel-is-cumulative' (succ k) = Tlevel-is-cumulative ∘ Tlevel-is-cumulative' k
 
 
 -- Theorem 7.1.8 (Σ preserves truncation level of sumands).
 
 Σ-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : A → 𝓥 ̇) → is n type A → ((a : A) → is n type (B a)) → is n type (Σ B)
 Σ-preserves-Tlevel ⟨-2⟩ A B = Σ-preserves-Contr 
-Σ-preserves-Tlevel (S n) A B A-is-Sn-type B-is-Sn-family (a , b) (a' , b') = ≃-preserves-Tlevel n _ _ (≃-sym Σ-≡-equiv) (Σ-preserves-Tlevel n _ _ (A-is-Sn-type _ _) λ p → B-is-Sn-family _ _ _)
+Σ-preserves-Tlevel (S n) A B A-is-Sn-type B-is-Sn-family (a , b) (a' , b') = ≃-preserves-Tlevel n _ _ (≃-sym Σ-≡-≃) (Σ-preserves-Tlevel n _ _ (A-is-Sn-type _ _) λ p → B-is-Sn-family _ _ _)
 
 
 -- Corollaries (× and pb)
@@ -109,7 +122,7 @@ cumulativity-of-Tlevels (S n) X X-is-Sn-type x x' = cumulativity-of-Tlevels n _ 
 pb-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : 𝓥 ̇) (C : 𝓦 ̇) (f : A → C) (g : B → C) → is n type A → is n type B → is n type C → is n type (pb f g)
 pb-preserves-Tlevel n A B C f g A-is-n-type B-is-n-type C-is-n-type = Σ-preserves-Tlevel n _ _ A-is-n-type (λ a →
   Σ-preserves-Tlevel n _ _ B-is-n-type (λ b →
-    cumulativity-of-Tlevels n _ C-is-n-type (f a) (g b)
+    Tlevel-is-cumulative C-is-n-type (f a) (g b)
     )
   )
   
@@ -137,36 +150,36 @@ Tlevel-is-predicate (S n) X = Π-preserves-Props _ λ x →
 
 -- Definition of type of all (small) n-Types.
 
-_-Type_ : (n : Tlevel) (𝓤 : Universe) → 𝓤 ⁺ ̇
-n -Type 𝓤 = Σ X ꞉ (𝓤 ̇) , is n type X
+_Type_ : (n : Tlevel) (𝓤 : Universe) → 𝓤 ⁺ ̇
+n Type 𝓤 = Σ X ꞉ (𝓤 ̇) , is n type X
 
 
 -- Theorem 7.1.11 (n-Type is an (n + 1)-type).
 
 module _  ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 
-  Tlevel-Type-is-of-next-Tlevel : (n : Tlevel) → is S n type (n -Type 𝓤)
+  Tlevel-Type-is-of-next-Tlevel : (n : Tlevel) → is S n type (n Type 𝓤)
 
   -- (i) Irrelevance of Tlevel data.
 
-  irrelevance-of-Tdata : (n : Tlevel) (Y Y' : n -Type 𝓤) → (Y ≡ Y') ≃ (pr₁ Y ≃ pr₁ Y')
+  irrelevance-of-Tdata : (n : Tlevel) (Y Y' : n Type 𝓤) → (Y ≡ Y') ≃ (pr₁ Y ≃ pr₁ Y')
   irrelevance-of-Tdata n (X , p) (X' , p') = Σ-over-predicate' (Tlevel-is-predicate n) _ _ ● (idtoeqv , idtoeqv-is-equiv) 
 
   -- (ii) pr₁ is an embedding.
 
-  pr₁-is-embedding : (X X' : 𝓤 ̇) → is-embedding (pr₁ {X = X → X'} {λ f → isequiv f}) 
-  pr₁-is-embedding X X' e e' = pr₂ (Σ-over-predicate' ishae-is-Prop e e')
+  pr₁-is-embedding : (X X' : 𝓤 ̇) → (X ≃ X') ↪ (X → X')
+  pr₁-is-embedding X X' = pr₁ , λ e e' → pr₂ (Σ-over-predicate' ishae-is-Prop e e')
 
   -- (iii) The theorem.
 
-  Tlevel-Type-is-of-next-Tlevel ⟨-2⟩ (X , p) (X' , p') = ≃-preserves-Tlevel ⟨-2⟩ (X ≃ X') _ (≃-sym (irrelevance-of-Tdata ⟨-2⟩ _ _)) (pr₂ isContr-iff-is-inhabited-Prop (is-inhabited , is-Prop))
+  Tlevel-Type-is-of-next-Tlevel ⟨-2⟩ (X , p) (X' , p') = ≃-preserves-Tlevel ⟨-2⟩ (X ≃ X') _ (≃-sym (irrelevance-of-Tdata ⟨-2⟩ _ _)) (inhabited-Prop-to-isContr is-inhabited is-Prop)
     where
     is-inhabited : X ≃ X'
     is-inhabited = pr₁ isContr-iff-is-𝟙 p ● ≃-sym (pr₁ isContr-iff-is-𝟙 p')
     is-Prop : isProp (X ≃ X')
-    is-Prop = (pr₂ Prop-iff-Contr-≡ (embedding-pulls-back-Tlevel ⟨-2⟩ (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (cumulativity-of-Tlevels ⟨-2⟩ _ p'))))
+    is-Prop = (pr₂ Prop-iff-Contr-≡ (embedding-pulls-back-Tlevel ⟨-2⟩ (X ≃ X') (X → X') (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (Tlevel-is-cumulative p'))))
 
-  Tlevel-Type-is-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S n) (X ≃ X') _ (≃-sym (irrelevance-of-Tdata (S n) _ _)) (embedding-pulls-back-Tlevel n (X ≃ X') (X → X') pr₁ (pr₁-is-embedding X X') (→-preserves-Tlevel (S n) X X' p'))
+  Tlevel-Type-is-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S n) (X ≃ X') _ (≃-sym (irrelevance-of-Tdata (S n) _ _)) (embedding-pulls-back-Tlevel n (X ≃ X') (X → X') (pr₁-is-embedding X X') (→-preserves-Tlevel (S n) X X' p'))
 
 
 -- Translation to old terminology (isContr, isProp, isSet)
@@ -174,13 +187,16 @@ module _  ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 isContr-≃-is-⟨-2⟩-type : (A : 𝓤 ̇) → isContr A ≃ is ⟨-2⟩ type A
 isContr-≃-is-⟨-2⟩-type A = idtoeqv (refl _)
 
+isSet-iff-is-⟨0⟩-type : {A : 𝓤 ̇} → isSet A ⇔ is ⟨0⟩ type A
+isSet-iff-is-⟨0⟩-type {𝓤} {A} = (λ i x y → pr₁ Prop-iff-Contr-≡ (i x y)) , λ i x y → pr₂ Prop-iff-Contr-≡ (i x y)
+
 module _ ⦃ fe : FunExt ⦄ where
 
   isProp-≃-is-⟨-1⟩-type : (A : 𝓤 ̇) → isProp A ≃ is ⟨-1⟩ type A
   isProp-≃-is-⟨-1⟩-type A = ⇔-to-≃ (isProp-is-Prop _) (Tlevel-is-predicate ⟨-1⟩ A ) Prop-iff-Contr-≡
 
   isSet-≃-is-⟨0⟩-type : (A : 𝓤 ̇) → isSet A ≃ is ⟨0⟩ type A
-  isSet-≃-is-⟨0⟩-type A = ⇔-to-≃ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) ((λ A-is-Set x y → pr₁ (isProp-≃-is-⟨-1⟩-type _) (A-is-Set x y)) , λ A-is-⟨0⟩-type x y → pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type _)) (A-is-⟨0⟩-type x y))
+  isSet-≃-is-⟨0⟩-type A = ⇔-to-≃ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) isSet-iff-is-⟨0⟩-type
 
   -- Retractions preserve propositions
 

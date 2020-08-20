@@ -82,30 +82,3 @@ UMP-𝕊¹ A =
     λ f → funext (𝕊¹-η' _ _ (refl _) (loop₁-β' (f base₁) (ap f loop₁))) 
     )
   )
-
-
--- End of chapter. What follows is a continuation of Exercise 2.4.
-
-module PathOver'-1-is-PathOver ⦃ univ : Univalence ⦄ where
-
-  open higher-paths
-
-  BndryOver-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 1 X) → BndryOver 1 P b ≡ P (lhs b) × P (rhs b)
-  BndryOver-agreement P b = ua (pr₂ , qinv-to-isequiv ((lift ⋆ ,_) , (refl , β)))
-    where
-    β :  (lift ⋆ ,_) ∘ pr₂ ∼ id
-    β (lift ⋆ , w) = dpair-≡ ((refl _) , (refl _))
-
-  BndryOver-agreement' : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 1 X) → BndryOver 1 P b ≃ P (lhs b) × P (rhs b)
-  BndryOver-agreement' P b = (pr₂ , qinv-to-isequiv ((lift ⋆ ,_) , (refl , β)))
-    where
-    β :  (lift ⋆ ,_) ∘ pr₂ ∼ id
-    β (lift ⋆ , w) = dpair-≡ ((refl _) , (refl _))
-
-  {- Alternatively, use Σ-over-Contr-base-is-fib -}
-
-  PathOver-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {b : Bndry 1 X} (p : Path 1 b) (b' : BndryOver 1 P b) → PathOver' 1 P {b} p b' ≡ PathOver P p (pr₁ (pr₂ b')) (pr₂ (pr₂ b')) 
-  PathOver-agreement P (refl _) b' = refl _
-
-  PathOver-agreement' : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {b : Bndry 1 X} (p : Path 1 b) (b' : BndryOver 1 P b) → PathOver' 1 P {b} p b' ≃ PathOver P p (pr₁ (pr₂ b')) (pr₂ (pr₂ b')) 
-  PathOver-agreement' P p b' = idtoeqv (PathOver-agreement P p b')

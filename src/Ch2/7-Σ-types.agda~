@@ -11,67 +11,73 @@ module Ch2.7-Σ-types where
 
 -- Theorem 2.7.2 (Equalities of dependent pairs are dependent pairs of equalities).
 
--- (i) From dependent pair of equalities to equality of dependent pairs
+module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {w w' : Σ x ꞉ A , P x} where
 
-dpair-≡ : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {w w' : Σ x ꞉ A , P x} → Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')  → w ≡ w'
-dpair-≡ {w = w₁ , w₂} {.w₁ , .w₂} (refl .w₁ , refl .w₂) = refl (w₁ , w₂)
+  -- (i) From dependent pair of equalities to equality of dependent pairs
 
--- (ii) Form equality of dependent pairs to dependent pair of equalities
+  dpair-≡ : Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')  → w ≡ w'
+  dpair-≡ (refl _ , refl _) = refl _
 
--- (ii).1 Definition of dpair-≡ via path induction
+  -- (ii) Form equality of dependent pairs to dependent pair of equalities
 
-dpr-≡ : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {w w' : Σ x ꞉ A , P x} → w ≡ w' → Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')
-dpr-≡ {P = P} {.w} {.w} (refl w) = (refl _) , (refl _)
+  -- (ii).1 Definition of dpair-≡ via path induction
 
--- (ii).2 Definition of dpair-≡ via pairing
+  dpr-≡ : w ≡ w' → Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')
+  dpr-≡ (refl w) = (refl _) , (refl _)
 
-dpr-≡' : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {w w' : Σ x ꞉ A , P x} → w ≡ w' → Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')
-dpr-≡' {P = P} {w} {w'} r = (ap pr₁ r) , (transport-∘ P pr₁ r (pr₂ w) ⁻¹ ∙ apd pr₂ r)
+  -- (ii).2 Definition of dpair-≡ via pairing
 
--- (ii).3 Definitions 1 and 2 agree
+  dpr-≡' : w ≡ w' → Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')
+  dpr-≡' r = (ap pr₁ r) , (transport-∘ P pr₁ r (pr₂ w) ⁻¹ ∙ apd pr₂ r)
 
-dpr-≡-agreement : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {w w' : Σ x ꞉ A , P x} (r : w ≡ w') → dpr-≡ r ≡ dpr-≡' r
-dpr-≡-agreement (refl w) = refl ((refl _) , (refl _))
+  -- (ii).3 Definitions 1 and 2 agree
 
--- (iii) Propositional computation rules for equality of dependent pairs
+  dpr-≡-agreement : (r : w ≡ w') → dpr-≡ r ≡ dpr-≡' r
+  dpr-≡-agreement (refl w) = refl ((refl _) , (refl _))
 
-Σ-≡-β : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {w w' : Σ x ꞉ A , P x} (r : Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')) → dpr-≡ (dpair-≡ r) ≡ r
-Σ-≡-β {w = w₁ , w₂} {.w₁ , .w₂} (refl .w₁ , refl .w₂) = refl ((refl w₁) , (refl w₂))
+  -- (iii) Propositional computation rules for equality of dependent pairs
 
-dpr₁-≡-β : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {w w' : Σ x ꞉ A , P x} (p : pr₁ w ≡ pr₁ w') (q : transport P p (pr₂ w) ≡ pr₂ w') → ap pr₁ (dpair-≡ (p , q)) ≡ p
-dpr₁-≡-β {w = w₁ , w₂} {.w₁ , .w₂} (refl .w₁) (refl .w₂) = refl (refl w₁)
+  dpr-≡-β : (r : Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w')) → dpr-≡ (dpair-≡ r) ≡ r
+  dpr-≡-β (refl _ , refl _) = refl ((refl _) , (refl _))
 
--- (iv) Propositional uniqueness rules for equality of dependent pairs
+  dpr₁-≡-β : (p : pr₁ w ≡ pr₁ w') (q : transport P p (pr₂ w) ≡ pr₂ w') → ap pr₁ (dpair-≡ (p , q)) ≡ p
+  dpr₁-≡-β (refl _) (refl _) = refl (refl _)
 
-Σ-≡-η : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {w w' : Σ x ꞉ A , P x}  (p : w ≡ w') → dpair-≡ (dpr-≡ p) ≡ p
-Σ-≡-η {w = .(x , y)} {.(x , y)} (refl (x , y)) = refl (refl (x , y))
+  -- (iv) Propositional uniqueness rules for equality of dependent pairs
 
-Σ-≡-η' : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {w w' : Σ x ꞉ A , P x}  (p : w ≡ w') → dpair-≡ (dpr-≡' p) ≡ p
-Σ-≡-η' {w = .(x , y)} {.(x , y)} (refl (x , y)) = refl (refl (x , y))
+  dpr-≡-η : (p : w ≡ w') → dpair-≡ (dpr-≡ p) ≡ p
+  dpr-≡-η (refl (x , y)) = refl (refl (x , y))
 
--- (v) Thm. 2.7.2 proper
+  dpr-≡-η' : (p : w ≡ w') → dpair-≡ (dpr-≡' p) ≡ p
+  dpr-≡-η'(refl (x , y)) = refl (refl (x , y))
 
-Σ-≡-equiv : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } (w w' : Σ x ꞉ A , P x) → (w ≡ w') ≃ (Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w'))
-Σ-≡-equiv w w' = dpr-≡ , qinv-to-isequiv (dpair-≡ , (Σ-≡-β , Σ-≡-η))
+  -- (v) Thm. 2.7.2 proper
 
+  Σ-≡-≃ : (w ≡ w') ≃ (Σ p ꞉ pr₁ w ≡ pr₁ w' , (transport P p (pr₂ w) ≡ pr₂ w'))
+  Σ-≡-≃ = dpr-≡ , qinv-to-isequiv (dpair-≡ , (dpr-≡-β , dpr-≡-η))
 
 -- Corollary 2.7.3 (Propositional uniqueness principle for dependent pairs).
 
-Σ-η : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } (z : Σ x ꞉ A , P x) → z ≡ (pr₁ z , pr₂ z)
+Σ-η : {A : 𝓤 ̇} {P : A → 𝓥 ̇} (z : Σ x ꞉ A , P x) → z ≡ (pr₁ z , pr₂ z)
 Σ-η z = dpair-≡ ((refl (pr₁ z)) , (refl (pr₂ z)))
 
 {- Note that we also have a judgemental uniqueness principle for dependent pairs : -}
 
-_ : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } (z : Σ x ꞉ A , P x) → z ≡ (pr₁ z , pr₂ z)
+_ : {A : 𝓤 ̇} {P : A → 𝓥 ̇} (z : Σ x ꞉ A , P x) → z ≡ (pr₁ z , pr₂ z)
 _ = hrefl id
+
 
 -- Theorem 2.7.4 (Action of transport on Σ-types).
 
-transport-dpair : {A : 𝓤 ̇ } {P : A → 𝓥 ̇ } {Q : Σ P → 𝓦 ̇ } {x y : A} (p : x ≡ y) (u : P x) (z : Q (x , u)) → transport (λ x → Σ v ꞉ P x , Q (x , v)) p (u , z) ≡ transport P p u , transport Q (dpair-≡ (p , refl (transport P p u))) z
+transport-dpair : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : Σ P → 𝓦 ̇} {x y : A} (p : x ≡ y) (u : P x) (z : Q (x , u)) → transport (λ x → Σ v ꞉ P x , Q (x , v)) p (u , z) ≡ transport P p u , transport Q (dpair-≡ (p , refl (transport P p u))) z
 transport-dpair (refl x) u z = refl (u , z)
 
 
--- Componentwise characterization of refl
+-- Componentwise characterization of refl, _⁻¹ and _∙_
 
-dpair-refl : {A : 𝓤 ̇ } {B : A → 𝓥 ̇ } (z : Σ B) → refl z ≡ dpair-≡ (refl (pr₁ z) , refl (pr₂ z))
-dpair-refl (a , b) = refl (refl (a , b))
+module _ {A : 𝓤 ̇} {B : A → 𝓥 ̇} where
+
+  dpair-refl : (z : Σ B) → refl z ≡ dpair-≡ (refl (pr₁ z) , refl (pr₂ z))
+  dpair-refl (a , b) = refl (refl (a , b))
+
+  -- TO-DO: _⁻¹ , _∙_

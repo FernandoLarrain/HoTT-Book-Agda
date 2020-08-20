@@ -22,7 +22,7 @@ module Ch3.Exercises where
 -- Exercise 3.3
 
 Σ-preserves-Props : {A : 𝓤 ̇} {B : A → 𝓥 ̇} → isProp A → ((x : A) → isProp (B x)) → isProp (Σ B)
-Σ-preserves-Props A-is-Prop B-is-Prop-family = pr₂ Prop-iff-Contr-≡ (λ w w' → ≃-preserves-Contr (≃-sym Σ-≡-equiv) (Σ-preserves-Contr (pr₁ Prop-iff-Contr-≡ A-is-Prop _ _) λ p → pr₁ Prop-iff-Contr-≡ (B-is-Prop-family _) _ _))
+Σ-preserves-Props A-is-Prop B-is-Prop-family = pr₂ Prop-iff-Contr-≡ (λ w w' → ≃-preserves-Contr (≃-sym Σ-≡-≃) (Σ-preserves-Contr (pr₁ Prop-iff-Contr-≡ A-is-Prop _ _) λ p → pr₁ Prop-iff-Contr-≡ (B-is-Prop-family _) _ _))
 
 {- For Σ-preserves-Sets see Example 3.1.5. -}
 
@@ -33,7 +33,7 @@ isProp-≃-inhabited-to-isContr : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) → isProp A
 isProp-≃-inhabited-to-isContr A = ⇔-to-≃ (isProp-is-Prop _) (Π-preserves-Props _ (λ a → isContr-is-Prop _)) (sufficiency , necessity)
   where
   sufficiency : isProp A → A → isContr A
-  sufficiency f a = pr₂ isContr-iff-is-inhabited-Prop (a , f)
+  sufficiency = swap inhabited-Prop-to-isContr
   necessity : (A → isContr A) → isProp A
   necessity g = λ x y → pr₂ (g x) x ⁻¹ ∙ pr₂ (g x) y
     

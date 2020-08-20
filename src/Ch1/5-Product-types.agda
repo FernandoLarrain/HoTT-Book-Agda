@@ -29,8 +29,5 @@ X × Y = Σ x ꞉ X , Y
 
 infixr 30 _×_ 
 
-⟨_,_⟩ : {X : 𝓤 ̇} {A : 𝓥 ̇} {B : 𝓦 ̇} → (X → A) → (X → B) → X → A × B
-⟨ f , g ⟩ x = f x , g x
-
-⟨_×_⟩ : {A : 𝓤 ̇} {B : 𝓥 ̇} {A' : 𝓦 ̇} {B' : 𝓣 ̇} → (A → B) → (A' → B') → A × A' → B × B'
-⟨ f × g ⟩ = ⟨ f ∘ pr₁ , g ∘ pr₂ ⟩
+×-map : {A : 𝓤 ̇} {B : 𝓥 ̇} {A' : 𝓦 ̇} {B' : 𝓣 ̇} → (A → B) → (A' → B') → A × A' → B × B'
+×-map f g = pair (f ∘ pr₁ , g ∘ pr₂)

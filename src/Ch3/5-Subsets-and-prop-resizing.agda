@@ -18,12 +18,12 @@ module Ch3.5-Subsets-and-prop-resizing where
 Σ-over-predicate' : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isProp (P x)) → (u v : Σ P) → (u ≡ v) ≃ (pr₁ u ≡ pr₁ v) 
 Σ-over-predicate' {𝓤} {𝓥} {A} {P} f u v =
   let f' : (x : A) → isSet (P x)
-      f' x = Props-are-Sets (P x) (f x)
+      f' x = isProp-to-isSet (f x)
   in ap pr₁ ,
      qinv-to-isequiv (
        (λ p → dpair-≡ (p , (f (pr₁ v) _ (pr₂ v))) ) ,
        (λ p → dpr₁-≡-β p (f (pr₁ v) _ (pr₂ v))) ,
-       λ q → ap dpair-≡ (dpair-≡ ((refl _) , f' _ _ _ _ _)) ∙ Σ-≡-η' q
+       λ q → ap dpair-≡ (dpair-≡ ((refl _) , f' _ _ _ _ _)) ∙ dpr-≡-η' q
       )
 
 

@@ -13,6 +13,11 @@ id x = x
 𝑖𝑑 : (X : 𝓤 ̇) → X → X
 𝑖𝑑 X = id
 
+-- Constant function
+
+const : (X : 𝓤 ̇) {Y : 𝓥 ̇} → Y → X → Y
+const X y = λ x → y
+
 
 -- Function composition
 

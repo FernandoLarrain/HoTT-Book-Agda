@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --rewriting #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -6,6 +6,7 @@ open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 
 module Ch6.10-Quotients where
+
 
 -- Remark 6.10.11 (Definition of ℤ via canonical representatives).
 

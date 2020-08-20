@@ -54,7 +54,7 @@ module _ ⦃ fe : FunExt ⦄ where
 Σ-preserves-≃' P Q e t = Σ-preserves-base-≃' P e ● Σ-preserves-family-≃ t
 
 
--- Now that we have shown that isequiv is a proposition, it is much simpler to derive groupoid laws for equivalences:
+-- Groupoid laws for equivalences:
 
 module _ ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} where
 
@@ -93,9 +93,11 @@ module _ ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} where
 
 -- ≃-sym is its own quasi-inverse
 
-qinv-≃-sym : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B : 𝓥 ̇) → qinv (≃-sym {𝓤} {𝓥} {A} {B})
-qinv-≃-sym A B = ≃-sym , (λ e⁻¹ → Σ-over-predicate ishae-is-Prop (refl _)) , (λ e → Σ-over-predicate ishae-is-Prop (refl _))
+qinv-≃-sym : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} → qinv (≃-sym {𝓤} {𝓥} {A} {B})
+qinv-≃-sym = ≃-sym , (λ e⁻¹ → Σ-over-predicate ishae-is-Prop (refl _)) , (λ e → Σ-over-predicate ishae-is-Prop (refl _))
 
+≃-sym-≃ : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} → (A ≃ B) ≃ (B ≃ A)
+≃-sym-≃ = ≃-sym , qinv-to-isequiv qinv-≃-sym
 
 -- Lemma 3.3.3 continued (logically equivalent propositions are equivalent).
 
@@ -109,7 +111,7 @@ module _ ⦃ fe : FunExt ⦄ where
 -- (ii) (i) symmetrized
 
   ≃-to-Prop-is-Prop' : (P : 𝓤 ̇ ) (Q : 𝓥 ̇ ) → isProp P → isProp (P ≃ Q)
-  ≃-to-Prop-is-Prop' P Q P-is-Prop = ≃-preserves-Props (≃-sym , qinv-to-isequiv (qinv-≃-sym _ _)) (≃-to-Prop-is-Prop _ _ P-is-Prop)
+  ≃-to-Prop-is-Prop' P Q P-is-Prop = ≃-preserves-Props ≃-sym-≃ (≃-to-Prop-is-Prop _ _ P-is-Prop)
 
 -- (iii) The lemma
 

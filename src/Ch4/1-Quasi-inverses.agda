@@ -7,10 +7,11 @@ open import Ch4.Exercises
 
 module Ch4.1-Quasi-inverses ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 
-postulate
-  pt : PropTrunc -- The last module triggers a loop when using instance arguments. Fix, restore safe flag and restore open import in Ch4.Equivalences.
+{- TO DO: the last module triggers a loop when using instance arguments. Fix, restore safe flag and restore open import in Ch4.Equivalences. -}
 
-open PropTrunc pt
+instance
+  postulate
+    pt' : PropTrunc 
 
 
 -- Lemma 4.1.1 (If f is quasi-invertible, then qinv f ≃ (id ∼ id)
@@ -42,10 +43,10 @@ inhabited-qinv-is-𝑖𝑑∼𝑖𝑑 {𝓤} {A} {B} f q =
 
 -- Lemma 4.1.2 (Sufficient conditions for non-trivial inhabitant of 𝑖𝑑 A ∼ 𝑖𝑑 A).
 
-module nontrivial-inhabitant-criterion (A : 𝓤 ̇) (a : A) (q : a ≡ a) (i : isSet (a ≡ a)) (g : ((x : A) → ∥ a ≡ x ∥)) (comm : (p : a ≡ a) → p ∙ q ≡ q ∙ p) where
+module nontrivial-inhabitant-criterion (A : 𝓤 ̇) (a : A) (q : a ≡ a) (i : isSet (a ≡ a)) (g : ((x : A) → ∥ a ≡ x ∥₋₁)) (comm : (p : a ≡ a) → p ∙ q ≡ q ∙ p) where
 
   first : is-⟨1⟩-type A
-  first x y = ∥∥-recursion (isSet-is-Prop (x ≡ y)) (λ p' → ∥∥-recursion (isSet-is-Prop (x ≡ y)) (λ p → ≃-preserves-Sets (≃-sym ((λ r → p ∙ r ∙ p' ⁻¹) , aux-equiv p p')) i) (g x)) (g y) where    
+  first x y = ∥∥₋₁-recursion (isSet-is-Prop (x ≡ y)) (λ p' → ∥∥₋₁-recursion (isSet-is-Prop (x ≡ y)) (λ p → ≃-preserves-Sets (≃-sym ((λ r → p ∙ r ∙ p' ⁻¹) , aux-equiv p p')) i) (g x)) (g y) where    
     aux-equiv : (p : a ≡ x) (p' : a ≡ y) → isequiv (λ r → p ∙ r ∙ p' ⁻¹)
     aux-equiv p p' = qinv-to-isequiv (
       (λ s → p ⁻¹  ∙ s ∙ p') ,
@@ -57,10 +58,10 @@ module nontrivial-inhabitant-criterion (A : 𝓤 ̇) (a : A) (q : a ≡ a) (i : 
   B x = Σ r ꞉ (x ≡ x) , ((s : a ≡ x) → r ≡ s ⁻¹ ∙ (q ∙ s))
 
   second : (x : A) → isProp (B x)
-  second x = ∥∥-recursion (isProp-is-Prop (B x)) (λ p → Σ-induction λ r h → Σ-induction λ r' h' → dpair-≡ ((h p ∙ h' p ⁻¹) , funext (λ s → first x x _ _ _ _))) (g x)
+  second x = ∥∥₋₁-recursion (isProp-is-Prop (B x)) (λ p → Σ-induction λ r h → Σ-induction λ r' h' → dpair-≡ ((h p ∙ h' p ⁻¹) , funext (λ s → first x x _ _ _ _))) (g x)
 
   third : Π B
-  third x = ∥∥-recursion (second x) (λ p → (p ⁻¹ ∙ (q ∙ p)) , λ s → ((ap (λ - → (p ⁻¹) ∙ -) (ru _ ∙ (ap (λ - → (q ∙ p) ∙ - ) (linv s ⁻¹) ∙ (∙-assoc _ _ _ ∙ ((ap (λ - → - ∙ s) ((∙-assoc _ _ _ ⁻¹) ∙ (comm (p ∙ (s ⁻¹)) ⁻¹)) ∙ (∙-assoc _ _ _ ⁻¹)) ∙ (∙-assoc _ _ _ ⁻¹))))) ∙ (∙-assoc _ _ _)) ∙ ap (λ - → - ∙ ((s ⁻¹) ∙ (q ∙ s))) (linv p)) ∙ (lu _ ⁻¹)) (g x)
+  third x = ∥∥₋₁-recursion (second x) (λ p → (p ⁻¹ ∙ (q ∙ p)) , λ s → ((ap (λ - → (p ⁻¹) ∙ -) (ru _ ∙ (ap (λ - → (q ∙ p) ∙ - ) (linv s ⁻¹) ∙ (∙-assoc _ _ _ ∙ ((ap (λ - → - ∙ s) ((∙-assoc _ _ _ ⁻¹) ∙ (comm (p ∙ (s ⁻¹)) ⁻¹)) ∙ (∙-assoc _ _ _ ⁻¹)) ∙ (∙-assoc _ _ _ ⁻¹))))) ∙ (∙-assoc _ _ _)) ∙ ap (λ - → - ∙ ((s ⁻¹) ∙ (q ∙ s))) (linv p)) ∙ (lu _ ⁻¹)) (g x)
 
   nontrivial-inhabitant-criterion : Σ f ꞉ (𝑖𝑑 A ∼ 𝑖𝑑 A) , f a ≡ q
   nontrivial-inhabitant-criterion = (λ x → pr₁ (third x)) , (pr₂ (third a) (refl a) ∙ lu _ ⁻¹ ∙ ru _ ⁻¹)
@@ -71,17 +72,19 @@ module nontrivial-inhabitant-criterion (A : 𝓤 ̇) (a : A) (q : a ≡ a) (i : 
 module qinv-is-not-Prop where
 
   X : 𝓤₀ ⁺ ̇
-  X = Σ A ꞉ (𝓤₀ ̇) , ∥ 𝟚 ≡ A ∥
+  X = Σ A ꞉ (𝓤₀ ̇) , ∥ 𝟚 ≡ A ∥₋₁
 
   X-≡ : {x y : X} → (x ≡ y) ≃ (pr₁ x ≡ pr₁ y)
-  X-≡ {x} {y} = Σ-over-predicate' (λ A → ∥∥-is-Prop) x y
+  X-≡ {x} {y} = Σ-over-predicate' (λ A → ∥∥₋₁-is-Prop) x y
+  
+  X-≡-η : {x y : X} → inv X-≡ ∘ pr₁ X-≡ ∼ 𝑖𝑑 (x ≡ y) 
+  X-≡-η {x} {y} = isequiv₂ (pr₂ (X-≡ {x} {y}))
 
-  X-≡-η = λ {x y : X} → isequiv₂ (pr₂ (X-≡ {x} {y}))
-
-  X-≡-β = λ {x y : X} → isequiv₃ (pr₂ (X-≡ {x} {y}))
+  X-≡-β : {x y : X} → pr₁ X-≡ ∘ inv X-≡ ∼ 𝑖𝑑 (pr₁ x ≡ pr₁ y)
+  X-≡-β {x} {y} = isequiv₃ (pr₂ (X-≡ {x} {y}))
 
   a : X
-  a = 𝟚 , ∣ refl 𝟚 ∣
+  a = 𝟚 , ∣ refl 𝟚 ∣₋₁
 
   q : a ≡ a
   q = inv X-≡ (ua twist-≃) 
@@ -89,8 +92,8 @@ module qinv-is-not-Prop where
   i : isSet (a ≡ a)
   i = ≃-preserves-Sets (≃-sym (X-≡ ● idtoeqv , idtoeqv-is-equiv ● autoequivs-of-𝟚)) 𝟚-is-Set
 
-  g : (x : X) → ∥ a ≡ x ∥
-  g (A , p) = ∥∥-recursion ∥∥-is-Prop (∣_∣ ∘ inv X-≡) p
+  g : (x : X) → ∥ a ≡ x ∥₋₁
+  g (A , p) = ∥∥₋₁-recursion ∥∥₋₁-is-Prop (∣_∣₋₁ ∘ inv X-≡) p
 
   𝟚-path-classification : (p : 𝟚 ≡ 𝟚) → (p ≡ refl 𝟚) + (p ≡ ua twist-≃)
   𝟚-path-classification p =
@@ -108,10 +111,10 @@ module qinv-is-not-Prop where
       (λ path → inl (X-≡-η p ⁻¹ ∙ ap (inv X-≡) path ∙ X-≡-η (refl a)))
       (λ path → inr (X-≡-η p ⁻¹ ∙ ap (inv X-≡) path))
       (𝟚-path-classification (pr₁ X-≡ p))
-
+      
   q-is-not-refl-a : ¬ (q ≡ refl a)
   q-is-not-refl-a path = uatwist-is-not-refl (X-≡-β _ ⁻¹ ∙ ap (pr₁ X-≡) (path ∙ X-≡-η (refl a) ⁻¹) ∙ X-≡-β _)
-
+  
   comm : (p : a ≡ a) → p ∙ q ≡ q ∙ p
   comm p =
     +-recursion
@@ -131,5 +134,3 @@ module qinv-is-not-Prop where
    
   qinv-is-not-Prop : ¬ (isProp (qinv (𝑖𝑑 X)))
   qinv-is-not-Prop p = 𝑖𝑑∼𝑖𝑑-is-not-Prop (≃-preserves-Props (inhabited-qinv-is-𝑖𝑑∼𝑖𝑑 {𝓤₀ ⁺} {X} {X} id (qinv-𝑖𝑑 X)) p)
-
-  

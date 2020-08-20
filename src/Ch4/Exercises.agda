@@ -111,12 +111,12 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B → C) w
     fibs-of-ϕ : fib ϕ (b , refl (g b)) ≃ fib f b
     fibs-of-ϕ = F , qinv-to-isequiv (G , α , β)
 
-  module fib-of-∘ where
+  module fib-∘ where
 
   -- (ii) Classically, (g ∘ f) ⁻¹ [c] = g ⁻¹ [f ⁻¹ [c]]
 
-  fib-of-∘ : (c : C) → fib (g ∘ f) c ≃ (Σ w ꞉ fib g c , fib f (pr₁ w))
-  fib-of-∘ c =
+  fib-∘ : (c : C) → fib (g ∘ f) c ≃ (Σ w ꞉ fib g c , fib f (pr₁ w))
+  fib-∘ c =
     fib (g ∘ f) c
       ≃⟨ (Σ-preserves-family-≃ λ a → ≃-sym (Σ-over-Contr-base-is-fib _ _ (free-right-endpt-is-Contr _ _))) ⟩
     (Σ a ꞉ A , Σ w ꞉ (Σ b ꞉ B , f a ≡ b) , g (pr₁ w) ≡ c)
@@ -131,4 +131,4 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B → C) w
       ≃⟨ ≃-sym (Σ-assoc _ _ _) ⟩
     (Σ w ꞉ fib g c , fib f (pr₁ w)) ■
 
-open fib-of-∘ public 
+open fib-∘ public 

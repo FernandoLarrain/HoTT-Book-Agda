@@ -39,8 +39,8 @@ inhabited-Prop-is-𝟙 P-is-Prop x₀ = ⇔-to-≃ P-is-Prop 𝟙-is-Prop ((λ x
 
 -- Lemma 3.3.4 (Propositions are sets).
 
-Props-are-Sets : (A : 𝓤 ̇) → isProp A → isSet A
-Props-are-Sets A f x y p q =
+isProp-to-isSet : {A : 𝓤 ̇} → isProp A → isSet A
+isProp-to-isSet {𝓤} {A} f x y p q =
   p
     ≡⟨ ii x y p ⟩
   g x ⁻¹ ∙ g y
@@ -71,8 +71,8 @@ Props-are-Sets A f x y p q =
 
 -- Lemma 3.1.8 (Sets are 1-types).
 
-Sets-are-⟨1⟩-types : (A : 𝓤 ̇) → isSet A → is-⟨1⟩-type A
-Sets-are-⟨1⟩-types A f x y = Props-are-Sets (x ≡ y) (f x y)
+isSet-to-is-⟨1⟩-type : (A : 𝓤 ̇) → isSet A → is-⟨1⟩-type A
+isSet-to-is-⟨1⟩-type A f x y = isProp-to-isSet (f x y)
 
 
 -- Lemma 3.3.5.
@@ -80,7 +80,7 @@ Sets-are-⟨1⟩-types A f x y = Props-are-Sets (x ≡ y) (f x y)
 module _  ⦃ fe : FunExt ⦄ where
 
   isProp-is-Prop : (A : 𝓤 ̇) → isProp (isProp A)
-  isProp-is-Prop A f g = funext (λ x → funext (λ y → Props-are-Sets A f x y (f x y) (g x y)))
+  isProp-is-Prop A f g = funext (λ x → funext (λ y → isProp-to-isSet f x y (f x y) (g x y)))
 
   isSet-is-Prop : (A : 𝓤 ̇) → isProp (isSet A)
   isSet-is-Prop A f g =
@@ -88,7 +88,7 @@ module _  ⦃ fe : FunExt ⦄ where
       funext (λ b →
         funext (λ p →
           funext (λ q →
-            Sets-are-⟨1⟩-types A f a b p q (f a b p q) (g a b p q)
+            isSet-to-is-⟨1⟩-type A f a b p q (f a b p q) (g a b p q)
           )
         )
       )

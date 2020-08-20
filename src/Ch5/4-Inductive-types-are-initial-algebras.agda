@@ -90,8 +90,8 @@ module single-universe where
     in Σ-over-predicate isHinit-ℕ-is-Prop (ℕAlg-≅-to-≡ (
     pr₁ (i J) ,
     pr₁ (j I) ,
-    pr₂ (pr₁ isContr-iff-is-inhabited-Prop  (j J)) _ _ ,
-    pr₂ (pr₁ isContr-iff-is-inhabited-Prop (i I)) _ _
+    isContr-to-isProp (j J) _ _ ,
+    isContr-to-isProp (i I) _ _
     ))
 
 

@@ -180,6 +180,11 @@ open pb-sq public
     refl
     ))
 
+-- Coproduct commutes with Σ.
+
+_ : {X : 𝓤 ̇} {Y : 𝓥 ̇} (P : X → 𝓦 ̇) (Q : Y → 𝓦 ̇) → Σ P + Σ Q ≃ Σ [ P , Q ]
+_ = λ P Q → [ Σ-induction (λ x u → inl x , u) , Σ-induction (λ y v → inr y , v) ] , qinv-to-isequiv (Σ-induction (+-induction _ (λ x u → inl (x , u)) (λ y v → inr (y , v))) , Σ-induction (+-induction _ (λ x u → refl _) (λ y v → refl _)) , +-induction _ (hrefl _) (hrefl _))
+
 
 -- Exercise 2.17 (Type constructors preserve equivalences)
 
@@ -232,7 +237,7 @@ module _ ⦃ fe : FunExt ⦄ where
       Π-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
       Π-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
         Π (P ∘ pr₁ e)
-          ≡⟨ ap Π (funext (transport-along-ua-is-pre-∘ e P) ⁻¹) ⟩
+          ≡⟨ ap Π (funext (transport-fun-ua-is-pre-∘ e P) ⁻¹) ⟩
         Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
           ≡⟨ Π-preserves-base-≡ P p ⟩
         Π P ∎
@@ -246,7 +251,7 @@ module _ ⦃ fe : FunExt ⦄ where
         Π P
           ≡⟨ Π-preserves-base-≡' P p ⟩
         Π (transport (λ - → - → 𝓥 ̇) p P) 
-          ≡⟨ ap Π (funext (transport-along-ua-is-pre-∘' e P)) ⟩
+          ≡⟨ ap Π (funext (transport-fun-ua-is-pre-∘' e P)) ⟩
         Π (P ∘ (inv e))  ∎
         )
 
@@ -282,7 +287,7 @@ module _ ⦃ fe : FunExt ⦄ where
       Σ-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
       Σ-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
         (Σ (P ∘ pr₁ e)
-          ≡⟨ ap Σ (funext (transport-along-ua-is-pre-∘ e P) ⁻¹) ⟩
+          ≡⟨ ap Σ (funext (transport-fun-ua-is-pre-∘ e P) ⁻¹) ⟩
         Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
           ≡⟨ Σ-preserves-base-≡ P p ⟩
         Σ P ∎
@@ -296,7 +301,7 @@ module _ ⦃ fe : FunExt ⦄ where
         (Σ P
           ≡⟨ Σ-preserves-base-≡' P p ⟩
         Σ (transport (λ - → - → 𝓥 ̇) p P)
-          ≡⟨ ap Σ (funext (transport-along-ua-is-pre-∘' e P)) ⟩
+          ≡⟨ ap Σ (funext (transport-fun-ua-is-pre-∘' e P)) ⟩
         Σ (P ∘ inv e) ∎
         )
 

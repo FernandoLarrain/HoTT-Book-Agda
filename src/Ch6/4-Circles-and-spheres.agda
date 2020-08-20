@@ -10,142 +10,43 @@ open import Ch6.2-Induction-pples-and-dependent-paths
 module Ch6.4-Circles-and-spheres where
 
 
--- Lemma 6.4.1 (The circle is non-trivial).
+-- Lemma 6.4.1 (The circle is nontrivial).
 
-𝕊¹-is-non-trivial : ⦃ univ : Univalence ⦄ → ¬ (loop₁ ≡ refl base₁)
-𝕊¹-is-non-trivial s = 𝓤-is-not-Set 𝓤₀ λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
-
-
--- Lemma 6.4.2 TO DO
+𝕊¹-is-nontrivial : ⦃ univ : Univalence ⦄ → ¬ (loop₁ ≡ refl base₁)
+𝕊¹-is-nontrivial s = 𝓤-is-not-Set 𝓤₀ λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
 
 
--- Lemma 6.4.3 TO DO
+-- Lemma 6.4.2 (𝑖𝑑 𝕊¹ ∼ 𝑖𝑑 𝕊¹ has a nontrivial inhabitant).
+
+nontrivial-inhabitant : (x : 𝕊¹) → x ≡ x
+nontrivial-inhabitant = 𝕊¹-ind _ loop₁ (transport-loop loop₁ loop₁ ∙ ((linv _ ∙ᵣ loop₁) ∙ lu _ ⁻¹))
+
+nontrivial-inhabitant-is-nontrivial : ⦃ univ : Univalence ⦄ → ¬ (nontrivial-inhabitant ≡ hrefl _)
+nontrivial-inhabitant-is-nontrivial p = 𝕊¹-is-nontrivial (happly p base₁)
 
 
--- Lemma 6.4.4 (Action on 2-paths).
+-- Lemma 6.4.3 (A universe with circle is not a 1-type).
 
-module _ {A : 𝓤 ̇ } {B : 𝓥 ̇ } (f : A → B) where
+𝓤₀-is-not-⟨1⟩-type : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → ¬ (is-⟨1⟩-type (𝓤₀ ̇))
+𝓤₀-is-not-⟨1⟩-type i = nontrivial-inhabitant-is-nontrivial (k _ _) where
+  aux-equiv : (≃-refl 𝕊¹ ≡ ≃-refl 𝕊¹) ≃ (𝑖𝑑 𝕊¹ ∼ 𝑖𝑑 𝕊¹)
+  aux-equiv =
+    (≃-refl 𝕊¹ ≡ ≃-refl 𝕊¹)
+      ≃⟨ Σ-over-predicate' ishae-is-Prop _ _ ⟩
+    (𝑖𝑑 𝕊¹ ≡ 𝑖𝑑 𝕊¹)
+      ≃⟨ happly , happly-is-equiv ⟩
+    (𝑖𝑑 𝕊¹ ∼ 𝑖𝑑 𝕊¹) ■
+  j : isSet (𝕊¹ ≃ 𝕊¹ )
+  j = ≃-preserves-Sets (idtoeqv , idtoeqv-is-equiv) (i _ _)
+  k : isProp (𝑖𝑑 𝕊¹ ∼ 𝑖𝑑 𝕊¹)
+  k = ≃-preserves-Props aux-equiv (j _ _)
 
-  ap² :  {x y : A} {p q : x ≡ y} → p ≡ q → ap f p ≡ ap f q
-  ap² (refl p) = refl (ap f p)
-
-  -- Remark (relationship between ap² and ap).
-
-  ap²-is-ap-of-ap : {x y : A} {p q : x ≡ y} → (r : p ≡ q) → ap² r ≡ ap (ap f) r
-  ap²-is-ap-of-ap (refl r) = refl _
-
-  -- Alternative definition of ap².
-
-  ap²' : {x y : A} {p q : x ≡ y} → p ≡ q → ap f p ≡ ap f q
-  ap²' = ap (ap f)
-
-  module ap'-2-is-ap² where
-
-    open higher-paths
-
-    private
-  
-      type-agreement : (b : Bndry 2 A) (r : Path 2 b) → ap'Codom 2 f b r ≡ type-of (ap² r)
-      type-agreement ((b , x , .x) , refl .x , .(refl x)) (refl .(refl x)) = refl _
-
-      term-agreement : (b : Bndry 2 A) (r : Path 2 b) → coe (type-agreement b r) (ap' 2 f r) ≡ ap² r  
-      term-agreement ((b , x , .x) , refl .x , .(refl x)) (refl .(refl x)) = refl _
+-- TO DO: Lift to arbitrary universes.
 
 
--- Lemma 6.4.5 (Two-dimensional transport).
+-- Lemmas 6.4.4-6:
 
-module _ {A : 𝓤 ̇ } (P : A → 𝓥 ̇) where
-
-  transport² :  {x y : A} {p q : x ≡ y} → p ≡ q → (u : P x) → transport P p u ≡ transport P q u
-  transport² (refl p) u = refl (transport P p u)
-
-  -- Remark (relationship between transport² and transport).
-
-  transport²-is-transport-along-transport : {x y : A} {p q : x ≡ y} (r : p ≡ q) (u : P x) → transport² r u ≡ transport (λ (- : x ≡ y) → transport P p u ≡ transport P - u) r (refl (transport P p u))
-  transport²-is-transport-along-transport (refl p) u = refl (refl (transport P p u))
-
-  -- Alternative definition of transport².
-
-  transport²' : {x y : A} {p q : x ≡ y} → p ≡ q → (u : P x) → transport P p u ≡ transport P q u
-  transport²' {x} {y} {p} r u = transport (λ (q : x ≡ y) → transport P p u ≡ transport P q u) r (refl (transport P p u))
-
-  module transport'-1-is-transport² where
-
-    open higher-paths
-
-    private
-
-      type-agreement : (b : Bndry 2 A) (r : Path 2 b) (u : P (left-basept b)) → transport'Codom 1 P b r u ≡ type-of (transport² r u)
-      type-agreement ((b , x , .x) , refl .x , .(refl x)) (refl .(refl x)) u = refl _
-
-      term-agreement : (b : Bndry 2 A) (r : Path 2 b) (u : P (left-basept b)) → coe (type-agreement b r u) (transport' 1 P r u) ≡ transport² r u 
-      term-agreement ((b , x , .x) , refl .x , .(refl x)) (refl .(refl x)) u = refl _
-
-
--- Lemma (transport² and transport²' in constant family).
-
-transport²const : {A : 𝓤 ̇} (B : 𝓥 ̇) {x y : A} {p q : x ≡ y} (r : p ≡ q) (b : B) → transport² (λ a → B) r b ≡ transportconst B p b ∙ transportconst B q b ⁻¹
-transport²const B (refl (refl x)) b = refl _
-
-transport²'const : {A : 𝓤 ̇} (B : 𝓥 ̇) {x y : A} {p q : x ≡ y} (r : p ≡ q) (b : B) → transport²' (λ a → B) r b ≡ transportconst B p b ∙ transportconst B q b ⁻¹
-transport²'const B (refl (refl x)) b = refl _
-
-
--- Definition of the type of dependent 2-paths.
-
-PathOver² : {A : 𝓤 ̇} (P : A → 𝓥 ̇) {x y : A} {p q : x ≡ y} (r : p ≡ q) {u : P x} {v : P y} (h : u ≡ v [ P ↓ p ]) (k : u ≡ v [ P ↓ q ]) → 𝓥 ̇
-PathOver² P r {u} h k = h ≡ transport² P r u ∙ k
-
-infix 0 PathOver²
-
-syntax PathOver² P r h k = h ≡ k [ P ⇊ r ]
-
--- Remark (relationship between PathOver² and PathOver).
-
-PathOver²-≡-PathOver-PathOver : {A : 𝓤 ̇} (P : A → 𝓥 ̇) {x y : A} {p q : x ≡ y} (r : p ≡ q) {u : P x} {v : P y} (h : u ≡ v [ P ↓ p ]) (k : u ≡ v [ P ↓ q ]) → (h ≡ k [ P ⇊ r ]) ≡ (h ≡ k [ (λ (- : x ≡ y) → u ≡ v [ P ↓ - ]) ↓ r ])
-PathOver²-≡-PathOver-PathOver P {x} {.x} {.(refl x)} {.(refl x)} (refl (refl x)) h (refl u) = refl _
-
-module PathOver'-2-is-PathOver² ⦃ univ : Univalence ⦄ where
-
-  open higher-paths
-  open PathOver'-1-is-PathOver
-
-  private
-  
-    BndryOver²-agreement : {X : 𝓤 ̇} (P : X → 𝓥 ̇) (b : Bndry 2 X) → BndryOver 2 P b ≃ -Σ (P (lhs (pr₁ b)) × P (rhs (pr₁ b))) (Σ-induction λ u v → PathOver P (lhs b) u v × PathOver P (rhs b) u v)
-    BndryOver²-agreement {𝓤} {𝓥} P ((lift ⋆ , x , y) , p , q) = Σ-preserves-≃ _ _ base-≃ (Σ-induction (Lift-induction _ _ _ (𝟙-induction _ (Σ-induction (λ u v → ×-preserves-≃ (PathOver-agreement' P p _) (PathOver-agreement' P q _))))))
-      where
-      base-≃ : BndryOver 1 P (lift ⋆ , x , y) ≃ P x × P y
-      base-≃ = BndryOver-agreement' P (lift ⋆ , x , y)
-
-
--- Lemma 6.4.6 (Dependent action on 2-paths).
-
-module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {x y : A} {p q : x ≡ y} (f : (x : A) → P x) where
-  apd² : (r : p ≡ q) → apd f p ≡ apd f q [ P ⇊ r ]
-  apd² (refl (refl x)) = refl (refl (f x))
-
-  -- Alternative definition of dependent action on 2-paths.
-
-  apd²' : (r : p ≡ q) → apd f p ≡ apd f q [ (λ - → f x ≡ f y [ P ↓ - ]) ↓ r ]
-  apd²' (refl p) = refl (apd f p) 
-
-module apd'-2-is-apd² {A : 𝓤 ̇} {P : A → 𝓥 ̇} (f : (x : A) → P x) where
-
-  open higher-paths
-
-  private
-    
-    type-agreement : (b : Bndry 2 A) (r : Path 2 b) → apd'Codom 2 f b r ≡ type-of (apd² f r)
-    type-agreement ((b , x , .x) , refl .x , .(refl x)) (refl .(refl x)) = refl _
-
-    term-agreement : (b : Bndry 2 A) (r : Path 2 b) → coe (type-agreement b r) (apd' 2 f r) ≡ apd² f r  
-    term-agreement ((b , x , .x) , refl .x , .(refl x)) (refl .(refl x)) = refl _
-
--- Lemma (apd² and apd²' "reduce" to ap² when family is constant).
-
-apd²-const : {A : 𝓤 ̇} (B : 𝓥 ̇) {x y : A} {p q : x ≡ y} (f : A → B) (r : p ≡ q) → apd² f r ≡ apdconst B f p ∙ (transportconst B p (f x) ∙ₗ (ap² f r ∙ apdconst' B f q)) ∙ ∙-assoc _ _ _ ∙ (transport²const B r (f x) ⁻¹ ∙ᵣ apd f q)
-apd²-const B {x} {.x} {.(refl x)} {.(refl x)} f (refl (refl x)) = refl _
+open import Ch6.4-Circles-and-spheres-safe public
 
 
 {- Note: There's a slight inconsistency in the book. Let f = 𝕊²-ind. Then, 
@@ -156,7 +57,7 @@ while
   
   s : refl b ≡ refl b [ (λ p → b ≡ b [ P ↓ p ] ↓ surf ] .
 
-As shown above, these two types are equal, but not judgmentally. We opted for PathOver². -}
+As shown in Ch6.Exercises, these two types are equal, but not judgmentally. In what follows, we adopt PathOver² as our official definition. -}
 
 
 -- The Sphere, 𝕊².

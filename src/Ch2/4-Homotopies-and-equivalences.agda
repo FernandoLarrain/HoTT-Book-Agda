@@ -26,8 +26,66 @@ module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} where
   hsym : {f g : Π P} → f ∼ g → g ∼ f
   hsym H x = H x ⁻¹
 
-  htrans : {f g h : Π P} → f ∼ g → g ∼ h → f ∼ h
-  htrans F G x = F x ∙ G x
+  _·_ : {f g h : Π P} → f ∼ g → g ∼ h → f ∼ h
+  _·_ F G x = F x ∙ G x
+
+  infixl 30 _·_
+
+
+-- Equational reasoning with _·_
+
+module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} where
+
+  _∼⟨_⟩_ : (f : Π P) {g h : Π P} → f ∼ g → g ∼ h → f ∼ h
+  _ ∼⟨ α ⟩ β = α · β
+
+  infixr 0 _∼⟨_⟩_
+
+  _□ : (f : Π P) → f ∼ f
+  _□ = hrefl
+
+  infix 1 _□ 
+
+
+-- Groupoid laws for homotopies
+
+module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {f g : Π P} where
+
+  ∼-ru : (α : f ∼ g) → α · hrefl g ∼ α
+  ∼-ru α x = ru _ ⁻¹ 
+
+  ∼-lu : (α : f ∼ g) → hrefl f · α ∼ α 
+  ∼-lu α x = lu _ ⁻¹
+
+  ∼-rinv : (α : f ∼ g) → α · hsym α ∼ hrefl f
+  ∼-rinv α x = rinv _ 
+
+  ∼-linv : (α : f ∼ g) → hsym α · α ∼ hrefl g
+  ∼-linv α x = linv _
+
+  hsym-invol : (α : f ∼ g) → hsym (hsym α) ∼ α
+  hsym-invol α x = ⁻¹-invol _
+
+·-assoc : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {f g h k : Π P} (α : f ∼ g) (β : g ∼ h) (γ : h ∼ k) → α · (β · γ) ∼ α · β · γ
+·-assoc α β γ x = ∙-assoc _ _ _
+
+-- A related law
+
+∼-distr : {A : 𝓤 ̇} {P : A → 𝓥 ̇} {f g h : Π P} (α : f ∼ g) (β : g ∼ h) → hsym (α · β) ∼ hsym β · hsym α
+∼-distr α β x = distr _ _
+
+
+-- Homotopy whiskering operations
+
+_·ᵣ_ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} {f g : A → B} → f ∼ g → (h : B → C) → h ∘ f ∼ h ∘ g
+(α ·ᵣ h) x = ap h (α x)
+
+infix 30 _·ᵣ_
+
+_·ₗ_ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} {g h : B → C} (f : A → B) → g ∼ h → g ∘ f ∼ h ∘ f
+(f ·ₗ α) = α ∘ f
+
+infix 30 _·ₗ_
 
 
 -- Lemma 2.4.3 (Naturality of homotopies).
@@ -35,25 +93,19 @@ module _ {A : 𝓤 ̇} {P : A → 𝓥 ̇} where
 module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {f g : A → B} {x y : A} (H : f ∼ g) where
 
   hnat : (p : x ≡ y) → H x ∙ ap g p ≡ ap f p ∙ H y
-  hnat (refl x) =
-    H x ∙ ap g (refl x)
-      ≡⟨ ru _ ⁻¹ ⟩
-    H x
-      ≡⟨ lu _ ⟩
-    ap f (refl x) ∙ H x
-    ∎
+  hnat (refl _) = ru _ ⁻¹ ∙ lu _
 
   hnat' : (p : x ≡ y) → H x ⁻¹ ∙ ap f p ∙ H y ≡ ap g p
-  hnat' (refl x) = ap (_∙ H x) (ru _ ⁻¹) ∙ linv _
+  hnat' (refl _) = ap (_∙ H _) (ru _ ⁻¹) ∙ linv _
 
   hnat'' : (p : x ≡ y) → ap f p ⁻¹ ∙ H x ∙ ap g p  ≡ H y
-  hnat'' (refl x) = ru _ ⁻¹ ∙ lu _ ⁻¹
+  hnat'' (refl _) = ru _ ⁻¹ ∙ lu _ ⁻¹
 
 
 -- Corollary 2.4.4.
 
 hnat-id : {A : 𝓤 ̇} {f : A → A} (H : f ∼ id) (x : A) → H (f x) ≡ ap f (H x)
-hnat-id {f = f} H x =
+hnat-id {𝓤} {A} {f} H x =
   H (f x)
     ≡⟨ ru _ ∙ ap (H (f x) ∙_) (rinv (H x) ⁻¹) ⟩ 
   H (f x) ∙ (H x ∙ (H x ⁻¹))
@@ -66,7 +118,19 @@ hnat-id {f = f} H x =
     ≡⟨ (ru _ ∙ ap (ap f (H x) ∙_) (rinv (H x) ⁻¹)) ⁻¹ ⟩
    ap f (H x)
   ∎
-  
+
+
+-- Example: Lift is a functor
+
+Lift-map : (𝓥 : Universe) {X Y : 𝓤 ̇} → (X → Y) → Lift 𝓥 X → Lift 𝓥 Y
+Lift-map 𝓥 f = lift ∘ Lift-recursion 𝓥 f
+
+Lift-id : (𝓥 : Universe) (X : 𝓤 ̇) → Lift-map 𝓥 (𝑖𝑑 X) ∼ 𝑖𝑑 (Lift 𝓥 X)
+Lift-id 𝓥 X = hrefl _
+
+Lift-∘ : (𝓥 : Universe) {X Y Z : 𝓤 ̇} (f : X → Y) (g : Y → Z) → Lift-map 𝓥 (g ∘ f) ∼ Lift-map 𝓥 g ∘ Lift-map 𝓥 f
+Lift-∘ 𝓥 f g = hrefl _
+
 
 -- Definition 2.4.6 (Quasi-inverse).
 
@@ -85,7 +149,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} where
   qinv₃ (g , α , β) = β 
 
 
--- Example 2.4.7 (Identity has a quasi-inverse).
+-- Example 2.4.7 (Identity is its own quasi-inverse).
 
 qinv-𝑖𝑑 : (A : 𝓤 ̇) → qinv (𝑖𝑑 A)
 qinv-𝑖𝑑 A = 𝑖𝑑 A , refl , refl
@@ -96,19 +160,19 @@ qinv-𝑖𝑑 A = 𝑖𝑑 A , refl , refl
 qinv-pre-∙ : {A : 𝓤 ̇} {x y : A} (z : A) (p : x ≡ y) → qinv (λ (q : y ≡ z) → p ∙ q)
 qinv-pre-∙ {𝓤} {A} {x} {y} z p =
   (p ⁻¹ ∙_) ,
-  (λ x₁ → ∙-assoc _ _ _ ∙ (ap (_∙ x₁) (rinv p) ∙ lu _ ⁻¹)) ,
-  λ x₁ → ∙-assoc _ _ _ ∙ (ap (_∙ x₁) (linv p) ∙ lu _ ⁻¹)
+  (λ r → ∙-assoc _ _ _ ∙ (ap (_∙ r) (rinv p) ∙ lu _ ⁻¹)) ,
+  λ r → ∙-assoc _ _ _ ∙ (ap (_∙ r) (linv p) ∙ lu _ ⁻¹)
 
 qinv-post-∙ : {A : 𝓤 ̇} {x y : A} (z : A) (p : x ≡ y)  → qinv (λ (q : z ≡ x) → q ∙ p)
 qinv-post-∙ {𝓤} {A} {x} {y} z p =
   (_∙ p ⁻¹) ,
-  (λ x₁ → ∙-assoc _ _ _ ⁻¹ ∙ (ap (x₁ ∙_) (linv p) ∙ ru _ ⁻¹)) ,
-  λ x₁ → ∙-assoc _ _ _ ⁻¹ ∙ (ap (x₁ ∙_) (rinv p) ∙ ru _ ⁻¹)
+  (λ r → ∙-assoc _ _ _ ⁻¹ ∙ (ap (r ∙_) (linv p) ∙ ru _ ⁻¹)) ,
+  λ r → ∙-assoc _ _ _ ⁻¹ ∙ (ap (r ∙_) (rinv p) ∙ ru _ ⁻¹)
 
 
 -- Example: _⁻¹ is its own quasi-inverse
 
-qinv-⁻¹ : {A : 𝓤 ̇} (x y : A) → qinv (_⁻¹ {x = x} {y})
+qinv-⁻¹ : {A : 𝓤 ̇} (x y : A) → qinv (_⁻¹ {𝓤} {A} {x} {y})
 qinv-⁻¹ x y =
   _⁻¹ ,
   ⁻¹-invol ,
@@ -122,20 +186,13 @@ module _ {A : 𝓤 ̇} {a b c : A} where
   -- _∙ₗ_ has qinv (for each left argument)
 
   ∙ₗ-inv : (q : a ≡ b) (r s : b ≡ c) → q ∙ r ≡ q ∙ s → r ≡ s
-  ∙ₗ-inv (refl b) r s β' = lu r ∙ β' ∙ lu s ⁻¹ 
+  ∙ₗ-inv (refl b) r s β = lu r ∙ β ∙ lu s ⁻¹ 
 
   ∙ₗ-inv-is-linv : (q : a ≡ b) (r s : b ≡ c) → ∙ₗ-inv q r s ∘ (q ∙ₗ_) ∼ id
   ∙ₗ-inv-is-linv (refl .x) (refl x) .(refl x) (refl .(refl x)) = refl _
 
   ∙ₗ-inv-is-rinv : (q : a ≡ b) (r s : b ≡ c) → (q ∙ₗ_) ∘ ∙ₗ-inv q r s  ∼ id
-  ∙ₗ-inv-is-rinv (refl x) r (refl .x) β rewrite
-    ru (lu r ∙ β) ⁻¹ |
-    ru (lu r ⁻¹ ∙ (lu r ∙ β)) ⁻¹ |
-    ∙-assoc (lu r ⁻¹) (lu r) β |
-    linv (lu r) |
-    lu r ⁻¹ |
-    lu β ⁻¹
-    = refl _
+  ∙ₗ-inv-is-rinv (refl x) r (refl .x) β = ru _ ⁻¹ ∙ ∙-assoc _ _ _ ∙ ru _ ⁻¹ ∙ ∙-assoc _ _ _ ∙ (linv _ ∙ᵣ β) ∙ lu _ ⁻¹
 
   qinv-∙ₗ : (q : a ≡ b) (r s : b ≡ c) → qinv (q ∙ₗ_)
   qinv-∙ₗ q r s = ∙ₗ-inv q r s , ∙ₗ-inv-is-rinv q r s , ∙ₗ-inv-is-linv q r s
@@ -143,19 +200,13 @@ module _ {A : 𝓤 ̇} {a b c : A} where
   -- _∙ᵣ_ has qinv (for each right argument)
 
   ∙ᵣ-inv : (p q : a ≡ b) (r : b ≡ c) → p ∙ r ≡ q ∙ r → p ≡ q
-  ∙ᵣ-inv p q (refl b) α' = ru p ∙ α' ∙ ru q ⁻¹
+  ∙ᵣ-inv p q (refl b) α = ru p ∙ α ∙ ru q ⁻¹
 
   ∙ᵣ-inv-is-linv : (p q : a ≡ b) (r : b ≡ c) → ∙ᵣ-inv p q r ∘ (_∙ᵣ r) ∼ id
   ∙ᵣ-inv-is-linv (refl x) .(refl x) (refl .x) (refl .(refl x)) = refl _
 
   ∙ᵣ-inv-is-rinv : (p q : a ≡ b) (r : b ≡ c) → (_∙ᵣ r) ∘ ∙ᵣ-inv p q r  ∼ id
-  ∙ᵣ-inv-is-rinv p (refl .x) (refl x) α' rewrite
-    ru (ru p ∙ α') ⁻¹ |
-    ru (ru p ⁻¹ ∙ (ru p ∙ α')) ⁻¹ |
-    ∙-assoc (ru p ⁻¹) (ru p) α' |
-    ap (_∙ α') (linv (ru p)) |
-    lu α' ⁻¹
-    = refl _
+  ∙ᵣ-inv-is-rinv p (refl .x) (refl x) α = ru _ ⁻¹ ∙ ∙-assoc _ _ _ ∙ ru _ ⁻¹ ∙ ∙-assoc _ _ _ ∙ (linv _ ∙ᵣ α) ∙ lu _ ⁻¹
 
   qinv-∙ᵣ : (p q : a ≡ b) (r : b ≡ c) → qinv (_∙ᵣ r)
   qinv-∙ᵣ p q r = ∙ᵣ-inv p q r , ∙ᵣ-inv-is-rinv p q r , ∙ᵣ-inv-is-linv p q r
@@ -280,6 +331,7 @@ module new-equiv where
 
     isequiv₄ : {f : A → B} → (h : isequiv f) → (x : A) → ap f (isequiv₂ h x) ≡ isequiv₃ h (f x)
     isequiv₄ (g , η , ε , τ) = τ
+    
 
     -- From qinv to isequiv. (Thm. 4.2.3)
 
@@ -298,6 +350,7 @@ module new-equiv where
         hnat' ε (ap f (η x)) |
         ap-id (ap f (η x)) 
         = refl _
+
 
     -- From isequiv to qinv. (Thm. 4.2.3)
 
@@ -348,7 +401,41 @@ module new-equiv where
 open new-equiv public
 
 
--- Example : types are equivalent to their lifts.
+-- We can translate all previous examples of quasi-invertible maps to equivalences:
+
+-- Example 2.4.8 (Pre- and post-concatenation are equivalences).
+
+pre-∙-≃ : {A : 𝓤 ̇} {x y : A} (z : A) → x ≡ y → (y ≡ z) ≃ (x ≡ z)
+pre-∙-≃ z p = (p ∙_) , qinv-to-isequiv (qinv-pre-∙ _ _)
+
+post-∙-≃ : {A : 𝓤 ̇} {x y : A} (z : A) → x ≡ y → (z ≡ x) ≃ (z ≡ y)
+post-∙-≃ z p = (_∙ p) , qinv-to-isequiv (qinv-post-∙ _ _)
+
+-- Example: _⁻¹ is an equivalence.
+
+⁻¹-≃ : {A : 𝓤 ̇} (x y : A) → (x ≡ y) ≃ (y ≡ x)
+⁻¹-≃ x y = _⁻¹ , qinv-to-isequiv (qinv-⁻¹ _ _)
+
+-- Example : whiskering operations induce equivalences
+
+module _ {A : 𝓤 ̇} {a b c : A} where
+
+  -- _∙ₗ_ is an equivalence (for each left argument)
+
+  ∙ₗ-≃ : (q : a ≡ b) (r s : b ≡ c) → (q ∙ r ≡ q ∙ s) ≃ (r ≡ s) 
+  ∙ₗ-≃ q r s = ≃-sym ((q ∙ₗ_) , qinv-to-isequiv (qinv-∙ₗ _ _ _))
+  
+  -- _∙ᵣ_ is an equivalence (for each right argument)
+
+  ∙ᵣ-≃ : (p q : a ≡ b) (r : b ≡ c) → (p ∙ r ≡ q ∙ r) ≃ (p ≡ q)
+  ∙ᵣ-≃ p q r = ≃-sym ((_∙ᵣ r) , qinv-to-isequiv (qinv-∙ᵣ _ _ _))
+
+-- Example 2.4.9
+
+transport-≃ : {A : 𝓤 ̇} (P : A → 𝓥 ̇) {x y : A} → x ≡ y → P x ≃ P y
+transport-≃ P p = transport P p , qinv-to-isequiv (qinv-transport P p)
+
+-- Example: lift and lower are equivalences (i.e. types are equivalent to their lifts).
 
 Lift-≃ : {𝓥 : Universe} {A : 𝓤 ̇} → Lift 𝓥 A ≃ A
 Lift-≃ {𝓤} {𝓥} {A} = lower , qinv-to-isequiv qinv-lower 

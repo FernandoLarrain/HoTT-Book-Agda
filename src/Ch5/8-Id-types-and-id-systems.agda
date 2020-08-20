@@ -43,10 +43,10 @@ ppmap-id (R , r₀) = (λ a → id) , (refl r₀)
 ppmap-≡ : ⦃ fe : FunExt ⦄ (A : 𝓤 ⊙) (R : pted-pred A 𝓥) (S : pted-pred A 𝓦) (g h : ppmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a : pr₁ A) (r : pr₁ R a) → pr₁ g a r ≡ pr₁ h a r) , (α (pr₂ A) (pr₂ R) ⁻¹ ∙ pr₂ g ≡ pr₂ h))
 
 ppmap-≡ (A , a₀) (R , r₀) (S , s₀) (g , gr) (h , hr) =
-  Σ-≡-equiv ●
+  Σ-≡-≃ ●
   Σ-preserves-≃ _ _
     ((happly , happly-is-equiv) ● Π-preserves-family-≃ (λ a → happly , happly-is-equiv))
-    λ p → (transport-lemma p gr ⁻¹ ∙_ ) , (qinv-to-isequiv (qinv-pre-∙ hr _))
+    λ p → pre-∙-≃ _ (transport-lemma p gr ⁻¹)
 
   where
 
@@ -136,7 +136,7 @@ module thm-5-8-2 ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (R' : pted-pred A' 𝓥) wh
   -- III.1. Based identity systems are initial
 
   i-to-ii : i {𝓦} → ii {𝓦}
-  i-to-ii R'-is-based-id-system (S , s₀) = pr₂ isContr-iff-is-inhabited-Prop (inhabited , is-Prop) where
+  i-to-ii R'-is-based-id-system (S , s₀) = inhabited-Prop-to-isContr inhabited is-Prop where
     inhabited : ppmap R' (S , s₀)
     inhabited = R'-is-based-id-system (λ a r → S a) s₀
     is-Prop : isProp (ppmap R' (S , s₀))
@@ -223,9 +223,9 @@ module thm-5-8-2 ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (R' : pted-pred A' 𝓥) wh
   iv-to-i : iv → i {𝓦}
   iv-to-i ΣR-is-Contr D d = (curry (λ u → transport (Σ-induction D) (p u) d)) , (ap (λ - → transport (Σ-induction D) - d) q) where
     p : (u : Σ R) → (a₀ , r₀) ≡ u
-    p = pr₂ (pr₁ isContr-iff-is-inhabited-Prop ΣR-is-Contr) (a₀ , r₀)
+    p = isContr-to-isProp ΣR-is-Contr (a₀ , r₀)
     q : p (a₀ , r₀) ≡ refl (a₀ , r₀)
-    q = pr₂ (pr₁ isContr-iff-is-inhabited-Prop (pr₁ Prop-iff-Contr-≡ (pr₂ (pr₁ isContr-iff-is-inhabited-Prop ΣR-is-Contr)) (a₀ , r₀) (a₀ , r₀))) _ _ 
+    q = isContr-to-isProp (pr₁ Prop-iff-Contr-≡ (isContr-to-isProp ΣR-is-Contr) (a₀ , r₀) (a₀ , r₀)) _ _ 
 
 
   -- III.6. Other implications
@@ -271,10 +271,10 @@ ppmap-≃-rrmap {𝓤} {𝓥} {𝓦} {A} (R , r₀) (S , s₀) = _ , (dep-Σ-UMP
 
 rrmap-≡ : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (R : refl-rel A 𝓥) (S : refl-rel A 𝓦) (g h : rrmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a b : A) (r : pr₁ R a b) → pr₁ g a b r ≡ pr₁ h a b r) , ((a : A) → α a a (pr₂ R a) ⁻¹ ∙ pr₂ g a ≡ pr₂ h a))
 rrmap-≡ A (R , r₀) (S , s₀) (g , gr) (h , hr) =
-  Σ-≡-equiv ●
+  Σ-≡-≃ ●
   Σ-preserves-≃ _ _
     ((happly , happly-is-equiv) ● Π-preserves-family-≃ (λ a → (happly , happly-is-equiv) ● Π-preserves-family-≃ (λ b → happly , happly-is-equiv)))
-    λ p → (happly , happly-is-equiv) ● Π-preserves-family-≃ (λ a → (transport-lemma p gr a ⁻¹ ∙_) , (qinv-to-isequiv (qinv-pre-∙ (hr a) _)))
+    λ p → (happly , happly-is-equiv) ● Π-preserves-family-≃ (λ a → pre-∙-≃ _ (transport-lemma p gr a ⁻¹))
 
   where
 
@@ -395,7 +395,7 @@ module thm-5-8-4 ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (R' : refl-rel A 𝓥) where
     rrmap-is-Contr = ≃-preserves-Contr aux-equiv (R'-is-initial ↑R')
 
     α : ((λ a b p → transport (R a) p (r₀ a)) , hrefl r₀) ∘rr inv-rrmap ≡ rrmap-id R'
-    α = pr₂ (pr₁ isContr-iff-is-inhabited-Prop rrmap-is-Contr) _ _
+    α = isContr-to-isProp rrmap-is-Contr _ _
     α' : (a b : A) (r : R a b) → transport (R a) (pr₁ inv-rrmap a b r) (r₀ a) ≡ r
     α' = pr₁ (pr₁ (rrmap-≡ A R' R' (((λ a b p → transport (R a) p (r₀ a)) , hrefl r₀) ∘rr inv-rrmap) (rrmap-id R')) α)
 

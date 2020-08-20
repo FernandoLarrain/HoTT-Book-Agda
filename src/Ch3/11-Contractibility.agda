@@ -17,12 +17,18 @@ isContr A = Σ a ꞉ A , (Π x ꞉ A , (a ≡ x))
 
 -- Lemma 3.11.3 (Contractible iff inhabited proposition iff 𝟙).
 
+isContr-to-isProp : {A : 𝓤 ̇} → isContr A → isProp A
+isContr-to-isProp (a , c) x y = c x ⁻¹ ∙ c y 
+
+inhabited-Prop-to-isContr : {A : 𝓤 ̇} → A → isProp A → isContr A
+inhabited-Prop-to-isContr a i = a , i a
+
 isContr-iff-is-inhabited-Prop : {A : 𝓤 ̇} → (isContr A ⇔ (A × isProp A))
 isContr-iff-is-inhabited-Prop {𝓤} {A} = sufficiency , necessity where
   sufficiency : isContr A → A × isProp A
-  sufficiency (a , c) = a , λ x y → c x ⁻¹ ∙ c y
+  sufficiency = pair (pr₁ , isContr-to-isProp)
   necessity : A × isProp A → isContr A
-  necessity (a , i) = a , λ x → i a x
+  necessity = Σ-induction inhabited-Prop-to-isContr
 
 is-inhabited-Prop-iff-is-𝟙 : {A : 𝓤 ̇} → ((A × isProp A) ⇔ (A ≃ 𝟙))
 is-inhabited-Prop-iff-is-𝟙 {𝓤} {A} = sufficiency , necessity where
@@ -54,7 +60,12 @@ isContr-iff-is-𝟙 {𝓤} {A} = sufficiency , necessity where
 -- Related result: every map between contractible types is an equivalence.
 
 map-between-Contrs-is-equiv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isContr A → isContr B → isequiv f
-map-between-Contrs-is-equiv f (a , i) (b , j) = qinv-to-isequiv ((λ y → a) , (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (b , j)) (f a)) , i)
+map-between-Contrs-is-equiv f (a , i) (b , j) = qinv-to-isequiv ((λ y → a) , (isContr-to-isProp (b , j) (f a)) , i)
+
+-- Related result: a proposition is contractible iff it is inhabited.
+
+isProp-to-isContr-iff-is-inhabited : {A : 𝓤 ̇} → isProp A → isContr A ⇔ A
+isProp-to-isContr-iff-is-inhabited A-is-Prop = pr₁ , (λ a → a , A-is-Prop a)
 
 
 module _ ⦃ fe : FunExt ⦄ where
@@ -67,21 +78,21 @@ module _ ⦃ fe : FunExt ⦄ where
     Π-preserves-Props (λ - → a' ≡ -) (Ids-are-Props a') _ p')
     where
       A-is-Prop : isProp A
-      A-is-Prop = pr₂ (pr₁ isContr-iff-is-inhabited-Prop (a , p))
+      A-is-Prop = isContr-to-isProp (a , p)
       Ids-are-Props : (x y : A) → isProp (x ≡ y)
-      Ids-are-Props x y = Props-are-Sets A A-is-Prop x y
+      Ids-are-Props x y = isProp-to-isSet A-is-Prop x y
 
 
   -- Corollary 3.11.5 (isContr is contractible when predicated of a contractible type).
 
   isContr-of-Contr-is-Contr : (A : 𝓤 ̇) → isContr A → isContr (isContr A)
-  isContr-of-Contr-is-Contr A c = pr₂ isContr-iff-is-inhabited-Prop (c , (isContr-is-Prop A))
+  isContr-of-Contr-is-Contr A c = inhabited-Prop-to-isContr c (isContr-is-Prop A)
 
 
   -- Lemma 3.11.6 (Π preserves contractibility).
 
   Π-preserves-Contr : {A : 𝓤 ̇} (P : A → 𝓥 ̇) → ((x : A) → isContr (P x)) → isContr (Π P)
-  Π-preserves-Contr P i =  pr₂ isContr-iff-is-inhabited-Prop ((λ x → pr₁ (i x)) , (Π-preserves-Props P (λ x → pr₂ (pr₁ isContr-iff-is-inhabited-Prop (i x)))))
+  Π-preserves-Contr P i =  pr₂ isContr-iff-is-inhabited-Prop ((λ x → pr₁ (i x)) , (Π-preserves-Props P (λ x →  isContr-to-isProp (i x))))
 
   -- Corollary (→)
 
@@ -91,20 +102,18 @@ module _ ⦃ fe : FunExt ⦄ where
 
 -- Definition of section, retraction and retract.
 
--- (i) A section is a right inverse
+-- (i) A section is a right inverse, a retraction is a left inverse.
 
-has-section : {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → 𝓤 ⊔ 𝓥 ̇   
-has-section {A = A} {B} r = Σ s ꞉ (B → A) , r ∘ s ∼ id
+sec : {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → 𝓤 ⊔ 𝓥 ̇   
+sec {𝓤} {𝓥} {A} {B} r = Σ s ꞉ (B → A) , r ∘ s ∼ id
 
--- (ii) A retraction is a right-invertible function
-
-is-retraction : {A : 𝓤 ̇} {B : 𝓥 ̇} (r : A → B) → (𝓤 ⊔ 𝓥) ̇
-is-retraction {A = A} {B} r = has-section r
+ret : {A : 𝓤 ̇} {B : 𝓥 ̇} → (B → A) → 𝓤 ⊔ 𝓥 ̇
+ret {𝓤} {𝓥} {A} {B} s = Σ r ꞉ (A → B) , r ∘ s ∼ id
 
 -- (iii) Retracts are codomains of retractions
 
 _◁_ : (B : 𝓥 ̇) (A : 𝓤 ̇) → (𝓤 ⊔ 𝓥) ̇
-B ◁ A = Σ r ꞉ (A → B) , (is-retraction r)
+B ◁ A = Σ r ꞉ (A → B) , (sec r)
 
 retraction : {B : 𝓥 ̇} {A : 𝓤 ̇} → B ◁ A → A → B
 retraction (r , s , α) = r
@@ -112,10 +121,10 @@ retraction (r , s , α) = r
 section : {B : 𝓥 ̇} {A : 𝓤 ̇} → B ◁ A → B → A
 section (r , s , α) = s
 
-retraction-eqn : {B : 𝓥 ̇} {A : 𝓤 ̇} → (ρ : B ◁ A) → retraction ρ ∘ section ρ ∼ id
-retraction-eqn (r , s , α) = α
+retract-eqn : {B : 𝓥 ̇} {A : 𝓤 ̇} → (ρ : B ◁ A) → retraction ρ ∘ section ρ ∼ id
+retract-eqn (r , s , α) = α
 
--- Remark
+-- Remark : equivalences are retractions
 
 ≃-to-◁ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → B ◁ A
 ≃-to-◁ (f , i) = let q = isequiv-to-qinv i in f , qinv₁ q , qinv₂ q
@@ -171,7 +180,7 @@ free-left-endpt-is-Contr A a = center , contraction
   α y = ap (λ - → transport P - y) (A-is-Set a a (i a ⁻¹) (refl _))
     where
     A-is-Set : isSet A
-    A-is-Set = Props-are-Sets A (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (a , i)))
+    A-is-Set = isProp-to-isSet (isContr-to-isProp (a , i))
   β : f⁻¹ ∘ f ∼ id
   β (x , y) = dpair-≡ (i x , (
     transport P (i x) (transport P (i x ⁻¹) y)
@@ -190,7 +199,7 @@ free-left-endpt-is-Contr A a = center , contraction
     )
   where
   A-is-Set : isSet A
-  A-is-Set = Props-are-Sets A (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (a , i)))
+  A-is-Set = isProp-to-isSet (isContr-to-isProp (a , i))
   
 -- (iii) Corollaries
 
@@ -201,12 +210,11 @@ free-left-endpt-is-Contr A a = center , contraction
 ×-preserves-Contr A B A-is-Contr B-is-Contr = Σ-preserves-Contr A-is-Contr (λ a → B-is-Contr)
 
 
--- Lemma 3.11.10 (A type is a proposition iff its path-space is contractible).
+-- Lemma 3.11.10 (A type is a proposition iff its path-spaces are contractible).
 
 Prop-iff-Contr-≡ : {A : 𝓤 ̇} → (isProp A ⇔ ((x y : A) → isContr (x ≡ y)))
 Prop-iff-Contr-≡ {𝓤} {A} = sufficiency , necessity where
   sufficiency : isProp A → (x y : A) → isContr (x ≡ y)
-  sufficiency i x y = (i x y) , ((Props-are-Sets A i) x y (i x y))
+  sufficiency i x y = (i x y) , (isProp-to-isSet i x y (i x y))
   necessity : ((x y : A) → isContr (x ≡ y)) → isProp A
   necessity f x y = pr₁ (f x y)
-

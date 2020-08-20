@@ -44,7 +44,7 @@ module thm-4-8-3 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) whe
   α P = funext λ b → ua (fibs-of-pr₁-are-values b)
 
   β : ψ ∘ χ ∼ id
-  β (A , f) = let g = pr₂ (ψ (χ (A , f))) in dpair-≡ ((ua (dom-is-sum-of-fibs f)) , (funext (transport-along-ua-is-pre-∘' (dom-is-sum-of-fibs f) g)))
+  β (A , f) = let g = pr₂ (ψ (χ (A , f))) in dpair-≡ ((ua (dom-is-sum-of-fibs f)) , (funext (transport-fun-ua-is-pre-∘' (dom-is-sum-of-fibs f) g)))
 
   χ-has-qinv : qinv χ
   χ-has-qinv = ψ , α , β

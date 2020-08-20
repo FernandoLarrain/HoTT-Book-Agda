@@ -13,7 +13,7 @@ module Ch4.3-Bi-invertible-maps where
 {-  In the book, biinv is definitionally equal to isequiv only up to a reordering of factors. Here, we use the same order for both. -}
 
 biinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
-biinv {𝓤} {𝓥} {A} {B} f = has-rinv f × has-linv f
+biinv {𝓤} {𝓥} {A} {B} f = sec f × ret f
 
 module biinv {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} where
 
@@ -45,7 +45,7 @@ biinv-to-qinv {𝓤} {𝓥} {A} {B} {f} ((g , α) , (h , β)) =
 -- Theorem 4.3.2 (biinv f is a proposition).
 
 biinv-is-Prop : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (biinv f)
-biinv-is-Prop f = suffices λ ib → ×-preserves-Contr (has-rinv f) (has-linv f) (has-rinv-of-qinv-is-Contr f (biinv-to-qinv ib)) (has-linv-of-qinv-is-Contr f (biinv-to-qinv ib))
+biinv-is-Prop f = suffices λ ib → ×-preserves-Contr (sec f) (ret f) (sec-of-qinv-is-Contr f (biinv-to-qinv ib)) (ret-of-qinv-is-Contr f (biinv-to-qinv ib))
   where
   suffices : (biinv f → isContr (biinv f)) → isProp (biinv f)
   suffices = inv (isProp-≃-inhabited-to-isContr (biinv f))

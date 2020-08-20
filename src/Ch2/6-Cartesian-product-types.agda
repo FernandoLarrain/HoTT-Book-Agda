@@ -21,7 +21,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {x y : A × B} where
   -- (ii) From equality of pairs to pair of equalities
 
   pr-≡ : x ≡ y → (pr₁ x ≡ pr₁ y) × (pr₂ x ≡ pr₂ y)
-  pr-≡ = ⟨ ap pr₁ , ap pr₂ ⟩
+  pr-≡ = pair (ap pr₁ , ap pr₂)
 
   -- (iii) Propositional computation rules for equality of pairs
 
@@ -36,13 +36,16 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {x y : A × B} where
 
   -- (iv) Propositional uniqueness principle for equality of pairs
 
-  ×-≡-η : (r : x ≡ y) → pair-≡ (ap pr₁ r , ap pr₂ r) ≡ r
-  ×-≡-η (refl x) = refl (refl x)
+  pr-≡-η : (r : x ≡ y) → pair-≡ (ap pr₁ r , ap pr₂ r) ≡ r
+  pr-≡-η (refl x) = refl (refl x)
 
   -- (v) Thm. 2.6.7 proper
 
   qinv-pr-≡ : qinv (pr-≡)
-  qinv-pr-≡ = pair-≡ , (Σ-induction λ p q → pr-≡-β p q) , ×-≡-η
+  qinv-pr-≡ = pair-≡ , (Σ-induction λ p q → pr-≡-β p q) , pr-≡-η
+
+  ×-≡-≃ : (x ≡ y) ≃ (pr₁ x ≡ pr₁ y) × (pr₂ x ≡ pr₂ y) 
+  ×-≡-≃ = pr-≡ , qinv-to-isequiv qinv-pr-≡ 
 
 
 -- Propositional uniqueness principle for pairs
@@ -72,11 +75,11 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} where
 
 -- Theorem 2.6.4 (Transport of pairs).
 
-transport-pair : {Z : 𝓤 ̇} (A B : Z → 𝓥 ̇) {z w : Z} (p : z ≡ w) → transport (λ z → A z × B z) p ∼ ⟨ transport A p × transport B p ⟩
+transport-pair : {Z : 𝓤 ̇} (A B : Z → 𝓥 ̇) {z w : Z} (p : z ≡ w) → transport (λ z → A z × B z) p ∼ ×-map (transport A p) (transport B p)
 transport-pair A B (refl z) (a , b) = refl (a , b)
 
 
 -- Theorem 2.6.5 (Functoriality of ap under products).
 
-ap-pair : {A : 𝓤 ̇} {B : 𝓥 ̇} {A' : 𝓦 ̇} {B' : 𝓣 ̇} (g : A → A') (h : B → B') {x y : A × B} (p : pr₁ x ≡ pr₁ y) (q : pr₂ x ≡ pr₂ y) → ap ⟨ g × h ⟩ (pair-≡ (p , q)) ≡ pair-≡ (ap g p , ap h q)
+ap-pair : {A : 𝓤 ̇} {B : 𝓥 ̇} {A' : 𝓦 ̇} {B' : 𝓣 ̇} (g : A → A') (h : B → B') {x y : A × B} (p : pr₁ x ≡ pr₁ y) (q : pr₂ x ≡ pr₂ y) → ap (×-map g h) (pair-≡ (p , q)) ≡ pair-≡ (ap g p , ap h q)
 ap-pair g h {a , b} {a , b} (refl a) (refl b) = refl _

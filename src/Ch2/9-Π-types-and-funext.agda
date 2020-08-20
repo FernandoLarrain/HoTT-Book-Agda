@@ -44,7 +44,7 @@ record FunExt : 𝓤ω where
 open FunExt ⦃ ... ⦄ public
 
 
-module _ ⦃ fe : FunExt ⦄ where
+module _ ⦃ fe : FunExt ⦄ where 
 
   -- Quasi-inverse
 
@@ -60,13 +60,13 @@ module _ ⦃ fe : FunExt ⦄ where
 
   -- Pointwise characterization of refl, _⁻¹ and _∙_.
 
-  fun-refl : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) → refl f ≡ funext (λ x → refl (f x))
+  fun-refl : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) → refl f ≡ funext (hrefl f)
   fun-refl f = (happly-η (refl f)) ⁻¹
 
-  fun-sym : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (α : f ≡ g) → (α ⁻¹) ≡ funext (λ x → (happly α x) ⁻¹)
+  fun-sym : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} (α : f ≡ g) → (α ⁻¹) ≡ funext (hsym (happly α))
   fun-sym (refl f) = fun-refl f
 
-  fun-trans : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g h : Π B} (α : f ≡ g) (β : g ≡ h) → (α ∙ β) ≡ funext (λ x → happly α x ∙ happly β x)
+  fun-trans : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g h : Π B} (α : f ≡ g) (β : g ≡ h) → (α ∙ β) ≡ funext (happly α · happly β)
   fun-trans (refl f) (refl f) = fun-refl f
 
 
@@ -78,11 +78,8 @@ transport-fun (refl _) f a = refl (f a)
 
 -- Equation 2.9.5 (Transport of dependent functions).
 
-transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : (x : X) → A x → 𝓥 ̇} {x₁ x₂ : X} (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₂) → transport (λ - → (a : A -) → B - a) p f a ≡ transport (λ - → (Σ-induction B) -) (dpair-≡ ((p ⁻¹) , refl (transport A (p ⁻¹) a)) ⁻¹) (f (transport A (p ⁻¹) a))
+transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : (x : X) → A x → 𝓥 ̇} {x₁ x₂ : X} (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₂) → transport (λ - → (a : A -) → B - a) p f a ≡ transport (Σ-induction B) (dpair-≡ ((p ⁻¹) , refl _) ⁻¹) (f (transport A (p ⁻¹) a))
 transport-dfun (refl _) f a = refl (f a)
-
-transport-dfun' : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : (x : X) → A x → 𝓥 ̇} {x₁ x₂ : X} (p : x₁ ≡ x₂) (f : (a : A x₁) → B x₁ a) → (a : A x₁) → transport (λ - → (a : A -) → B - a) p f (transport A p a) ≡ transport (λ - → (Σ-induction B) -) (dpair-≡ (p , refl (transport A p a))) (f a)
-transport-dfun' (refl _) f a = refl (f a)
 
 
 -- Lemma 2.9.6 (Function extensionality with respect to dependent paths; equality of parameterized functions).
@@ -105,23 +102,41 @@ module dpath-funext ⦃ fe : FunExt ⦄ {X : 𝓤 ̇} (A B : X → 𝓥 ̇) wher
     
     k : transport B p (f a) ≡ g (transport A p a) 
     k = pr₁ (equiv p f g) q a
-
+    
+    ijk : transport P p f (transport A p a) ≡ g (transport A p a)
     ijk = i ∙ j ∙ k
 
   open paths
 
-  path-≡ : {x y : X} (p : x ≡ y) (f : P x) (g : P y) (q : transport P p f ≡ g) (a : A x) → happly q (transport A p a) ≡ ijk p f g q a
-  path-≡ (refl x) f g q a = lu _
+  dpath-funext-β : {x y : X} (p : x ≡ y) (f : P x) (g : P y) (q : transport P p f ≡ g) (a : A x) → happly q (transport A p a) ≡ ijk p f g q a
+  dpath-funext-β (refl x) f g q a = lu _
 
 
--- Lemma 2.9.7
+-- Lemma 2.9.7 (Function extensionality with respect to dependent paths; equality of parameterized depedent functions).
 
 module dpath-dfunext ⦃ fe : FunExt ⦄ {X : 𝓤 ̇} (A : X → 𝓥 ̇) (B : (x : X) → A x → 𝓥 ̇) where
 
   P : X → 𝓥 ̇
   P x = (a : A x) → B x a
 
-  equiv : {x y : X} (p : x ≡ y) (f : P x) (g : P y) → (transport P p f ≡ g) ≃ ((a : A x) → transport (Σ-induction B) (dpair-≡ (p , refl (transport A p a))) (f a) ≡ g (transport A p a))
+  equiv : {x y : X} (p : x ≡ y) (f : P x) (g : P y) → (transport P p f ≡ g) ≃ ((a : A x) → transport (Σ-induction B) (dpair-≡ (p , refl _)) (f a) ≡ g (transport A p a))
   equiv (refl _) f g = happly , happly-is-equiv
 
-  -- TO DO: computation rule.
+  module paths where
+  
+    i : {x y : X} (p : x ≡ y) (f : P x) (g : P y) (q : transport P p f ≡ g) (a : A x) → transport P p f (transport A p a) ≡ transport (Σ-induction B) (dpair-≡ ((p ⁻¹) , refl _) ⁻¹) (f (transport A (p ⁻¹) (transport A p a)))
+    i p f g q a = transport-dfun p f (transport A p a)
+
+    j : {x y : X} (p : x ≡ y) (f : P x) (g : P y) (q : transport P p f ≡ g) (a : A x) → transport (Σ-induction B) (dpair-≡ ((p ⁻¹) , refl _) ⁻¹) (f (transport A (p ⁻¹) (transport A p a))) ≡ transport (Σ-induction B) (dpair-≡ (p , refl _)) (f a)
+    j (refl _) f g q a = refl _
+
+    k : {x y : X} (p : x ≡ y) (f : P x) (g : P y) (q : transport P p f ≡ g) (a : A x) → transport (Σ-induction B) (dpair-≡ (p , refl _)) (f a) ≡ g (transport A p a)
+    k p f g = pr₁ (equiv p f g)
+
+    ijk : {x y : X} (p : x ≡ y) (f : P x) (g : P y) (q : transport P p f ≡ g) (a : A x) → transport P p f (transport A p a) ≡ g (transport A p a)
+    ijk p f g q a = i p f g q a ∙ j p f g q a ∙ k p f g q a
+
+  open paths
+
+  dpath-dfunext-β : {x y : X} (p : x ≡ y) (f : P x) (g : P y) (q : transport P p f ≡ g) (a : A x) → happly q (transport A p a) ≡ ijk p f g q a
+  dpath-dfunext-β (refl _) f g q a = lu _

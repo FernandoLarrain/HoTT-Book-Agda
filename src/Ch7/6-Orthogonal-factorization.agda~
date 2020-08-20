@@ -1,0 +1,13 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+open import Ch6.9-Truncations
+open import Ch7.1-Definition-of-n-types
+open import Ch7.3-Truncations-safe
+open import Ch7.5-Connectedness
+
+module Ch7.6-Orthogonal-factorizacion ⦃ trunc : Truncations ⦄ where
+
