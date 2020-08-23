@@ -36,4 +36,31 @@ isProp-≃-inhabited-to-isContr A = ⇔-to-≃ (isProp-is-Prop _) (Π-preserves-
   sufficiency = swap inhabited-Prop-to-isContr
   necessity : (A → isContr A) → isProp A
   necessity g = λ x y → pr₂ (g x) x ⁻¹ ∙ pr₂ (g x) y
-    
+
+
+-- Points of a type
+
+module pts-of-type ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) {B : 𝓥 ̇} (c : isContr B) where
+
+  b = pr₁ c
+  contraction = pr₂ c
+
+  ϕ : A → B → A
+  ϕ = singleton-ind (b , contraction) (λ - → A)
+
+  ψ : (B → A) → A
+  ψ f = f b
+
+  α : ϕ ∘ ψ ∼ id
+  α f = funext (singleton-ind c (λ b → ϕ (ψ f) b ≡ f b) (center-prop-β c (λ - → A) (f b)))
+
+  β : ψ ∘ ϕ ∼ id
+  β a = ap (λ - → transport (λ a → A) - a) (B-is-Set _ _ (contraction b) (refl _))  where
+    B-is-Set : isSet B
+    B-is-Set = isProp-to-isSet (isContr-to-isProp c)  
+  
+  equiv : A ≃ (B → A)
+  equiv =  ϕ , qinv-to-isequiv (ψ , α , β)
+
+pts-of-type-𝟙 : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} → A ≃ (𝟙 → A)
+pts-of-type-𝟙 {𝓤} {A} = (𝟙-recursion A) , (qinv-to-isequiv ((λ f → f ⋆) , ((λ f → funext (𝟙-induction _ (refl _))) , hrefl _))) 

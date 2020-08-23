@@ -19,76 +19,78 @@ module _ ⦃ fe : FunExt ⦄ where
   ×-UMP : (X : 𝓤 ̇) (A : 𝓥 ̇) (B : 𝓦 ̇) → isequiv {_} {_} {X → A × B} {(X → A) × (X → B)} split
   ×-UMP X A B = qinv-to-isequiv (pair , hrefl _ , λ f → funext λ x → ×-η (f x) ⁻¹)
 
-  -- Products are unique (using universe polymorphism).
+  private
 
-  module ×-UMP-to-≃ (A : 𝓤 ̇) (B : 𝓥 ̇) (P : 𝓦 ̇) (π₁ : P → A) (π₂ : P → B) (i : {𝓣 : Universe} (X : 𝓣 ̇) → isequiv {_} {_} {X → P} {(X → A) × (X → B)} (λ f → π₁ ∘ f , π₂ ∘ f)) where
+    -- Products are unique (using universe polymorphism).
 
-    -- Notation
+    module ×-UMP-to-≃ (A : 𝓤 ̇) (B : 𝓥 ̇) (P : 𝓦 ̇) (π₁ : P → A) (π₂ : P → B) (i : {𝓣 : Universe} (X : 𝓣 ̇) → isequiv {_} {_} {X → P} {(X → A) × (X → B)} (λ f → π₁ ∘ f , π₂ ∘ f)) where
 
-    split' : {X : 𝓣 ̇} → (X → P) → (X → A) × (X → B)
-    split' f = π₁ ∘ f , π₂ ∘ f
+      -- Notation
 
-    pair' : {X : 𝓣 ̇} → (X → A) × (X → B) → (X → P)
-    pair' {𝓣} {X} = qinv₁ (isequiv-to-qinv (i X))
+      split' : {X : 𝓣 ̇} → (X → P) → (X → A) × (X → B)
+      split' f = π₁ ∘ f , π₂ ∘ f
 
-    -- Relevant quasi-inverses
+      pair' : {X : 𝓣 ̇} → (X → A) × (X → B) → (X → P)
+      pair' {𝓣} {X} = qinv₁ (isequiv-to-qinv (i X))
 
-    q : qinv (λ (f : A × B → P) → π₁ ∘ f , π₂ ∘ f)
-    q = isequiv-to-qinv (i (A × B))
+      -- Relevant quasi-inverses
 
-    q' : qinv (λ (f : P → P) → π₁ ∘ f , π₂ ∘ f)
-    q' = isequiv-to-qinv (i P)
+      q : qinv (λ (f : A × B → P) → π₁ ∘ f , π₂ ∘ f)
+      q = isequiv-to-qinv (i (A × B))
 
-    -- Maps back and forth
+      q' : qinv (λ (f : P → P) → π₁ ∘ f , π₂ ∘ f)
+      q' = isequiv-to-qinv (i P)
 
-    ϕ : P → A × B
-    ϕ = pair (π₁ , π₂)
+      -- Maps back and forth
 
-    ψ : A × B → P
-    ψ = pair' (pr₁ , pr₂)
+      ϕ : P → A × B
+      ϕ = pair (π₁ , π₂)
 
-    -- Commutativity conditions
+      ψ : A × B → P
+      ψ = pair' (pr₁ , pr₂)
 
-    ϕ₁ : pr₁ ∘ ϕ ≡ π₁
-    ϕ₁ = refl _
+      -- Commutativity conditions
 
-    ϕ₂ : pr₂ ∘ ϕ ≡ π₂
-    ϕ₂ = refl _
+      ϕ₁ : pr₁ ∘ ϕ ≡ π₁
+      ϕ₁ = refl _
 
-    ψ₁ : π₁ ∘ ψ ≡ pr₁
-    ψ₁ = ap pr₁ (qinv₂ q (pr₁ , pr₂))
+      ϕ₂ : pr₂ ∘ ϕ ≡ π₂
+      ϕ₂ = refl _
 
-    ψ₂ : π₂ ∘ ψ ≡ pr₂
-    ψ₂ = ap pr₂ (qinv₂ q (pr₁ , pr₂))
-   
-    -- Witnesses of invertibility
+      ψ₁ : π₁ ∘ ψ ≡ pr₁
+      ψ₁ = ap pr₁ (qinv₂ q (pr₁ , pr₂))
 
-    α : ϕ ∘ ψ ∼ 𝑖𝑑 (A × B)
-    α = happly (
-      ϕ ∘ ψ
-        ≡⟨ funext (×-η ∘ (ϕ ∘ ψ)) ⟩
-      pair (split (ϕ ∘ ψ))
-        ≡⟨ ap pair (qinv₂ q (pr₁ , pr₂)) ⟩ -- (qinv₂ q (pr₁ , pr₂))
-      pair (split (𝑖𝑑 (A × B)))
-        ≡⟨ refl _ ⟩
-      𝑖𝑑 (A × B) ∎
-      )
+      ψ₂ : π₂ ∘ ψ ≡ pr₂
+      ψ₂ = ap pr₂ (qinv₂ q (pr₁ , pr₂))
 
-    β : ψ ∘ ϕ ∼ 𝑖𝑑 P
-    β = happly (
-      ψ ∘ ϕ
-        ≡⟨ qinv₃ q' (ψ ∘ ϕ) ⁻¹ ⟩
-      pair' (split' (ψ ∘ ϕ))
-        ≡⟨ ap pair' (pair-≡ (ap (_∘ ϕ) ψ₁ , ap (_∘ ϕ) ψ₂)) ⟩
-      pair'(split' (𝑖𝑑 P))
-        ≡⟨ qinv₃ q' (𝑖𝑑 P) ⟩
-      𝑖𝑑 P ∎
-      )
+      -- Witnesses of invertibility
 
-    -- Equivalence
+      α : ϕ ∘ ψ ∼ 𝑖𝑑 (A × B)
+      α = happly (
+        ϕ ∘ ψ
+          ≡⟨ funext (×-η ∘ (ϕ ∘ ψ)) ⟩
+        pair (split (ϕ ∘ ψ))
+          ≡⟨ ap pair (qinv₂ q (pr₁ , pr₂)) ⟩ -- (qinv₂ q (pr₁ , pr₂))
+        pair (split (𝑖𝑑 (A × B)))
+          ≡⟨ refl _ ⟩
+        𝑖𝑑 (A × B) ∎
+        )
 
-    equiv : P ≃ A × B
-    equiv = ϕ , qinv-to-isequiv (ψ , α , β)
+      β : ψ ∘ ϕ ∼ 𝑖𝑑 P
+      β = happly (
+        ψ ∘ ϕ
+          ≡⟨ qinv₃ q' (ψ ∘ ϕ) ⁻¹ ⟩
+        pair' (split' (ψ ∘ ϕ))
+          ≡⟨ ap pair' (pair-≡ (ap (_∘ ϕ) ψ₁ , ap (_∘ ϕ) ψ₂)) ⟩
+        pair'(split' (𝑖𝑑 P))
+          ≡⟨ qinv₃ q' (𝑖𝑑 P) ⟩
+        𝑖𝑑 P ∎
+        )
+
+      -- Equivalence
+
+      equiv : P ≃ A × B
+      equiv = ϕ , qinv-to-isequiv (ψ , α , β)
 
 
   -- UMP of dependent pair types.

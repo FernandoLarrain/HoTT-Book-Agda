@@ -38,14 +38,7 @@ is-inhabited-Prop-iff-is-𝟙 {𝓤} {A} = sufficiency , necessity where
   necessity (f , i) with isequiv-to-qinv i
   ... | (f⁻¹ , β , α) = 
     inv (f , i) ⋆ ,
-    λ x y →
-      x
-        ≡⟨ α x ⁻¹ ⟩
-      f⁻¹ (f x)
-        ≡⟨ ap f⁻¹ (𝟙-is-Prop _ _) ⟩
-      f⁻¹ (f y)
-        ≡⟨ α y ⟩
-      y ∎
+    λ x y → α x ⁻¹ ∙ ap f⁻¹ (𝟙-is-Prop _ _) ∙ α y
 
 isContr-iff-is-𝟙 : {A : 𝓤 ̇} → (isContr A ⇔ (A ≃ 𝟙))
 isContr-iff-is-𝟙 {𝓤} {A} = sufficiency , necessity where
@@ -66,6 +59,22 @@ map-between-Contrs-is-equiv f (a , i) (b , j) = qinv-to-isequiv ((λ y → a) , 
 
 isProp-to-isContr-iff-is-inhabited : {A : 𝓤 ̇} → isProp A → isContr A ⇔ A
 isProp-to-isContr-iff-is-inhabited A-is-Prop = pr₁ , (λ a → a , A-is-Prop a)
+
+-- Related result: contractible (a.k.a. singleton) types have an induction principle akin to 𝟙-induction, namely singleton induction.
+
+singleton-ind : {A : 𝓤 ̇} (c : isContr A) (P : A → 𝓥 ̇) → P (pr₁ c) → (x : A) → P x
+singleton-ind (center , contraction) P u x = transport P (contraction x) u
+
+center-prop-β : {A : 𝓤 ̇} (c : isContr A) (P : A → 𝓥 ̇) (u : P (pr₁ c)) → singleton-ind c P u (pr₁ c) ≡ u
+center-prop-β {𝓤} {𝓥} {A} (center , contraction) P u = ap (λ - → transport P - u) (A-is-Set _ _ (contraction center) (refl center)) where
+  A-is-Set : isSet A
+  A-is-Set = isProp-to-isSet (isContr-to-isProp (center , contraction))  
+
+singleton-ind' : {A : 𝓤 ̇} (a : A) → isProp A → (P : A → 𝓥 ̇) → P a → (x : A) → P x
+singleton-ind' a i P u x = transport P (i a x) u
+
+point-prop-β : {A : 𝓤 ̇} (a : A) (i : isProp A) (P : A → 𝓥 ̇) (u : P a) → singleton-ind' a i P u a ≡ u
+point-prop-β a i P u = ap (λ - → transport P - u) (isProp-to-isSet i _ _ (i a a) (refl a))
 
 
 module _ ⦃ fe : FunExt ⦄ where
@@ -167,6 +176,9 @@ free-left-endpt-is-Contr A a = center , contraction
 
 Σ-of-Contr-family-is-base : (A : 𝓤 ̇)  (P : A → 𝓥 ̇) → ((x : A) → isContr (P x)) → Σ P ≃ A
 Σ-of-Contr-family-is-base A P c = pr₁ , (qinv-to-isequiv ((λ x → x , pr₁ (c x)) , (refl , λ z → dpair-≡ (refl _ , pr₂ (c (pr₁ z)) (pr₂ z)))))
+
+Σ-over-𝟙 : (P : 𝟙 → 𝓤 ̇) → Σ P ≃ P ⋆
+Σ-over-𝟙 P = Σ-induction (𝟙-induction _ id) , qinv-to-isequiv ((λ x → ⋆ , x) , hrefl _ , Σ-induction (𝟙-induction _ (hrefl _)))
 
 -- (ii) The sum over a contractible base is the fiber at the center of the base.
 

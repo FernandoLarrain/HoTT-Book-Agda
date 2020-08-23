@@ -29,6 +29,9 @@ fibs-of-pr₁-are-values {𝓤} {𝓥} {A} {B} a =
 dom-is-sum-of-fibs : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → (Σ b ꞉ B , fib f b) ≃ A
 dom-is-sum-of-fibs {𝓤} {𝓥} {A} {B} f = Σ-swap B A (λ b a → f a ≡ b) ● Σ-of-Contr-family-is-base _ _ (λ x → free-right-endpt-is-Contr _ _)
 
+fib-of-!𝟙 : {A : 𝓤 ̇} → fib (!𝟙 A) ⋆ ≃ A
+fib-of-!𝟙 {𝓤} {A} = ≃-sym (Σ-over-𝟙 (λ u → fib (!𝟙 A) u)) ● dom-is-sum-of-fibs (!𝟙 A)
+
 
 -- Theorem 4.8.3
 

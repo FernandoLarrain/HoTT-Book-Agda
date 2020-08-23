@@ -18,8 +18,8 @@ data 𝟙 : 𝓤₀ ̇  where
 𝟙-recursion : (B : 𝓤 ̇) → B → 𝟙 → B
 𝟙-recursion B b x = 𝟙-induction (λ _ → B) b x
 
-!𝟙 : {X : 𝓤 ̇} → X → 𝟙
-!𝟙 x = ⋆
+!𝟙 : (X : 𝓤 ̇) → X → 𝟙
+!𝟙 X x = ⋆
 
 
 -- Binary product
