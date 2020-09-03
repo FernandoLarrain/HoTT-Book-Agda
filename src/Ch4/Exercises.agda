@@ -100,7 +100,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B → C) w
     G : fib f b → fib ϕ (b , refl (g b))
     G (a , p) = (a , (ap g p)) , dpair-≡ (p , q) where
       q :  transport (λ x → g x ≡ g b) p (ap g p) ≡ refl (g b)
-      q = transport-funval-≡ g (λ - → g b) p (ap g p) ∙ (linv _ ⋆' ap-const-fun (g b) p)
+      q = transport-funval-≡ g (λ - → g b) p (ap g p) ∙ (linv _ ✦ ap-const-fun (g b) p)
 
     α : F ∘ G ∼ id
     α (a , p) = dpair-≡ (refl a , dpr₁-≡-β p _) 

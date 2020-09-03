@@ -32,4 +32,6 @@ im n {A} {B} f = Σ b ꞉ B , (∥ fib f b ∥ n)
 
 
 
+
+
  

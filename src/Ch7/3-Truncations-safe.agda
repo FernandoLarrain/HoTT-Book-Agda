@@ -49,14 +49,14 @@ module _ ⦃ tc : Truncations ⦄ where
     ψ : (A → B) → ∥ A ∥ n → B
     ψ = ∥∥-recursion i
 
-    α : ϕ ∘ ψ ∼ id
-    α g = funext (∣∣-prop-β' i g)
+    β : ϕ ∘ ψ ∼ id
+    β g = funext (∣∣-prop-β' i g)
 
-    β : ψ ∘ ϕ ∼ id
-    β f = funext (∥∥-uniqueness-pple i (∣∣-prop-β' i (ϕ f)))
+    η : ψ ∘ ϕ ∼ id
+    η f = funext (∥∥-uniqueness-pple i (∣∣-prop-β' i (ϕ f)))
 
     equiv : (∥ A ∥ n → B) ≃ (A → B)
-    equiv = ϕ , (qinv-to-isequiv (ψ , α , β))
+    equiv = ϕ , (qinv-to-isequiv (ψ , β , η))
 
   -- Relation to old definitions
 

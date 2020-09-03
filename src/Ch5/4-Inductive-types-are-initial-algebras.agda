@@ -41,7 +41,7 @@ module ℕHom-≡ ⦃ fe : FunExt ⦄  (C : 𝓤 ̇) (D : 𝓤 ̇) (cs : C → C
   transport-lemma' (refl _) α c = lu _ ∙ ru _
 
   transport-lemma : {f g : C → D} (γ : f ∼ g) (α : f ∘ cs ∼ ds ∘ f) (c : C) → transport P (funext γ) α c ≡ γ (cs c) ⁻¹ ∙ α c ∙ ap ds (γ c)   
-  transport-lemma γ α c = transport-lemma' (funext γ) α c ∙ ((ap _⁻¹ (happly-β γ (cs c)) ∙ᵣ α c) ⋆' ap (ap ds) (happly-β γ c))
+  transport-lemma γ α c = transport-lemma' (funext γ) α c ∙ ((ap _⁻¹ (happly-β γ (cs c)) ∙ᵣ α c) ✦ ap (ap ds) (happly-β γ c))
 
 
 -- Isomorphic ℕ-algebras are equal.

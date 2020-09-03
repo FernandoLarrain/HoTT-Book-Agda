@@ -36,6 +36,8 @@ open import Ch2.1-Types-are-higher-groupoids public
 -- infix 1 _∎
 -- infix 30 _∙ᵣ_
 -- infix 30 _∙ₗ_
+-- infixl 30 _✦_
+-- infixl 30 _✧_
 open import Ch2.2-Functions-are-functors public
 open import Ch2.3-Type-families-are-fibrations public
 -- infix 0 PathOver

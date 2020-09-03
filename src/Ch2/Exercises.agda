@@ -335,69 +335,72 @@ module _ ⦃ fe : FunExt ⦄ where
 -- (vi) Id preserves ≃ : there are ways to formulate this, but they essentially reduce to ap-of-equiv-is-equiv in Ch2.11-Identity-type.
 
 
-private {- The following results are experimental / exploratory. -}
-
-  module whiskering-and-hz-composition where
+module whiskering-and-hz-composition where
 
 
-    -- (i) Whiskering
+  -- (i) Whiskering
 
 
-    -- Alternative definition of whiskering operations
+  -- Alternative definition of whiskering operations
 
-    ∙ᵣ-agrees-with-ap : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) → α ∙ᵣ r ≡ ap (_∙ r) α
-    ∙ᵣ-agrees-with-ap {𝓤} {A} {.b} {.b} {.b} {.(refl b)} {.(refl b)} (refl (refl .b)) (refl b) = refl _
+  ∙ᵣ-agrees-with-ap : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) → α ∙ᵣ r ≡ ap (_∙ r) α
+  ∙ᵣ-agrees-with-ap {𝓤} {A} {.b} {.b} {.b} {.(refl b)} {.(refl b)} (refl (refl .b)) (refl b) = refl _
 
-    ∙ₗ-agrees-with-ap : {A : 𝓤 ̇ } {a b c : A} {r s : b ≡ c} (q : a ≡ b) (β : r ≡ s) → q ∙ₗ β ≡ ap (q ∙_) β 
-    ∙ₗ-agrees-with-ap {𝓤} {A} {.b} {.b} {.b} {.(refl b)} {.(refl b)} (refl b) (refl (refl .b)) = refl _
-
-
-    -- Iterated whiskering (particular case of associativity of _⋆'_)
-
-    iterated-∙ᵣ-is-∙ : {A : 𝓤 ̇ } {a b c d : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) (s : c ≡ d)  → (α ∙ᵣ r) ∙ᵣ s ≡ (∙-assoc _ _ _ ⁻¹) ∙ (α ∙ᵣ (r ∙ s)) ∙ (∙-assoc _ _ _)
-    iterated-∙ᵣ-is-∙ (refl (refl .x)) (refl .x) (refl x) = refl _
-
-    iterated-∙ₗ-is-∙ : {A : 𝓤 ̇ } {a b c d : A} {r s : c ≡ d} (p : a ≡ b) (q : b ≡ c) (β : r ≡ s) → p ∙ₗ (q ∙ₗ β) ≡ (∙-assoc _ _ _) ∙ ((p ∙ q) ∙ₗ β) ∙ (∙-assoc _ _ _ ⁻¹)
-    iterated-∙ₗ-is-∙ (refl .x) (refl x) (refl (refl .x)) = refl _
+  ∙ₗ-agrees-with-ap : {A : 𝓤 ̇ } {a b c : A} {r s : b ≡ c} (q : a ≡ b) (β : r ≡ s) → q ∙ₗ β ≡ ap (q ∙_) β 
+  ∙ₗ-agrees-with-ap {𝓤} {A} {.b} {.b} {.b} {.(refl b)} {.(refl b)} (refl b) (refl (refl .b)) = refl _
 
 
-    -- Unit laws for whiskering (particular case of identity of _⋆'_)
-
-    ∙ᵣ-ru : {A : 𝓤 ̇} {a b : A} {p q : a ≡ b} (α : p ≡ q) → ru p ⁻¹ ∙ α ∙ ru q  ≡ α ∙ᵣ refl b   
-    ∙ᵣ-ru (refl (refl x)) = refl _
-
-    ∙ₗ-lu : {A : 𝓤 ̇} {a b : A} {p q : a ≡ b} (α : p ≡ q) → lu p ⁻¹ ∙ α ∙ lu q ≡ refl a ∙ₗ α   
-    ∙ₗ-lu (refl (refl x)) = refl _
+  -- (ii) Horizontal composition
 
 
-    -- (ii) Horizontal composition
+  -- Associativity
+
+  ✦-assoc : {A : 𝓤 ̇ } {a b c d : A} {p q : a ≡ b} {r s : b ≡ c} {t u : c ≡ d} (α : p ≡ q) (β : r ≡ s) (γ : t ≡ u) → ∙-assoc p r t ⁻¹ ∙ (α ✦ (β ✦ γ)) ∙ ∙-assoc q s u ≡ α ✦ β ✦ γ
+  ✦-assoc (refl (refl .x)) (refl (refl .x)) (refl (refl x)) = refl _
 
 
-    -- Associativity of horizontal composition
+  -- Unit laws
 
-    ⋆'-assoc : {A : 𝓤 ̇ } {a b c d : A} {p q : a ≡ b} {r s : b ≡ c} {t u : c ≡ d} (α : p ≡ q) (β : r ≡ s) (γ : t ≡ u) → α ⋆' (β ⋆' γ) ≡ ∙-assoc p r t ∙ ((α ⋆' β) ⋆' γ) ∙ (∙-assoc q s u ⁻¹)
-    ⋆'-assoc (refl (refl .x)) (refl (refl .x)) (refl (refl x)) = refl _
+  ✦-ru : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} (α : p ≡ q) → ru p ⁻¹ ∙ α ∙ ru q ≡ α ✦ refl (refl b)
+  ✦-ru (refl (refl x)) = refl _
 
-
-    -- Unit laws for horizontal composition
-
-    ⋆'-ru : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) → α ≡ ru p ∙ (α ⋆' refl (refl b)) ∙ ru q ⁻¹
-    ⋆'-ru (refl (refl x)) = refl _
+  ✦-lu : {A : 𝓤 ̇} {a b : A} {p q : a ≡ b} (α : p ≡ q) → lu p ⁻¹ ∙ α ∙ lu q ≡ refl (refl a) ✦ α
+  ✦-lu (refl (refl x)) = refl _
 
 
-    -- Horizontal inverse
+  -- Vertical and horizontal identities
 
-    ⋆'-sym : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} → p ≡ q →  p ⁻¹ ≡ q ⁻¹
-    ⋆'-sym {p = refl x} (refl .(refl x)) = refl _
-
-
-    -- Inverse law
-
-    ⋆'-rinv : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} (α : p ≡ q) →  α ⋆' (⋆'-sym α) ≡ rinv p ∙ refl (refl a) ∙ (rinv q ⁻¹)
-    ⋆'-rinv {p = .(refl x)} (refl (refl x)) = refl _
+  ✦-refl : {A : 𝓤 ̇} {a b c : A} (p : a ≡ b) (r : b ≡ c) → refl p ✦ refl r ≡ refl (p ∙ r)
+  ✦-refl (refl _) (refl _) = refl _
 
 
-    -- Whiskering is horizontal composition with refl
+  -- Horizontal inverse
 
-    ⋆'-refl-is-∙ᵣ : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) → α ⋆' (refl r) ≡ α ∙ᵣ r 
-    ⋆'-refl-is-∙ᵣ (refl (refl .x)) (refl x) = refl _
+  ✦-sym : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} → p ≡ q →  p ⁻¹ ≡ q ⁻¹
+  ✦-sym {𝓤} {A} {a} {b} {refl x} (refl .(refl x)) = refl _
+
+
+  -- Inverse laws
+
+  ✦-rinv : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} (α : p ≡ q) →  α ✦ ✦-sym α ≡ rinv p ∙ rinv q ⁻¹
+  ✦-rinv {𝓤} {A} {a} {b} {.(refl x)} (refl (refl x)) = refl _
+
+  ✦-linv : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} (α : p ≡ q) →  ✦-sym α ✦ α ≡ linv p ∙ linv q ⁻¹
+  ✦-linv {𝓤} {A} {a} {b} {.(refl x)} (refl (refl x)) = refl _
+
+
+  -- Whiskering is horizontal composition with refl
+
+  ∙ᵣ-is-✦-refl : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) → α ✦ (refl r) ≡ α ∙ᵣ r 
+  ∙ᵣ-is-✦-refl (refl (refl .x)) (refl x) = refl _
+
+  ∙ₗ-is-refl-✦ : {A : 𝓤 ̇ } {a b c : A} (p : a ≡ b) {r s : b ≡ c} (β : r ≡ s) → (refl p) ✦ β ≡ p ∙ₗ β
+  ∙ₗ-is-refl-✦ (refl x) (refl (refl .x)) = refl _
+
+
+  -- Exchange law
+
+  exchange : {A : 𝓤 ̇} {a b c : A} {p₁ p₂ p₃ : a ≡ b} {r₁ r₂ r₃ : b ≡ c} (α : p₁ ≡ p₂) (α' : p₂ ≡ p₃) (β : r₁ ≡ r₂) (β' : r₂ ≡ r₃) → (α ∙ α') ✦ (β ∙ β') ≡ (α ✦ β) ∙ (α' ✦ β')
+  exchange {𝓤} {A} {a} {.a} {.a} {.(refl a)} {.(refl a)} {.(refl a)} {.(refl a)} {.(refl a)} {.(refl a)} (refl (refl .a)) (refl .(refl a)) (refl (refl .a)) (refl .(refl a)) = refl _
+
+open whiskering-and-hz-composition public
