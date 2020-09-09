@@ -135,8 +135,42 @@ module _ (A : 𝓤 ̇) (B : 𝓥 ̇) (f : A → B) where
 
       module _ (ε : τ-pres) (a : A) where
 
-        _ : {!!} -- if α is refl (𝕁-∼), then β is, and then γ ≡ δ. But there's no way to show that γ, δ and ε are trivial.
-        _ = {!!}
+--        _ : {!!} -- if α is refl (𝕁-∼), then β is, and then γ ≡ δ. But there's no way to show that γ, δ and ε are trivial.
+--        _ = {!!}
+
+
+module ≃-refl-case ⦃ fe : FunExt ⦄ (A B : 𝓤 ̇) where
+
+  open EqvPreservation
+  open maps
+  open htpies
+  open coh
+  
+--   ϕ : (f₁ f₂ : A → B) →  hae-pres (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂ → f₂ ∼ f₁
+--   ϕ f₁ f₂ (α , β , γ , δ , ε) = α
+
+--   ψ : (f₁ f₂ : A → B) → f₂ ∼ f₁ → hae-pres (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂
+--   ψ f₁ f₂ = 𝕁-∼ (λ f₂ f₁ α → hae-pres (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂) (λ f → hrefl _ , hrefl _ , hrefl _ , hrefl _ , hrefl _) f₂ f₁
+
+--   ϕ∘ψ : (f₁ f₂ : A → B) → ϕ f₁ f₂ ∘ ψ f₁ f₂ ∼ id
+--   ϕ∘ψ f₁ f₂ = 𝕁-∼ (λ f₂ f₁ α → ϕ f₁ f₂ (ψ f₁ f₂ α) ≡ α) {!!} f₂ f₁
+
+-- Does the 𝕁-∼ rule compute definitionally? Nope... better use ≡ instead of ∼...
+
+  ϕ : (f₁ f₂ : A → B) →  hae-pres (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂ → f₂ ≡ f₁
+  ϕ f₁ f₂ (α , β , γ , δ , ε) = funext α
+
+  ψ : (f₁ f₂ : A → B) → f₂ ≡ f₁ → hae-pres (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂
+  ψ f f (refl f) = hrefl _ , hrefl _ , hrefl _ , hrefl _ , hrefl _
+
+  ϕ∘ψ : (f₁ f₂ : A → B) → ϕ f₁ f₂ ∘ ψ f₁ f₂ ∼ id
+  ϕ∘ψ f f (refl f) = fun-refl _ ⁻¹
+
+  ψ∘ϕ : (f₁ f₂ : A → B) → ψ f₁ f₂ ∘ ϕ f₁ f₂ ∼ id
+  ψ∘ϕ f₁ f₂ = Σ-induction (𝕁-∼ (λ (f₂ f₁ : A → B) α → (etc : _) → ψ f₁ f₂ (ϕ f₁ f₂ (α , etc)) ≡ (α , etc)) (λ f → Σ-induction λ β → Σ-induction λ γ → Σ-induction λ δ ε → dpair-≡ (ap (pr₁ ∘ (ψ f f)) (fun-refl _ ⁻¹) , {!!})) f₂ f₁)
+  
+--   _ : hae-pres (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂ ≃ (f₂ ≡ f₁)  
+--   _ = {!!}
 
 -- simple-homs : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (A₁ A₂ : 𝓤 ̇) (e : A₁ ≃ A₂) (B₁ B₂ : 𝓥 ̇) (e' : B₁ ≃ B₂) (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) → hae-pres (A₁ , A₂ , e) (B₁ , B₂ , e') f₁ f₂ ≃ (f₂ ∘ pr₁ e ≡ pr₁ e' ∘ f₁)
 -- simple-homs {𝓤} {𝓥} = 𝕁-≃ (λ A₁ A₂ e → (B₁ B₂ : 𝓥 ̇) (e' : B₁ ≃ B₂) (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) → hae-pres (A₁ , A₂ , e) (B₁ , B₂ , e') f₁ f₂ ≃ (f₂ ∘ pr₁ e ≡ pr₁ e' ∘ f₁)) λ A →
@@ -197,23 +231,23 @@ module _ (A : 𝓤 ̇) (B : 𝓥 ̇) (f : A → B) where
 --   δ : (w : Σ P) → ap pr₁ (ρₜ w) ≡ aux-δ w ∙ ρ (pr₁ w)
 --   δ (a , u) = dpr₁-≡-β (ρ a) (ρₚ a u) ∙ lu _
 
---   open coh σₜ ρₜ τₜ σ ρ τ γ δ
+--   -- open coh σₜ ρₜ τₜ σ ρ τ γ δ
 
---   _ : aux-ε-γ₂ σₜ σ γ ∼ λ w → {!!} -- hnat?
---   _ = {!!}
+--   -- _ : aux-ε-γ₂ σₜ σ γ ∼ λ w → {!!} -- hnat?
+--   -- _ = {!!}
 
---   _ : aux-ε-δ₂ ρₜ ρ δ ∼ λ w → ru _ ⁻¹ ∙ δ (sₜ w)
---   _ = Σ-induction λ a u → {!!}
+--   -- _ : aux-ε-δ₂ ρₜ ρ δ ∼ λ w → ru _ ⁻¹ ∙ δ (sₜ w)
+--   -- _ = Σ-induction λ a u → {!!}
 
---   ε : τ-pres -- τ-pres
---   ε (a , u) =
---     (ap (ap pr₁) (τₜ (a , u)) ✦ refl (refl _)) ∙ ((δ (sₜ (a , u)) ✦ refl (refl _)) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (refl (refl _) ✦ (ru _ ⁻¹ ∙ lu _ ∙ (refl _ ✦ refl _))) ∙ ∙-assoc _ _ _  )
---       ≡⟨ {!!} ⟩
---     {!!}
---       ≡⟨ {!!} ⟩
---     {!!}
---       ≡⟨ {!!} ⟩
---     {!!}
+--   -- ε : τ-pres -- τ-pres
+--   -- ε (a , u) =
+--   --   (ap (ap pr₁) (τₜ (a , u)) ✦ refl (refl _)) ∙ ((δ (sₜ (a , u)) ✦ refl (refl _)) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (refl (refl _) ✦ (ru _ ⁻¹ ∙ lu _ ∙ (refl _ ✦ refl _))) ∙ ∙-assoc _ _ _  )
+--   --     ≡⟨ {!!} ⟩
+--   --   {!!}
+--   --     ≡⟨ {!!} ⟩
+--   --   {!!}
+--   --     ≡⟨ {!!} ⟩
+--   --   {!!}
 
---   π₁ : ℤHom (Σ P , (a₀ , u₀) , sₜ , pₜ , σₜ , ρₜ , τₜ) (A , a₀ , s , p , σ , ρ , τ)
---   π₁ = pr₁ , refl _ , (hrefl _) , (hrefl _) , γ , δ , ε
+--   -- π₁ : ℤHom (Σ P , (a₀ , u₀) , sₜ , pₜ , σₜ , ρₜ , τₜ) (A , a₀ , s , p , σ , ρ , τ)
+--   -- π₁ = pr₁ , refl _ , (hrefl _) , (hrefl _) , γ , δ , ε

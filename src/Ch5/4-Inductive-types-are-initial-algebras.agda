@@ -3,6 +3,7 @@
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
 open import Ch5.1-Introduction-to-inductive-types
 open import Ch5.3-W-types
 
@@ -181,3 +182,86 @@ module single-universe where
 
       htpy-≡ : transport (λ h → h ∘ succ ∼ cs ∘ h) fun-≡ α ≡ β
       htpy-≡ = funext htpy-∼
+
+
+{- The book does not treat the case of W-types in detail. The following follows "Homotopy-initial algebras in type theory" (Awodey, Gambino & Sojakova, 2016). -}
+
+module W-types ⦃ fe : FunExt ⦄ {𝓤 : Universe} (A : 𝓤 ̇) (B : A → 𝓤 ̇) where
+
+  -- 1. P-algebras and their morphisms
+
+  --Definition (Polynomial functor associated to A and B).
+
+  P₀ : 𝓤 ̇ → 𝓤 ̇
+  P₀ C = Σ x ꞉ A , (B x → C)
+
+  P₁ : {C D : 𝓤 ̇} → (C → D) → P₀ C → P₀ D
+  P₁ f (x , u) = x , (f ∘ u)
+
+  P₂ : {C D : 𝓤 ̇} {f g : C → D} → (f ∼ g) → P₁ f ∼ P₁ g
+  P₂ α (x , u) = dpair-≡ ((refl _) , funext (α ∘ u))
+
+  -- Functoriality of P (we have judgemental η-rule for dependent pairs).
+
+  φ-∘ : {C D E : 𝓤 ̇} (f : C → D) (g : D → E) → P₁ (g ∘ f) ≡ P₁ g ∘ P₁ f
+  φ-∘ f g = refl _
+
+  φ-𝑖𝑑 : (C : 𝓤 ̇) → P₁ (𝑖𝑑 C) ≡ 𝑖𝑑 (P₀ C)
+  φ-𝑖𝑑 C = refl _
+
+  -- Definition 4.2 (P-algebra).
+
+  PAlg : 𝓤 ⁺ ̇
+  PAlg = Σ C ꞉ (𝓤 ̇) , (P₀ C → C)
+
+  -- Definition (is algebra homomorphism).
+
+  isalghom : (C D : PAlg) → (pr₁ C → pr₁ D) → 𝓤 ̇
+  isalghom (C , sc) (D , sd) f = f ∘ sc ∼ sd ∘ P₁ f
+
+  --  Definition 4.3 (P-algebra morphism).
+
+  PHom : PAlg → PAlg → 𝓤 ̇
+  PHom (C , sc) (D , sd) = Σ f ꞉ (C → D) , isalghom (C , sc) (D , sd) f
+
+  -- Definition (Composition of P-algebra morphisms).
+
+  Pcomp : (C D E : PAlg) → PHom D E → PHom C D → PHom C E
+  Pcomp (C , sc) (D , sd) (E , se) (g , g') (f , f') = (g ∘ f) , λ w → ap g (f' w) ∙ g' (P₁ f w)
+
+  -- Definition (Identity morphism).
+
+  Pid : (C : PAlg) → PHom C C
+  Pid (C , sc) = id , (hrefl _)
+
+  -- Definition 4.4 (P-algebra homotopy).
+
+  PHot : (C D : PAlg) → PHom C D → PHom C D → 𝓤 ̇
+  PHot (C , sc) (D , sd) (f , f') (g , g') = Σ α ꞉ (f ∼ g) , ((w : P₀ C) → f' w ∙ ap sd (P₂ α w) ≡ α (sc w) ∙ g' w)
+
+  -- -- Lemma 4.5: Characterization of the identity type of morphisms
+
+  -- -- PHom-≡-elim : (C D : PAlg) (f g : PHom C D) → f ≡ g → PHot C D f g
+  -- -- PHom-≡-elim (C , sc) (D , sd) (f , f') (.f , .f') (refl .(f , f')) = (hrefl _) , (Σ-induction λ x u → (f' (x , u) ∙ₗ {!!}) ∙ ru _ ⁻¹ ∙ lu _)
+
+  -- PHom-≡-≃ : (C D : PAlg) (f g : PHom C D) → (f ≡ g) ≃ PHot C D f g
+  -- PHom-≡-≃ (C , sc) (D , sd) (f , f') (g , g') =
+  --   ((f , f') ≡ (g , g'))
+  --     ≃⟨ Σ-≡-≃ ⟩
+  --   (Σ p ꞉ (f ≡ g) , (transport (isalghom (C , sc) (D , sd)) p f' ≡ g'))
+  --     ≃⟨ Σ-preserves-≃ _ _ (happly , happly-is-equiv) (λ p → (happly , happly-is-equiv) ● (≃-sym ((transport (λ - → transport (isalghom (C , sc) (D , sd)) - f' ∼ g') (happly-η p)) , (qinv-to-isequiv (qinv-transport _ (happly-η p)))))) ⟩
+  --   (Σ α ꞉ (f ∼ g) , (transport (isalghom (C , sc) (D , sd)) (funext α) f' ∼ g'))
+  --     ≃⟨ Σ-preserves-family-≃ (λ α → {!!}) ⟩
+  --   (Σ α ꞉ (f ∼ g) , ((w : P₀ C) → f' w ∙ ap sd (P₂ α w) ≡ α (sc w) ∙ g' w)) ■ 
+  --   where
+  --   transport-lemma : (p : f ≡ g) →  (transport (isalghom (C , sc) (D , sd)) p f' ∼ g') ≃ ((w : P₀ C) → f' w ∙ ap sd (P₂ (happly p) w) ≡ happly p (sc w) ∙ g' w)
+  --   transport-lemma (refl _) = (λ α' → Σ-induction λ x u → (α' (x , u) ✦ ap (ap sd) (transport (λ - → dpair-≡ (refl _ , -) ≡ refl _) (fun-refl _) (refl _))) ∙ ru _ ⁻¹ ∙ lu _ ) , qinv-to-isequiv ((λ β' → Σ-induction λ x u → {!β' (x , u)!}) , {!!} , {!!})
+    
+  --   aux-≃ : (α : f ∼ g) →  (transport (isalghom (C , sc) (D , sd)) (funext α) f' ∼ g') ≃ ((w : P₀ C) → f' w ∙ ap sd (P₂ α w) ≡ α (sc w) ∙ g' w)
+  --   aux-≃ α = {!!}
+  
+
+    
+
+  
+  
