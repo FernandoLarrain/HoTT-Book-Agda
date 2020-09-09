@@ -1,0 +1,35 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+
+module Ch5.Exercises where
+
+
+-- Exercise: characterization of Π-types (a dependent function is a section of the projection of total space).
+
+module _ ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {g h : has-section f} where
+
+  has-section-≡ : (g ≡ h) ≃ (Σ α ꞉ pr₁ g ∼ pr₁ h , ((y : B) → ap f (α y) ⁻¹ ∙ pr₂ g y ≡ pr₂ h y)) 
+  has-section-≡ = Σ-≡-≃ ● Σ-preserves-≃ _ _ (happly , happly-is-equiv) λ p → (happly , happly-is-equiv) ● Π-preserves-family-≃ (λ y → (transport-lemma ⁻¹ ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) where
+    transport-lemma : {p : pr₁ g ≡ pr₁ h} {y : B} →  transport (λ s → f ∘ s ∼ id) p (pr₂ g) y ≡ ap f (happly p y) ⁻¹ ∙ pr₂ g y
+    transport-lemma {refl .(fst g)} = lu _
+
+module _ ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B : A → 𝓥 ̇) where
+
+  ϕ : Π B → has-section {_} {_} {Σ B} pr₁
+  ϕ f = (λ a → a , (f a)) , (hrefl _)
+
+  ψ : has-section {_} {_} {Σ B} pr₁ → Π B
+  ψ (g , s) = λ a → transport B (s a) (pr₂ (g a))
+
+  α : ϕ ∘ ψ ∼ id
+  α (g , s) = inv (has-section-≡ pr₁) ((λ a → dpair-≡ ((s a ⁻¹) , (transport-∙ B (s a) (s a ⁻¹) (pr₂ (g a)) ∙ ap (λ - → transport B - (pr₂ (g a))) (rinv (s a))))) , λ a → ru _ ⁻¹ ∙ (ap _⁻¹ (dpr₁-≡-β _ _) ∙ ⁻¹-invol _))
+
+  β : ψ ∘ ϕ ∼ id
+  β f = refl _
+
+  dfuns-are-sections-of-pr₁ : Π B ≃ has-section {_} {_} {Σ B} pr₁ 
+  dfuns-are-sections-of-pr₁ = ϕ , (qinv-to-isequiv (ψ , (α , β)))

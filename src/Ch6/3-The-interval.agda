@@ -3,7 +3,7 @@
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
-open import Ch6.2-Induction-pples-and-dependent-paths
+open import Rewrite
 
 module Ch6.3-The-interval where
 
@@ -70,7 +70,7 @@ I-is-Contr = i0 , I-ind (λ i → i0 ≡ i) (refl _) seg (transport-post-∙ seg
 -- Lemma 6.3.2 (Function Extensionality)
 
 I-implies-funext : {A : 𝓤 ̇} {B : 𝓥 ̇} (f g : A → B) → f ∼ g → f ≡ g
-I-implies-funext {A = A} {B} f g p = ap q seg
+I-implies-funext {𝓤} {𝓥} {A} {B} f g p = ap q seg
   where
   p' : A → I → B
   p' x = I-rec (f x) (g x) (p x)

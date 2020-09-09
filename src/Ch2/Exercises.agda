@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
@@ -7,8 +7,11 @@ open import Ch2.3-Type-families-are-fibrations
 open import Ch2.4-Homotopies-and-equivalences
 open import Ch2.6-Cartesian-product-types
 open import Ch2.7-Σ-types
+open import Ch2.8-The-unit-type
 open import Ch2.9-Π-types-and-funext
 open import Ch2.10-Universes-and-univalence
+open import Ch2.12-Coproducts
+open import Ch2.15-Universal-properties
 
 module Ch2.Exercises where
 
@@ -123,6 +126,23 @@ module higher-paths where
       term-agreement (b , x , .x) (refl .x) u = refl _
 
 
+-- Exercise 2.11 (Commutative square ; pullback square).
+
+module pb-sq ⦃ fe : FunExt ⦄ {𝓤 𝓥 𝓦 : Universe} {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → C) (g : B → C) where
+
+  comm-sq : (P : 𝓣 ̇) → (𝓤 ⊔ 𝓥 ⊔ 𝓦 ⊔ 𝓣) ̇
+  comm-sq P = Σ h ꞉ (P → A) , Σ k ꞉ (P → B) , f ∘ h ∼ g ∘ k
+
+  pb-UMP : (X : 𝓣 ̇) → isequiv {_} {_} {X → pb f g} {comm-sq X} (λ u → pb₁ f g ∘ u , pb₂ f g ∘ u , pb-comm f g ∘ u)
+  pb-UMP X = qinv-to-isequiv (
+    (Σ-induction λ h → Σ-induction λ k α x → h x , k x , α x) ,
+    (Σ-induction (λ h → Σ-induction λ k α → refl _)) ,
+    λ u → refl _
+    )
+
+open pb-sq public
+
+
 -- Exercise 2.10 (Dependent pairing is associative).
 
 Σ-assoc : (A : 𝓤 ̇ ) (B : A → 𝓥 ̇ ) (C : Σ B → 𝓦 ̇ ) → (Σ (λ x → Σ (λ y → C (x , y)))) ≃ Σ C
@@ -160,120 +180,130 @@ module higher-paths where
     refl
     ))
 
+-- Coproduct commutes with Σ.
+
+_ : {X : 𝓤 ̇} {Y : 𝓥 ̇} (P : X → 𝓦 ̇) (Q : Y → 𝓦 ̇) → Σ P + Σ Q ≃ Σ [ P , Q ]
+_ = λ P Q → [ Σ-induction (λ x u → inl x , u) , Σ-induction (λ y v → inr y , v) ] , qinv-to-isequiv (Σ-induction (+-induction _ (λ x u → inl (x , u)) (λ y v → inr (y , v))) , Σ-induction (+-induction _ (λ x u → refl _) (λ y v → refl _)) , +-induction _ (hrefl _) (hrefl _))
+
 
 -- Exercise 2.17 (Type constructors preserve equivalences)
 
--- (i) → preserves equivalences
+module _ ⦃ fe : FunExt ⦄ where
 
--- The proof of the following lemma does not require tools beyond Ch2, but the book does not use (nor prove) it until Ch4.
+  -- (i) → preserves equivalences
 
--- Lemma 4.2.8
+  -- The proof of the following lemma does not require tools beyond Ch2, but the book does not use (nor prove) it until Ch4.
 
-pre-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : B → C) → h ∘ f)
-pre-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
-  (λ h → h ∘ g) ,
-  (λ h → funext λ a → ap h (α a)) ,
-  λ h → funext (λ b → ap h (β b))
+  -- Lemma 4.2.8.
 
-post-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : C → A) → f ∘ h)
-post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
-  (λ h → g ∘ h) ,
-  (λ h → funext λ c → β (h c)) ,
-  λ h → funext (λ c → α (h c))
+  pre-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : B → C) → h ∘ f)
+  pre-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
+    (λ h → h ∘ g) ,
+    (λ h → funext λ a → ap h (α a)) ,
+    λ h → funext (λ b → ap h (β b))
 
--- → preserves equivalence of domains
+  post-∘-by-qinv-is-qinv : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) (f : A → B) → qinv f → qinv (λ (h : C → A) → f ∘ h)
+  post-∘-by-qinv-is-qinv {A = A} {B} C f (g , β , α) =
+    (λ h → g ∘ h) ,
+    (λ h → funext λ c → β (h c)) ,
+    λ h → funext (λ c → α (h c))
 
-→-preserves-dom-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) → A ≃ B → (A → C) ≃ (B → C)
-→-preserves-dom-≃ C (f , i) = ≃-sym (_∘ f , qinv-to-isequiv (pre-∘-by-qinv-is-qinv C f (isequiv-to-qinv i)))
+  -- → preserves equivalence of domains
 
--- → preserves equivalence of codomains
+  →-preserves-dom-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} (C : 𝓦 ̇) → A ≃ B → (A → C) ≃ (B → C)
+  →-preserves-dom-≃ C (f , i) = ≃-sym (_∘ f , qinv-to-isequiv (pre-∘-by-qinv-is-qinv C f (isequiv-to-qinv i)))
 
-→-preserves-codom-≃ : (A : 𝓤 ̇) {B : 𝓥 ̇} {C : 𝓦 ̇} → B ≃ C → (A → B) ≃ (A → C)
-→-preserves-codom-≃ A (f , i) = f ∘_ , qinv-to-isequiv (post-∘-by-qinv-is-qinv A f (isequiv-to-qinv i))
+  -- → preserves equivalence of codomains
 
--- Putting everything together:
+  →-preserves-codom-≃ : (A : 𝓤 ̇) {B : 𝓥 ̇} {C : 𝓦 ̇} → B ≃ C → (A → B) ≃ (A → C)
+  →-preserves-codom-≃ A (f , i) = f ∘_ , qinv-to-isequiv (post-∘-by-qinv-is-qinv A f (isequiv-to-qinv i))
 
-→-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓥 ̇} {D : 𝓦 ̇} → A ≃ C → B ≃ D → (A → B) ≃ (C → D)
-→-preserves-≃ e₁ e₂ = →-preserves-dom-≃ _ e₁ ● →-preserves-codom-≃ _ e₂
+  -- Putting everything together:
 
--- (ii) Π preserves equivalences
+  →-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓥 ̇} {D : 𝓦 ̇} → A ≃ C → B ≃ D → (A → B) ≃ (C → D)
+  →-preserves-≃ e₁ e₂ = →-preserves-dom-≃ _ e₁ ● →-preserves-codom-≃ _ e₂
 
-private {- A more general version of the next result can be found in Ch4.2 -}
+  -- (ii) Π preserves equivalences
 
-  -- Π preserves equivalences of base types
+  private {- A more general version of the next result can be found in Ch4.2 -}
 
-  Π-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Π P
-  Π-preserves-base-≡ P (refl A) = refl _ 
+    module _ ⦃ univ : Univalence ⦄ where
 
-  Π-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
-  Π-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
-    Π (P ∘ pr₁ e)
-      ≡⟨ ap Π (funext (transport-along-ua-is-pre-∘ e P) ⁻¹) ⟩
-    Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
-      ≡⟨ Π-preserves-base-≡ P p ⟩
-    Π P ∎
+      -- Π preserves equivalences of base types
+
+      Π-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Π P
+      Π-preserves-base-≡ P (refl A) = refl _ 
+
+      Π-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
+      Π-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
+        Π (P ∘ pr₁ e)
+          ≡⟨ ap Π (funext (transport-fun-ua-is-pre-∘ e P) ⁻¹) ⟩
+        Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
+          ≡⟨ Π-preserves-base-≡ P p ⟩
+        Π P ∎
+        )
+
+      Π-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Π P ≡ Π (transport (λ - → - → 𝓥 ̇) p P)
+      Π-preserves-base-≡' P (refl A) = refl _ 
+
+      Π-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) → (e : A ≃ B) → Π P ≃ Π (P ∘ (inv e))
+      Π-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
+        Π P
+          ≡⟨ Π-preserves-base-≡' P p ⟩
+        Π (transport (λ - → - → 𝓥 ̇) p P) 
+          ≡⟨ ap Π (funext (transport-fun-ua-is-pre-∘' e P)) ⟩
+        Π (P ∘ (inv e))  ∎
+        )
+
+  -- Π preserves fiberwise equivalences
+
+  Π-preserves-family-≃ : {A : 𝓤 ̇} {P : A → 𝓦 ̇} {Q : A → 𝓣 ̇} → ((a : A) → P a ≃ Q a) → Π P ≃ Π Q
+  Π-preserves-family-≃ ϕ =
+    (λ f a → F a (f a)) ,
+    (qinv-to-isequiv (
+      (λ g a → G a (g a)) ,
+      (λ g → funext λ a → α a (g a)) ,
+      λ f → funext λ a → β a (f a)
+      )
     )
+    where
+    F = (λ a → pr₁ (ϕ a))
+    q = (λ a → isequiv-to-qinv (pr₂ (ϕ a)))
+    G = (λ a → qinv₁ (q a))
+    α = (λ a → qinv₂ (q a))
+    β = (λ a → qinv₃ (q a))
 
-  Π-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Π P ≡ Π (transport (λ - → - → 𝓥 ̇) p P)
-  Π-preserves-base-≡' P (refl A) = refl _ 
+  -- (iii) Σ preserves equivalences
 
-  Π-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) → (e : A ≃ B) → Π P ≃ Π (P ∘ (inv e))
-  Π-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
-    Π P
-      ≡⟨ Π-preserves-base-≡' P p ⟩
-    Π (transport (λ - → - → 𝓥 ̇) p P) 
-      ≡⟨ ap Π (funext (transport-along-ua-is-pre-∘' e P)) ⟩
-    Π (P ∘ (inv e))  ∎
-    )
+  private {- A more general version of the next result can be found in Ch4.2 -}
 
+    module _ ⦃ univ : Univalence ⦄ where
 
--- Π preserves fiberwise equivalences
+      -- Σ preserves equivalences of base types
 
-Π-preserves-family-≃ : {A : 𝓤 ̇} {P : A → 𝓦 ̇} {Q : A → 𝓣 ̇} → ((a : A) → P a ≃ Q a) → Π P ≃ Π Q
-Π-preserves-family-≃ ϕ =
-  (λ f a → F a (f a)) ,
-  (qinv-to-isequiv (
-    (λ g a → G a (g a)) ,
-    (λ g → funext λ a → α a (g a)) ,
-    λ f → funext λ a → β a (f a)
-    )
-  )
-  where
-  F = (λ a → pr₁ (ϕ a))
-  q = (λ a → isequiv-to-qinv (pr₂ (ϕ a)))
-  G = (λ a → qinv₁ (q a))
-  α = (λ a → qinv₂ (q a))
-  β = (λ a → qinv₃ (q a))
+      Σ-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Σ P
+      Σ-preserves-base-≡ P (refl A) = refl _
 
--- (iii) Σ preserves equivalences
+      Σ-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
+      Σ-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
+        (Σ (P ∘ pr₁ e)
+          ≡⟨ ap Σ (funext (transport-fun-ua-is-pre-∘ e P) ⁻¹) ⟩
+        Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
+          ≡⟨ Σ-preserves-base-≡ P p ⟩
+        Σ P ∎
+        )
 
-private {- A more general version of the next result can be found in Ch4.2 -}
+      Σ-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Σ P ≡ Σ (transport (λ - → - → 𝓥 ̇) p P)
+      Σ-preserves-base-≡' P (refl A) = refl _
 
-  -- Σ preserves equivalences of base types
-
-  Σ-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Σ P
-  Σ-preserves-base-≡ P (refl A) = refl _
-
-  Σ-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
-  Σ-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
-    (Σ (P ∘ pr₁ e)
-      ≡⟨ ap Σ (funext (transport-along-ua-is-pre-∘ e P) ⁻¹) ⟩
-    Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
-      ≡⟨ Σ-preserves-base-≡ P p ⟩
-    Σ P ∎
-    )
-
-  Σ-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Σ P ≡ Σ (transport (λ - → - → 𝓥 ̇) p P)
-  Σ-preserves-base-≡' P (refl A) = refl _
-
-  Σ-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (e : A ≃ B) → Σ P ≃ Σ (P ∘ inv e)
-  Σ-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
-    (Σ P
-      ≡⟨ Σ-preserves-base-≡' P p ⟩
-    Σ (transport (λ - → - → 𝓥 ̇) p P)
-      ≡⟨ ap Σ (funext (transport-along-ua-is-pre-∘' e P)) ⟩
-    Σ (P ∘ inv e) ∎
-    )
+      Σ-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (e : A ≃ B) → Σ P ≃ Σ (P ∘ inv e)
+      Σ-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
+        (Σ P
+          ≡⟨ Σ-preserves-base-≡' P p ⟩
+        Σ (transport (λ - → - → 𝓥 ̇) p P)
+          ≡⟨ ap Σ (funext (transport-fun-ua-is-pre-∘' e P)) ⟩
+        Σ (P ∘ inv e) ∎
+        )
 
 -- Σ preserves fiberwise equivalences
 
@@ -302,70 +332,75 @@ private {- A more general version of the next result can be found in Ch4.2 -}
 +-preserves-≃ (f , i) (g , j) with isequiv-to-qinv i | isequiv-to-qinv j
 ... | (finv , α , β) | (ginv , γ , δ) = +-recursion (inl ∘ f) (inr ∘ g) , qinv-to-isequiv (+-recursion (inl ∘ finv) (inr ∘ ginv) , +-induction _ (λ c → ap inl (α c)) (λ d → ap inr (γ d)) , +-induction _ (λ a → ap inl (β a)) (λ b → ap inr (δ b)))
 
-
-private {- The following results are experimental / exploratory. -}
-
-  module whiskering-and-hz-composition where
+-- (vi) Id preserves ≃ : there are ways to formulate this, but they essentially reduce to ap-of-equiv-is-equiv in Ch2.11-Identity-type.
 
 
-    -- (i) Whiskering
+module whiskering-and-hz-composition where
 
 
-    -- Alternative definition of whiskering operations
-
-    ∙ᵣ-agrees-with-ap : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) → α ∙ᵣ r ≡ ap (_∙ r) α
-    ∙ᵣ-agrees-with-ap {𝓤} {A} {.b} {.b} {.b} {.(refl b)} {.(refl b)} (refl (refl .b)) (refl b) = refl _
-
-    ∙ₗ-agrees-with-ap : {A : 𝓤 ̇ } {a b c : A} {r s : b ≡ c} (q : a ≡ b) (β : r ≡ s) → q ∙ₗ β ≡ ap (q ∙_) β 
-    ∙ₗ-agrees-with-ap {𝓤} {A} {.b} {.b} {.b} {.(refl b)} {.(refl b)} (refl b) (refl (refl .b)) = refl _
+  -- (i) Whiskering
 
 
-    -- Iterated whiskering (particular case of associativity of _⋆'_)
+  -- Alternative definition of whiskering operations
 
-    iterated-∙ᵣ-is-∙ : {A : 𝓤 ̇ } {a b c d : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) (s : c ≡ d)  → (α ∙ᵣ r) ∙ᵣ s ≡ (∙-assoc _ _ _ ⁻¹) ∙ (α ∙ᵣ (r ∙ s)) ∙ (∙-assoc _ _ _)
-    iterated-∙ᵣ-is-∙ (refl (refl .x)) (refl .x) (refl x) = refl _
+  ∙ᵣ-agrees-with-ap : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) → α ∙ᵣ r ≡ ap (_∙ r) α
+  ∙ᵣ-agrees-with-ap {𝓤} {A} {.b} {.b} {.b} {.(refl b)} {.(refl b)} (refl (refl .b)) (refl b) = refl _
 
-    iterated-∙ₗ-is-∙ : {A : 𝓤 ̇ } {a b c d : A} {r s : c ≡ d} (p : a ≡ b) (q : b ≡ c) (β : r ≡ s) → p ∙ₗ (q ∙ₗ β) ≡ (∙-assoc _ _ _) ∙ ((p ∙ q) ∙ₗ β) ∙ (∙-assoc _ _ _ ⁻¹)
-    iterated-∙ₗ-is-∙ (refl .x) (refl x) (refl (refl .x)) = refl _
-
-
-    -- Unit laws for whiskering (particular case of identity of _⋆'_)
-
-    ∙ᵣ-ru : {A : 𝓤 ̇} {a b : A} {p q : a ≡ b} (α : p ≡ q) → ru p ⁻¹ ∙ α ∙ ru q  ≡ α ∙ᵣ refl b   
-    ∙ᵣ-ru (refl (refl x)) = refl _
-
-    ∙ₗ-lu : {A : 𝓤 ̇} {a b : A} {p q : a ≡ b} (α : p ≡ q) → lu p ⁻¹ ∙ α ∙ lu q ≡ refl a ∙ₗ α   
-    ∙ₗ-lu (refl (refl x)) = refl _
+  ∙ₗ-agrees-with-ap : {A : 𝓤 ̇ } {a b c : A} {r s : b ≡ c} (q : a ≡ b) (β : r ≡ s) → q ∙ₗ β ≡ ap (q ∙_) β 
+  ∙ₗ-agrees-with-ap {𝓤} {A} {.b} {.b} {.b} {.(refl b)} {.(refl b)} (refl b) (refl (refl .b)) = refl _
 
 
-    -- (ii) Horizontal composition
+  -- (ii) Horizontal composition
 
 
-    -- Associativity of horizontal composition
+  -- Associativity
 
-    ⋆'-assoc : {A : 𝓤 ̇ } {a b c d : A} {p q : a ≡ b} {r s : b ≡ c} {t u : c ≡ d} (α : p ≡ q) (β : r ≡ s) (γ : t ≡ u) → α ⋆' (β ⋆' γ) ≡ ∙-assoc p r t ∙ ((α ⋆' β) ⋆' γ) ∙ (∙-assoc q s u ⁻¹)
-    ⋆'-assoc (refl (refl .x)) (refl (refl .x)) (refl (refl x)) = refl _
-
-
-    -- Unit laws for horizontal composition
-
-    ⋆'-ru : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) → α ≡ ru p ∙ (α ⋆' refl (refl b)) ∙ ru q ⁻¹
-    ⋆'-ru (refl (refl x)) = refl _
+  ✦-assoc : {A : 𝓤 ̇ } {a b c d : A} {p q : a ≡ b} {r s : b ≡ c} {t u : c ≡ d} (α : p ≡ q) (β : r ≡ s) (γ : t ≡ u) → ∙-assoc p r t ⁻¹ ∙ (α ✦ (β ✦ γ)) ∙ ∙-assoc q s u ≡ α ✦ β ✦ γ
+  ✦-assoc (refl (refl .x)) (refl (refl .x)) (refl (refl x)) = refl _
 
 
-    -- Horizontal inverse
+  -- Unit laws
 
-    ⋆'-sym : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} → p ≡ q →  p ⁻¹ ≡ q ⁻¹
-    ⋆'-sym {p = refl x} (refl .(refl x)) = refl _
+  ✦-ru : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} (α : p ≡ q) → ru p ⁻¹ ∙ α ∙ ru q ≡ α ✦ refl (refl b)
+  ✦-ru (refl (refl x)) = refl _
 
-
-    -- Inverse law
-
-    ⋆'-rinv : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} (α : p ≡ q) →  α ⋆' (⋆'-sym α) ≡ rinv p ∙ refl (refl a) ∙ (rinv q ⁻¹)
-    ⋆'-rinv {p = .(refl x)} (refl (refl x)) = refl _
+  ✦-lu : {A : 𝓤 ̇} {a b : A} {p q : a ≡ b} (α : p ≡ q) → lu p ⁻¹ ∙ α ∙ lu q ≡ refl (refl a) ✦ α
+  ✦-lu (refl (refl x)) = refl _
 
 
-    -- Whiskering is horizontal composition with refl
+  -- Vertical and horizontal identities
 
-    ⋆'-refl-is-∙ᵣ : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) → α ⋆' (refl r) ≡ α ∙ᵣ r 
-    ⋆'-refl-is-∙ᵣ (refl (refl .x)) (refl x) = refl _
+  ✦-refl : {A : 𝓤 ̇} {a b c : A} (p : a ≡ b) (r : b ≡ c) → refl p ✦ refl r ≡ refl (p ∙ r)
+  ✦-refl (refl _) (refl _) = refl _
+
+
+  -- Horizontal inverse
+
+  ✦-sym : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} → p ≡ q →  p ⁻¹ ≡ q ⁻¹
+  ✦-sym {𝓤} {A} {a} {b} {refl x} (refl .(refl x)) = refl _
+
+
+  -- Inverse laws
+
+  ✦-rinv : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} (α : p ≡ q) →  α ✦ ✦-sym α ≡ rinv p ∙ rinv q ⁻¹
+  ✦-rinv {𝓤} {A} {a} {b} {.(refl x)} (refl (refl x)) = refl _
+
+  ✦-linv : {A : 𝓤 ̇ } {a b : A} {p q : a ≡ b} (α : p ≡ q) →  ✦-sym α ✦ α ≡ linv p ∙ linv q ⁻¹
+  ✦-linv {𝓤} {A} {a} {b} {.(refl x)} (refl (refl x)) = refl _
+
+
+  -- Whiskering is horizontal composition with refl
+
+  ∙ᵣ-is-✦-refl : {A : 𝓤 ̇ } {a b c : A} {p q : a ≡ b} (α : p ≡ q) (r : b ≡ c) → α ✦ (refl r) ≡ α ∙ᵣ r 
+  ∙ᵣ-is-✦-refl (refl (refl .x)) (refl x) = refl _
+
+  ∙ₗ-is-refl-✦ : {A : 𝓤 ̇ } {a b c : A} (p : a ≡ b) {r s : b ≡ c} (β : r ≡ s) → (refl p) ✦ β ≡ p ∙ₗ β
+  ∙ₗ-is-refl-✦ (refl x) (refl (refl .x)) = refl _
+
+
+  -- Exchange law
+
+  exchange : {A : 𝓤 ̇} {a b c : A} {p₁ p₂ p₃ : a ≡ b} {r₁ r₂ r₃ : b ≡ c} (α : p₁ ≡ p₂) (α' : p₂ ≡ p₃) (β : r₁ ≡ r₂) (β' : r₂ ≡ r₃) → (α ∙ α') ✦ (β ∙ β') ≡ (α ✦ β) ∙ (α' ✦ β')
+  exchange {𝓤} {A} {a} {.a} {.a} {.(refl a)} {.(refl a)} {.(refl a)} {.(refl a)} {.(refl a)} {.(refl a)} (refl (refl .a)) (refl .(refl a)) (refl (refl .a)) (refl .(refl a)) = refl _
+
+open whiskering-and-hz-composition public

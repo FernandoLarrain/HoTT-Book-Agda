@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -47,15 +47,15 @@ isSet A = (x y : A) (p q : x ≡ y) → p ≡ q
 -- Example 3.1.5 (_×_ preserves sets).
 
 ×-preserves-Sets : {A : 𝓤 ̇} {B : 𝓥 ̇} → isSet A → isSet B → isSet (A × B)
-×-preserves-Sets f g (x , y) (z , w) p q = ×-≡-η p ⁻¹ ∙ ap pair-≡ (ap (λ - → - , ap pr₂ p) (f x z _ _) ∙ ap (λ - → ap pr₁ q , -) (g y w _ _)) ∙ ×-≡-η q
+×-preserves-Sets f g (x , y) (z , w) p q = pr-≡-η p ⁻¹ ∙ ap pair-≡ (ap (λ - → - , ap pr₂ p) (f x z _ _) ∙ ap (λ - → ap pr₁ q , -) (g y w _ _)) ∙ pr-≡-η q
 
 Σ-preserves-Sets : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → isSet A → ((x : A) → isSet (P x)) → isSet (Σ P)
-Σ-preserves-Sets {𝓤} {𝓥} {A} {P} f g (z₁ , z₂) (w₁ , w₂) p q = Σ-≡-η p ⁻¹ ∙ ap dpair-≡ (dpair-≡ (f z₁ w₁ _ _ , g w₁ _ w₂ _ _)) ∙ Σ-≡-η q
+Σ-preserves-Sets {𝓤} {𝓥} {A} {P} f g (z₁ , z₂) (w₁ , w₂) p q = dpr-≡-η p ⁻¹ ∙ ap dpair-≡ (dpair-≡ (f z₁ w₁ _ _ , g w₁ _ w₂ _ _)) ∙ dpr-≡-η q
 
 
 -- Example 3.1.6 (Π preserves sets).
 
-Π-preserves-Sets : {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isSet (P x)) → isSet (Π P)
+Π-preserves-Sets : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {P : A → 𝓥 ̇} → ((x : A) → isSet (P x)) → isSet (Π P)
 Π-preserves-Sets i f g p q = happly-η p ⁻¹ ∙ ap funext (funext (λ x → i x _ _ _ _)) ∙ happly-η q
 
 
@@ -68,30 +68,42 @@ is-⟨1⟩-type A = (x y : A) (p q : x ≡ y) (r s : p ≡ q) → r ≡ s
 -- Lemma 3.1.8. See Lemma 3.3.4.
 
 
+-- Lift preserves equivalences
+
+Lift-equiv : (𝓥 : Universe) {X Y : 𝓤 ̇} → X ≃ Y → Lift 𝓥 X ≃ Lift 𝓥 Y
+Lift-equiv 𝓥 e = Lift-≃ ● e ● ≃-Lift
+
+
 -- Example 3.1.9 (Not all types are sets).
 
-module 𝓤₀-is-not-Set where
+module 𝓤-is-not-Set ⦃ univ : Univalence ⦄ (𝓤 : Universe) where
 
-  id-equiv : 𝟚 ≃ 𝟚
-  id-equiv = 𝑖𝑑 𝟚 , qinv-to-isequiv (qinv-𝑖𝑑 𝟚)
+  ≃-refl-𝟚' : Lift 𝓤 𝟚 ≃ Lift 𝓤 𝟚
+  ≃-refl-𝟚' = Lift-equiv 𝓤 (≃-refl 𝟚)
 
-  f : 𝟚 → 𝟚
-  f ₀ = ₁
-  f ₁ = ₀
+  twist : 𝟚 → 𝟚
+  twist ₀ = ₁
+  twist ₁ = ₀
 
-  swap-equiv : 𝟚 ≃ 𝟚
-  swap-equiv =
-    f ,
+  twist-≃ : 𝟚 ≃ 𝟚
+  twist-≃ =
+    twist ,
     qinv-to-isequiv (
-      f ,
+      twist ,
       (𝟚-induction _ (refl _) (refl _)) ,
       (𝟚-induction _ (refl _) (refl _))
       ) 
-  
-  𝓤₀-is-not-Set : ¬ (isSet (𝓤₀ ̇))
-  𝓤₀-is-not-Set g =
-    let p : id-equiv ≡ swap-equiv
-        p = idtoeqv-β' id-equiv ⁻¹ ∙ ap idtoeqv (g 𝟚 𝟚 (ua id-equiv) (ua swap-equiv)) ∙ idtoeqv-β' (swap-equiv)
-    in ₀-is-not-₁ (transport (λ (- : 𝟚 → 𝟚) → ₀ ≡ - ₀) (ap pr₁ p) (refl ₀))
 
-open 𝓤₀-is-not-Set using (𝓤₀-is-not-Set) public
+  twist-≃' : Lift 𝓤 𝟚 ≃ Lift 𝓤 𝟚
+  twist-≃' = Lift-equiv 𝓤 (twist-≃)
+
+  ₀-is-not-₁' : ¬ (lift {𝓤₀} {𝓤} ₀ ≡ lift {𝓤₀} {𝓤} ₁)
+  ₀-is-not-₁' p = ₀-is-not-₁ (ap lower p)
+
+  𝓤-is-not-Set : ¬ (isSet (𝓤 ̇))
+  𝓤-is-not-Set g =
+    let p : ≃-refl-𝟚' ≡ twist-≃'
+        p = idtoeqv-β' ≃-refl-𝟚' ⁻¹ ∙ ap idtoeqv (g (Lift 𝓤 𝟚) (Lift 𝓤 𝟚) (ua ≃-refl-𝟚') (ua twist-≃')) ∙ idtoeqv-β' (twist-≃')
+    in ₀-is-not-₁' (transport (λ (- : Lift 𝓤 𝟚 → Lift 𝓤 𝟚) → lift ₀ ≡ - (lift ₀)) (ap pr₁ p) (refl (lift ₀)))
+
+open 𝓤-is-not-Set using (𝓤-is-not-Set) public

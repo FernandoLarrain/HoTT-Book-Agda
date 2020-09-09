@@ -36,10 +36,18 @@ open import Ch2.1-Types-are-higher-groupoids public
 -- infix 1 _∎
 -- infix 30 _∙ᵣ_
 -- infix 30 _∙ₗ_
+-- infixl 30 _✦_
+-- infixl 30 _✧_
 open import Ch2.2-Functions-are-functors public
 open import Ch2.3-Type-families-are-fibrations public
+-- infix 0 PathOver
 open import Ch2.4-Homotopies-and-equivalences public
 -- infix 0 _∼_
+-- infixl 30 _·_
+-- infixr 0 _∼⟨_⟩_
+-- infix 1 _□
+-- infix 30 _·ᵣ_
+-- infix 30 _·ₗ_
 -- infix 10 _≃_
 -- infixl 30 _●_
 -- infixr 0 _≃⟨_⟩_
@@ -65,19 +73,26 @@ open import Ch3.4-Classical-vs-intuitionistic-logic public
 open import Ch3.5-Subsets-and-prop-resizing public
 open import Ch3.6-The-logic-of-mere-props public
 open import Ch3.7-Propositional-truncation public
+-- infix 0 ∥_∥₋₁
+-- infixl 20 _∨_
+-- infixr -1 -∃
 open import Ch3.9-The-pple-of-unique-choice public
 open import Ch3.11-Contractibility public
 open import Ch3.Exercises public
 
 -- Chapter 4
 
-open import Ch4.1-Quasi-inverses public
 open import Ch4.2-Half-adjoint-equivalences public
 open import Ch4.3-Bi-invertible-maps public
 open import Ch4.4-Contractible-fibers public
 open import Ch4.5-On-the-definition-of-equivalences public
 open import Ch4.6-Surjections-and-embeddings public
 open import Ch4.7-Closure-properties-of-equivalences public
+open import Ch4.8-The-object-classifier public
+open import Ch4.9-Univalence-implies-funext public
+open import Ch4.Exercises public
+open import Ch4.1-Quasi-inverses public
+
 
 -- Chapter 5
 
@@ -85,16 +100,18 @@ open import Ch5.1-Introduction-to-inductive-types public
 open import Ch5.3-W-types public
 open import Ch5.4-Inductive-types-are-initial-algebras public
 open import Ch5.8-Id-types-and-id-systems public
-
+open import Ch5.Exercises public
 
 -- Chapter 6
+
+open import Rewrite public
 
 open import Ch6.2-Induction-pples-and-dependent-paths public
 open import Ch6.3-The-interval public public
 open import Ch6.4-Circles-and-spheres public
 open import Ch6.5-Suspensions public
-open import Ch6.8-Pushouts public
 open import Ch6.9-Truncations public
+open import Ch6.8-Pushouts public
 open import Ch6.10-Quotients public
 open import Ch6.Exercises public
 
@@ -103,3 +120,5 @@ open import Ch6.Exercises public
 open import Ch7.1-Definition-of-n-types public
 open import Ch7.2-UIP-and-Hedberg's-theorem public
 open import Ch7.3-Truncations public
+open import Ch7.5-Connectedness public
+open import Ch7.6-Orthogonal-factorization public

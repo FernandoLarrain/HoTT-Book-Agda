@@ -25,6 +25,18 @@ apd : {A : 𝓤 ̇} {x y : A} {P : A → 𝓥 ̇} (f : (x : A) → P x) (p : x �
 apd f (refl x) = refl (f x)
 
 
+-- Definition of type of dependent paths ("pathovers").
+
+{- Note : this notation is not used until Ch6. -}
+
+PathOver : {X : 𝓤 ̇} (P : X → 𝓥 ̇) {x y : X} (p : x ≡ y) (u : P x) (v : P y) → 𝓥 ̇
+PathOver P p u v = transport P p u ≡ v
+
+infix 0 PathOver
+
+syntax PathOver P p u v = u ≡ v [ P ↓ p ]
+
+
 -- Lemma 2.3.5 (Transport in constant family).
 
 transportconst : {A : 𝓤 ̇} (B : 𝓥 ̇) {x y : A} (p : x ≡ y) (b : B) → transport (λ (x : A) → B) p b ≡ b

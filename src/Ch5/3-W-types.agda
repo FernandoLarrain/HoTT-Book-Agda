@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -32,5 +32,5 @@ Listᵂ A = W (𝟙 + A) (+-recursion (λ u → 𝟘) λ a → 𝟙)
 
 -- Theorem 5.3.1 (Uniqueness principle for W-types)
 
-W-η : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (E : W A B → 𝓦 ̇) (e : (a : A) (f : B a → W A B) → ((b : B a) → E (f b)) → E (sup a f)) (g h : Π E) → ((a : A) (f : B a → W A B) → g (sup a f) ≡ e a f (g ∘ f)) → ((a : A) (f : B a → W A B) → h (sup a f) ≡ e a f (h ∘ f)) → g ≡ h
-W-η E e g h βg βh = funext (W-induction _ (λ a f ih → βg a f ∙ ap (e a f) (funext ih) ∙ βh a f ⁻¹))
+W-uniqueness-pple : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : A → 𝓥 ̇} (E : W A B → 𝓦 ̇) (e : (a : A) (f : B a → W A B) → ((b : B a) → E (f b)) → E (sup a f)) (g h : Π E) → ((a : A) (f : B a → W A B) → g (sup a f) ≡ e a f (g ∘ f)) → ((a : A) (f : B a → W A B) → h (sup a f) ≡ e a f (h ∘ f)) → g ≡ h
+W-uniqueness-pple E e g h βg βh = funext (W-induction _ (λ a f ih → βg a f ∙ ap (e a f) (funext ih) ∙ βh a f ⁻¹))

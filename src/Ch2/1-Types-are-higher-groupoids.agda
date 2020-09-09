@@ -78,15 +78,19 @@ module _ {A : 𝓤 ̇} {a b c : A} where
 
   infix 30 _∙ₗ_
 
-  -- Horizontal compositions
+  -- Horizontal composition
 
-  _⋆'_ : {p q : a ≡ b} {r s : b ≡ c} (α : p ≡ q) (β : r ≡ s) → p ∙ r ≡ q ∙ s
-  _⋆'_ {q = q} {r = r} α β = (α ∙ᵣ r) ∙ (q ∙ₗ β)
+  _✦_ : {p q : a ≡ b} {r s : b ≡ c} (α : p ≡ q) (β : r ≡ s) → p ∙ r ≡ q ∙ s
+  _✦_ {q = q} {r = r} α β = (α ∙ᵣ r) ∙ (q ∙ₗ β)
 
-  _⋆''_ : {p q : a ≡ b} {r s : b ≡ c} (α : p ≡ q) (β : r ≡ s) → (p ∙ r) ≡ (q ∙ s)
-  _⋆''_ {p = p} {s = s} α β = (p ∙ₗ β) ∙ (α ∙ᵣ s)
+  infixl 30 _✦_
 
-  hz-comp-agreement : {p q : a ≡ b} {r s : b ≡ c} (α : p ≡ q) (β : r ≡ s) → (α ⋆' β) ≡ (α ⋆'' β)
+  _✧_ : {p q : a ≡ b} {r s : b ≡ c} (α : p ≡ q) (β : r ≡ s) → (p ∙ r) ≡ (q ∙ s)
+  _✧_ {p = p} {s = s} α β = (p ∙ₗ β) ∙ (α ∙ᵣ s)
+
+  infixl 30 _✧_
+
+  hz-comp-agreement : {p q : a ≡ b} {r s : b ≡ c} (α : p ≡ q) (β : r ≡ s) → (α ✦ β) ≡ (α ✧ β)
   hz-comp-agreement {refl x} {refl x} {refl x} {refl x} (refl (refl x)) (refl (refl x)) = refl (refl (refl x))
 
   {- For the proof of theorem, see next section, after Lemma 2.2.1 (Action on paths). The book proves Eckmann-Hilton before defining action on paths, but it is not clear how to do so without doing a path induction or using one of the asymmetric definitions of _∙_. -}

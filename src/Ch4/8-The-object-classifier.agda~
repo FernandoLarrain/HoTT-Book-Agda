@@ -1,0 +1,14 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.
+
+module Ch4.8-The-object-classifier where
+
+
+-- Lemma 4.8.1 (fibers of pr₁ are values of type family)
+
+fibs-of-pr₁-are-values : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (a : A) → fib pr₁ a ≃ B a
+fibs-of-pr₁-are-values = ?

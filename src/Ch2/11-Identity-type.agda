@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
@@ -10,9 +10,9 @@ open import Ch2.9-Π-types-and-funext
 module Ch2.11-Identity-type where
 
 
--- Theorem 2.11.1 (The action on paths of an equivalence is an equivalence).
+-- Theorem 2.11.1 (The action on paths of an equivalence is an equivalence / Id preserves equivalence).
 
-{- The proof is not hard; it is just a very long and detailed example of equational reasoning. It is easier to use the rewrite construct. -}
+{- The proof is not hard; it is just a very long and detailed example of equational reasoning. In general, for long proofs such as this it is easier to use the rewrite construct. -}
 
 ap-of-equiv-is-equiv : {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} → isequiv (f) → (a a' : A) → isequiv (ap f {a} {a'})
 ap-of-equiv-is-equiv {𝓤} {𝓥} {A} {B} {f} e a a' with isequiv-to-qinv e
@@ -87,6 +87,21 @@ ap-of-equiv-is-equiv {𝓤} {𝓥} {A} {B} {f} e a a' with isequiv-to-qinv e
       ≡⟨ lu _ ⁻¹ ∙ ap-id _ ⟩
     p ∎
   ))
+
+
+-- Example : ap lift and ap lower are equivalences.
+
+ap-lift-is-equiv : {𝓥 : Universe} {A : 𝓤 ̇} {x y : A} → isequiv (ap (lift {𝓤} {𝓥} {A}) {x} {y})
+ap-lift-is-equiv = ap-of-equiv-is-equiv (qinv-to-isequiv qinv-lift) _ _
+
+ap-lift-≃ : {𝓥 : Universe} {A : 𝓤 ̇} {x y : A} → (x ≡ y) ≃ (lift {𝓤} {𝓥} {A} x ≡ lift y) 
+ap-lift-≃ = (ap lift) , ap-lift-is-equiv
+
+ap-lower-is-equiv : {𝓥 : Universe} {A : 𝓤 ̇} {x y : Lift 𝓥 A} → isequiv (ap (lower {𝓤} {𝓥} {A}) {x} {y})
+ap-lower-is-equiv = ap-of-equiv-is-equiv (qinv-to-isequiv qinv-lower) _ _
+
+ap-lower-≃ : {𝓥 : Universe} {A : 𝓤 ̇} {x y : Lift 𝓥 A} → (x ≡ y) ≃ (lower {𝓤} {𝓥} {A} x ≡ lower y) 
+ap-lower-≃ = (ap lower) , ap-lower-is-equiv
 
 
 -- Lemma 2.11.2 (Transport of paths along equality of endpts).

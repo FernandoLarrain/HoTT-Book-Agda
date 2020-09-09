@@ -2,7 +2,7 @@
 
 ## The library
 
-The structure of the library follows closely that of the book. The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else) and `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types). The following files are ordered lexicographically, first, by dependence, and second, by numbering.
+The structure of the library follows closely that of the book. The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else), `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types), `Ch4.1` on `Ch4` and `Ch6.8` on `Ch6.9`. The following files are ordered lexicographically, first, by dependence, and second, by numbering.
 
 #### Chapter 1 (src\Ch1)
 
@@ -56,14 +56,17 @@ The file `Sets-and-logic` imports `Ch3`.
 
 #### Chapter 4 (src\Ch4)
 
-1. `1-Quasi-inverses`
-2. `2-Half-adjoint-equivalences`
-3. `3-Bi-invertible-maps`
-4. `4-Contractible-fibers`
-5. `6-Surjections-and-embeddings`
-6. `7-Closure-properties-of-equivalences`
+1. `2-Half-adjoint-equivalences`
+2. `3-Bi-invertible-maps`
+3. `4-Contractible-fibers`
+4. `6-Surjections-and-embeddings`
+5. `7-Closure-properties-of-equivalences`
+6. `8-The-object-classifier`
+7. `9-Univalence-implies-funext`
+6. `Exercises`
+7. `1-Quasi-inverses`
 
-The file `Equivalences` imports `Ch4`.
+The file `Equivalences` imports `Ch4` (except `1-Quasi-inverses`).
 
 ### Chapter 5 (src\Ch5)
 
@@ -71,23 +74,32 @@ The file `Equivalences` imports `Ch4`.
 2. `3-W-types`
 3. `4-Inductive-types-are-initial-algebras`
 4. `8-Id-types-and-id-systems`
+5. `Exercises`
+
+The file `Induction` imports `Ch4`. 
 
 #### Chapter 6 (src\Ch6)
 
 1. `2-Induction-pples-and-dependent-paths`
 2. `3-The-interval`
-3. `4-Circles-and-spheres`
-4. `5-Suspensions`
-5. `8-Pushouts`
-6. `9-Truncations`
-7. `10-Quotients`
-8. `Exercises`
+3. `4-Circles-and-spheres-safe`
+4. `4-Circles-and-spheres`
+5. `5-Suspensions-safe`
+6. `5-Suspensions`
+7. `9-Truncations`
+8. `8-Pushouts`
+9. `10-Quotients`
+10. `Exercises`
 
 #### Chapter 7 (src\Ch7)
 
 1. `1-Definition-of-n-types`
-2. `2-UIP-and-Hedberg's-theorem`
-3. `3-Truncations`
+2. `2-UIP-and-Herberg's-theorem-safe`
+3. `2-UIP-and-Hedberg's-theorem`
+4. `3-Truncations-safe`
+5. `3-Truncations`
+6. `5-Connectedness`
+7. `6-Orthogonal-factorization`
 
 
 ## Potential inconsistencies
@@ -96,25 +108,16 @@ Agda has some features that are inconsitent with HoTT. To avoid them,
 
 1. the absurd pattern should be used only intially for the definition of the recursion and induction principles of the empty type, and
 
-2. every file should begin with `{-# OPTIONS --without-K #-}`
+2. every file should begin with `{-# OPTIONS --without-K #-}`.
 
-Also,
-
-1. The following files use the `rewrite` construct: `Ch2.4`, `Ch4.2` and `Ch7.1` (Is it consistent with HoTT? It shoudn't if it is just a particular case of with-abstraction).
-
-2. The `--safe` option was used until the first postulates were made (around the end of `Ch2`).
+For extra care, files can begin with `{-# OPTIONS --without-K --exact-split --safe #-}`. However, the `--safe` option is incompatible with the use of postulates and rewriting, so most of chapters 6 and 7 is unsafe (see below).
 
 
 ## The axioms
 
-1. `Ch2.9` postulates function extensionality, which is later proved from univalence in `Ch4.9` and using the interval in `Ch6.3`.
+1. Function extensionality, univalence, propositional and set truncations are assumed via modules. The last two become postulates in Ch7. 
 
-2. `Ch2.10` postulates univalence.
-
-3. `Ch6` postulates several higher inductive types.
-
-4. Propositional truncation is assumed via modules in `Ch3.7` (`basic-truncation-development`), `Ch3.9` (`unique-choice`) and `Ch4.6` (`surjections`, `isequiv-\simeq-is-surjective-embedding`).
-
+2. Higher inductive types with definitional equality for point constructors have to be postulated together with a rewrite relation which is defined in the file `Rewrite`.
 
 ## The notion of equivalence
 
@@ -145,24 +148,60 @@ The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences fro
 
 * Prove groupoid laws for homotopies (using equality or homotopy?) and equivalence relations.
 
-* Spaces in old type declarations
-
-* Define biimplication
-
-* Define map product and coproduct
-
-* Define disequality
-
-* Whiskering should bind looser than concatenation
+* Whiskering should bind more loosely than concatenation
 
 * Remove named implicit arguments
 
-* Make function and type arguments for funext and univalence implicit
-
 * Modules with equivalence: .equiv
 
-* Finish / fix 2.14
+* Finish / fix 2.14 (maybe change to magmas; the full associativity proof is in M. Escardo's notes.
 
 * Define equivalence with old 1-type definition
 
 * Use PROP and SET?
+
+* Improve readability of univalence and funext modules
+
+* Change where-lemmas to sublemmas
+
+* Generalize constructions that restrict to a single universe when possible. Restrict theorem hypotheses, not definitions (unless multiverse definitions don't make sense). E.g. N-Algebras in Ch5.
+
+* Results about the relation between path spaces in fibers and ap in Ch4.2 and "propositional maps" in Ch4.6 should be postponed until Ch7.
+
+* Develop groupoid structure and whiskering operations for homotopies.
+
+* Redefine retraction and section to be just witnesses of invertibility. Retract suffice for naming the triple.
+
+* Derive equivalences from quasi-inverse results to avoid repeated construction of equivalences.
+
+* Homotopy preserves isequiv.
+
+* inv preserves isequiv.
+
+* Homotopy and inv commute.
+
+* Section and retraction commutative triangles.
+
+* Functorial action of products, coproducts and universe lifting.
+
+* Spans, cones, cocones, functorial action of pullbacks and pushouts.
+
+* Constant function
+
+* Singleton induction
+
+* Unwhiskering operations and whiskering operations for homotopies
+
+* Rename \Sigma-over-Contr and \Sigma-of-Contr as left and right unit laws
+
+* Define maps over / total over (at least for thesis)
+
+* Fix Ch4.1. Does opening PropTrunc publicly help?
+
+* Prove 2-groupoid laws for whiskering and horizontal composition operations
+
+* Use rewrite only when necessary. Propositional computation rules suffice for UMPs.
+
+* Simplify lifting arguments using universe polymorphism (see, e.g., UMP of products in Ch2.15).
+
+* Universe polymorphism is used explicitly in some proofs about inductive principles / universal mapping properties. To get actual equivalences (rather than mere logical equivalences) it is best to avoid it and use lifting or multiple hypotheses.

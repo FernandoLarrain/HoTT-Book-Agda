@@ -15,9 +15,9 @@ ap f (refl x) = refl (f x)
 -- Theorem 2.1.6 (Eckmann-Hilton continued).
 
 eckmann-hilton : {A : 𝓤 ̇} {a : A} (α β : refl a ≡ refl a) → (α ∙ β) ≡ (β ∙ α)
-eckmann-hilton {a = a} α β = ((u ⁻¹) ∙ (hz-comp-agreement α β) ) ∙ v where
-  u : (α ⋆' β) ≡ (α ∙ β)
-  v : (α ⋆'' β) ≡ (β ∙ α)
+eckmann-hilton {𝓤} {A} {a} α β = ((u ⁻¹) ∙ (hz-comp-agreement α β) ) ∙ v where
+  u : (α ✦ β) ≡ (α ∙ β)
+  v : (α ✧ β) ≡ (β ∙ α)
   u = ap (_∙ _) (ru _ ⁻¹ ∙ lu _ ⁻¹) ∙ ∙-assoc _ _ _ ∙ (ru _ ⁻¹ ∙ ap (α ∙_) (lu _ ⁻¹))
   v = ap (_∙ _) (ru _ ⁻¹ ∙ lu _ ⁻¹) ∙ ∙-assoc _ _ _ ∙ (ru _ ⁻¹ ∙ ap (β ∙_) (lu _ ⁻¹))
 
@@ -36,6 +36,7 @@ ap-∘ f g (refl x) = refl (refl (g (f x)))
 ap-id : {A : 𝓤 ̇} {x y : A} (p : x ≡ y) → ap id p ≡ p
 ap-id (refl x) = refl (refl x)
 
-
+ap-const-fun : {A : 𝓤 ̇} {B : 𝓥 ̇} {x y : A} (b : B) (p : x ≡ y) → ap (const A b) p ≡ refl b
+ap-const-fun b (refl _) = refl _
 
 

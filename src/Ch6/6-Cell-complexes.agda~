@@ -1,0 +1,53 @@
+{-# OPTIONS --without-K --exact-split --rewriting #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+
+module Ch6.6-Cell-complexes where
+
+-- The Torus, T².
+
+postulate
+
+  -- (i) Type formation rule
+
+    T² : 𝓤₀ ̇
+
+  -- (ii) Constructors
+  
+  b : T²
+  p q : b ≡ b
+  
+
+-- module _ (P : 𝕊² → 𝓤 ̇) (b : P base₂) (s : refl b ≡ refl b [ P ⇊ surf ]) where
+
+--   postulate
+
+--     -- (iii) Induction principle
+
+--     𝕊²-ind : Π P
+  
+--     -- (iv) Computation rules
+
+--     base₂-β : 𝕊²-ind base₂ ↦ b
+
+--     {-# REWRITE base₂-β #-}
+
+--     surf-β : apd² 𝕊²-ind surf ≡ s
+
+-- module _ {B : 𝓤 ̇} (b : B) (s : refl b ≡ refl b) where
+
+--   -- (v) Recursion principle
+  
+--   𝕊²-rec : 𝕊² → B
+--   𝕊²-rec = 𝕊²-ind (λ x → B) b (s ∙ (transport²const B surf b ⁻¹ ∙ ru _))
+
+--   -- (vi) Computation rules
+  
+--   base₂-β' : 𝕊²-rec base₂ ≡ b
+--   base₂-β' = refl _
+
+--   surf-β' : ap² 𝕊²-rec surf ≡ s
+--   surf-β' =  ru _ ∙ lu _ ∙ ru _ ∙ lu _ ∙ ru _ ∙ ∙ᵣ-inv _ _ _ (ap (λ - → refl (refl (𝕊²-rec base₂)) ∙ (refl (refl (𝕊²-rec base₂)) ∙ (ap² 𝕊²-rec surf ∙ refl (refl (𝕊²-rec base₂))) ∙ refl (refl (𝕊²-rec base₂))) ∙ refl (refl (𝕊²-rec base₂)) ∙ (- ∙ ru (transport² (λ a → B) surf (𝕊²-rec base₂)))) (lu (transport²const B surf (𝕊²-rec base₂) ⁻¹)) ∙ (apd²-const B 𝕊²-rec surf ⁻¹ ∙ surf-β (λ x → B) b (s ∙ (transport²const B surf b ⁻¹ ∙ ru _))))

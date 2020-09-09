@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -16,5 +16,9 @@ data List {𝓤} (A : 𝓤 ̇) : 𝓤 ̇ where
 
 -- Theorem 5.1.1 (Uniqueness principle for ℕ)
 
-ℕ-η : (E : ℕ → 𝓤 ̇) (ez : E 0) (es : (n : ℕ) → E n → E (succ n)) (f g : Π E) → f 0 ≡ ez → ((n : ℕ) → f (succ n) ≡ es n (f n)) → g 0 ≡ ez → ((n : ℕ) → g (succ n) ≡ es n (g n)) → f ≡ g
-ℕ-η E ez es f g fz fs gz gs = funext (ℕ-induction _ (fz ∙ gz ⁻¹) λ n p → fs n ∙ ap (es n) p ∙ gs n ⁻¹)
+ℕ-uniqueness-pple' : (E : ℕ → 𝓤 ̇) (ez : E 0) (es : (n : ℕ) → E n → E (succ n)) (f g : Π E) → f 0 ≡ ez → ((n : ℕ) → f (succ n) ≡ es n (f n)) → g 0 ≡ ez → ((n : ℕ) → g (succ n) ≡ es n (g n)) → f ∼ g
+ℕ-uniqueness-pple' E ez es f g fz fs gz gs = ℕ-induction _ (fz ∙ gz ⁻¹) λ n p → fs n ∙ ap (es n) p ∙ gs n ⁻¹
+
+
+ℕ-uniqueness-pple : ⦃ fe : FunExt ⦄ (E : ℕ → 𝓤 ̇) (ez : E 0) (es : (n : ℕ) → E n → E (succ n)) (f g : Π E) → f 0 ≡ ez → ((n : ℕ) → f (succ n) ≡ es n (f n)) → g 0 ≡ ez → ((n : ℕ) → g (succ n) ≡ es n (g n)) → f ≡ g
+ℕ-uniqueness-pple E ez es f g fz fs gz gs = funext (ℕ-uniqueness-pple' E ez es f g fz fs gz gs)

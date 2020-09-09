@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -12,3 +12,7 @@ open import Ch4.4-Contractible-fibers public
 open import Ch4.5-On-the-definition-of-equivalences public
 open import Ch4.6-Surjections-and-embeddings public
 open import Ch4.7-Closure-properties-of-equivalences public
+open import Ch4.8-The-object-classifier public
+open import Ch4.9-Univalence-implies-funext public
+open import Ch4.Exercises public
+-- open import Ch4.1-Quasi-inverses public
