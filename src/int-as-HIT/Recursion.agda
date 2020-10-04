@@ -61,7 +61,7 @@ module _ (B : 𝓤 ̇) (b₀ : B) (succ' : B → B) (pred' : B → B) (sec' : pr
     ret-β : (z : ℤₕ) → ap ℤₕ-rec (retₕ z) ≡ ret' (ℤₕ-rec z)
 
     coh-β : (z : ℤₕ) → ap² ℤₕ-rec (cohₕ z) ≡
-      (ap-∘ succₕ ℤₕ-rec (secₕ z) ∙ (ru _ ∙ hnat (hrefl _) (secₕ z) ⁻¹ ∙ lu _ ⁻¹) ∙ ap-∘ ℤₕ-rec succ' (secₕ z) ⁻¹) ∙ ap² succ' (sec-β z) ∙ coh' (ℤₕ-rec z) ∙ ret-β (succₕ z) ⁻¹
+      (ap-∘ succₕ ℤₕ-rec (secₕ z) ∙ (ru _ ∙ hnat (hrefl _) (secₕ z) ⁻¹ ∙ lu _ ⁻¹) ∙ ap-∘ ℤₕ-rec succ' (secₕ z) ⁻¹) ∙ ap (ap succ') (sec-β z) ∙ coh' (ℤₕ-rec z) ∙ ret-β (succₕ z) ⁻¹ -- check that it agrees with the definition of homomorphism
 
   module _ (g : ℤₕ → B) (p : g 0ₕ ≡ b₀) (α : g ∘ succₕ ∼ succ' ∘ g) where  
 
@@ -142,13 +142,15 @@ norm-has-sec (strneg (succ n)) = ap predω (norm-has-sec (strneg n))
 -- 4. Normalization is section of embedding
 
 rec-id : ℤₕ-rec ℤₕ 0ₕ succₕ predₕ secₕ retₕ cohₕ ∼ id
-rec-id = ℤₕ-η ℤₕ 0ₕ succₕ predₕ secₕ retₕ cohₕ id (refl _) (hrefl _) 
+rec-id = ℤₕ-η ℤₕ 0ₕ succₕ predₕ secₕ retₕ cohₕ id (refl _) (hrefl _)
 
 rec-emb∘norm : ℤₕ-rec ℤₕ 0ₕ succₕ predₕ secₕ retₕ cohₕ ∼ embedding ∘ normalization
-rec-emb∘norm = ℤₕ-η ℤₕ 0ₕ succₕ predₕ secₕ retₕ cohₕ (embedding ∘ normalization) (refl _) (λ z → {!!})
+rec-emb∘norm = ℤₕ-η ℤₕ 0ₕ succₕ predₕ secₕ retₕ cohₕ (embedding ∘ normalization) (refl _) (λ z → embedding (normalization (succₕ z)) ≡⟨ refl _ ⟩ embedding (succω (normalization z)) ≡⟨ aux (normalization z) ⟩ succₕ (embedding (normalization z)) ∎) where
+  aux : embedding ∘ succω ∼ succₕ ∘ embedding
+  aux 0ω = refl _
+  aux (strpos x) = refl _
+  aux (strneg zero) = retₕ 0ₕ ⁻¹
+  aux (strneg (succ x)) = retₕ (strnegₕ x) ⁻¹
 
 emb-has-sec : embedding ∘ normalization ∼ id
-emb-has-sec = {!!}
-
--- We should get id if we do recursion from ℤₕ to ℤₕ
--- We should get embedding ∘ normalization equal to this recursion. Can we show the homotopy without induction?
+emb-has-sec z = rec-emb∘norm z ⁻¹ ∙ rec-id z

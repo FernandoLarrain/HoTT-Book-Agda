@@ -188,7 +188,10 @@ isContr-≃-is-⟨-2⟩-type : (A : 𝓤 ̇) → isContr A ≃ is ⟨-2⟩ type 
 isContr-≃-is-⟨-2⟩-type A = idtoeqv (refl _)
 
 isSet-iff-is-⟨0⟩-type : {A : 𝓤 ̇} → isSet A ⇔ is ⟨0⟩ type A
-isSet-iff-is-⟨0⟩-type {𝓤} {A} = (λ i x y → pr₁ Prop-iff-Contr-≡ (i x y)) , λ i x y → pr₂ Prop-iff-Contr-≡ (i x y)
+isSet-iff-is-⟨0⟩-type = (λ i x y → pr₁ Prop-iff-Contr-≡ (i x y)) , λ i x y → pr₂ Prop-iff-Contr-≡ (i x y)
+
+is-⟨1⟩-type-iff-is-⟨1⟩-type : {A : 𝓤 ̇} → is-⟨1⟩-type A ⇔ is ⟨1⟩ type A
+is-⟨1⟩-type-iff-is-⟨1⟩-type = (λ i x y → pr₁ isSet-iff-is-⟨0⟩-type (i x y)) , (λ i x y → pr₂ isSet-iff-is-⟨0⟩-type (i x y))
 
 module _ ⦃ fe : FunExt ⦄ where
 
@@ -197,6 +200,12 @@ module _ ⦃ fe : FunExt ⦄ where
 
   isSet-≃-is-⟨0⟩-type : (A : 𝓤 ̇) → isSet A ≃ is ⟨0⟩ type A
   isSet-≃-is-⟨0⟩-type A = ⇔-to-≃ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) isSet-iff-is-⟨0⟩-type
+
+  is-⟨1⟩-type-is-Prop : {A : 𝓤 ̇} → isProp (is-⟨1⟩-type A)
+  is-⟨1⟩-type-is-Prop = Π-preserves-Props _ (λ x → Π-preserves-Props _ λ y → isSet-is-Prop _) 
+  
+  isSet-≃-is-⟨1⟩-type : (A : 𝓤 ̇) → is-⟨1⟩-type A ≃ is ⟨1⟩ type A
+  isSet-≃-is-⟨1⟩-type A = ⇔-to-≃ is-⟨1⟩-type-is-Prop (Tlevel-is-predicate ⟨1⟩ _) is-⟨1⟩-type-iff-is-⟨1⟩-type
 
   -- Retractions preserve propositions
 

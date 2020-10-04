@@ -4,37 +4,15 @@ open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
---open import Ch5.4-Inductive-types-are-initial-algebras
 open import Ch5.8-Id-types-and-id-systems
---open import Ch6.4-Circles-and-spheres-safe
---open import Ch6.5-Suspensions-safe
 
 module int-as-HIT.Z-algebras where
 
 
--- General definitions / results.
-
-PathOver² : {A : 𝓤 ̇} (P : A → 𝓥 ̇) {x y : A} {p q : x ≡ y} (r : p ≡ q) {u : P x} {v : P y} (h : u ≡ v [ P ↓ p ]) (k : u ≡ v [ P ↓ q ]) → 𝓥 ̇
-PathOver² P {x} {y} r {u} {v} h k = h ≡ k [ (λ (- : x ≡ y) → u ≡ v [ P ↓ - ]) ↓ r ]
-
-infix 0 PathOver²
-
-syntax PathOver² P r h k = h ≡ k [ P ⇊ r ]
-
-
-ap-over : {X : 𝓤 ̇} {Y : 𝓥 ̇} (P : X → 𝓦 ̇) (Q : Y → 𝓣 ̇) (f : X → Y) (g : (x : X) → P x → Q (f x)) {x₁ x₂ : X} (p : x₁ ≡ x₂) {u₁ : P x₁} {u₂ : P x₂} → u₁ ≡ u₂ [ P ↓ p ] → g x₁ u₁ ≡ g x₂ u₂ [ Q ↓ ap f p ]
-ap-over P Q f g (refl _) q = ap (g _) q
-
-
-ap-dpair : {X : 𝓤 ̇} {Y : X → 𝓥 ̇} (f : X → X) (g : (x : X) → Y x → Y (f x)) {x x' : X} {y : Y x} {y' : Y x'} (p : x ≡ x') (q : y ≡ y' [ Y ↓ p ]) → ap {_} {_} {Σ Y} {Σ Y} (Σ-induction (λ x y → f x , g x y)) (dpair-≡ (p , q)) ≡ dpair-≡ ((ap f p) , ap-over Y Y f g p q)
-ap-dpair f g (refl _) (refl _) = refl _
-
-
--- ℤ-algebras and their homomorphisms
+-- Equivalences and their morphisms
 
 Eqv : (𝓤 : Universe) → 𝓤 ⁺ ̇
-Eqv 𝓤 = Σ A₁ ꞉ (𝓤 ̇) , Σ A₂ ꞉ (𝓤 ̇) , A₁ ≃ A₂ -- It suffices to consider types in a single universe.
-
+Eqv 𝓤 = Σ A₁ ꞉ (𝓤 ̇) , Σ A₂ ꞉ (𝓤 ̇) , A₁ ≃ A₂
 
 module EqvPreservation {A₁ A₂ : 𝓤 ̇} {B₁ B₂ : 𝓥 ̇} (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) where
 
@@ -97,6 +75,18 @@ hae-pres (A₁ , A₂ , s , p , σ , ρ , τ) (B₁ , B₂ , s' , p' , σ' , ρ'
         open coh
 
 
+hae-pres' : (A : Eqv 𝓤) (B : Eqv 𝓥) (f₁ : pr₁ A → pr₁ B) (f₂ : pr₁ (pr₂ A) → pr₁ (pr₂ B)) → EqvPreservation.s-pres f₁ f₂ (pr₁ (pr₂ (pr₂ A))) (pr₁ (pr₂ (pr₂ B)))  → 𝓤 ⊔ 𝓥 ̇ 
+hae-pres' (A₁ , A₂ , s , p , σ , ρ , τ) (B₁ , B₂ , s' , p' , σ' , ρ' , τ') f₁ f₂ α =
+  Σ β ꞉ p-pres p p' ,
+  Σ γ ꞉ σ-pres α β σ σ' ,
+  Σ δ ꞉ ρ-pres α β ρ ρ' ,
+  τ-pres α β σ ρ τ σ' ρ' τ' γ δ
+  where open EqvPreservation f₁ f₂
+        open maps
+        open htpies s p s' p'
+        open coh
+
+
 EqvHom : Eqv 𝓤 → Eqv 𝓥 → 𝓤 ⊔ 𝓥 ̇
 EqvHom A B = Σ f₁ ꞉ (pr₁ A → pr₁ B) , Σ f₂ ꞉ (pr₁ (pr₂ A) → pr₁ (pr₂ B)) , hae-pres A B f₁ f₂ 
 
@@ -120,24 +110,27 @@ _ = λ 𝓤 → refl _
 
 -- Can we work with simpler homomorphisms?
 
-module _ (A : 𝓤 ̇) (B : 𝓥 ̇) (f : A → B) where
+module _ ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B : 𝓥 ̇) (f : A → B) where
 
   open EqvPreservation f f
   open maps
+  open htpies id id id id
+  open coh (hrefl _)
 
-  module _ (β : p-pres id id) where
+  aux-contr : isContr (Σ β ꞉ p-pres id id , σ-pres (hrefl _) β (hrefl _) (hrefl _))
+  aux-contr = ≃-preserves-Contr (split , (dep-Σ-UMP A (λ a → f a ≡ f a) λ a βa → refl (f a) ≡ (βa ∙ refl (f a)) ∙ refl (f a))) (Π-preserves-Contr _ (λ a → ≃-preserves-Contr (Σ-preserves-family-≃ (λ βa → post-∙-≃ (refl (f a)) (ru βa ∙ ru _))) (free-right-endpt-is-Contr _ _)))
 
-    open htpies id id id id (hrefl f) (hrefl f)
+  aux-contr' : isContr (Σ δ ꞉ ρ-pres (hrefl _) (hrefl _) (hrefl _) (hrefl _) , τ-pres (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) δ)
+  aux-contr' = ≃-preserves-Contr (split , (dep-Σ-UMP A (λ a → refl (f a) ≡ refl (f a) ∙ refl (f a) ∙ refl (f a)) λ a δa → (refl (refl (f a)) ∙ (refl (refl (f a)) ∙ δa ∙ refl (refl (f a)) ∙ refl (refl (f a)) ∙ refl (refl (f a)) ∙ refl (refl (f a)) ∙ refl (refl (f a)))) ≡ (refl (refl (f a))))) (Π-preserves-Contr _ (λ a → ≃-preserves-Contr (Σ-preserves-family-≃ (λ δa → pre-∙-≃ (refl (refl (f a))) (lu _ ⁻¹ ∙ ru _ ⁻¹ ∙ ru _ ⁻¹ ∙ ru _ ⁻¹ ∙ ru _ ⁻¹ ∙ ru _ ⁻¹ ∙ lu δa ⁻¹))) (free-left-endpt-is-Contr _ _)))
 
-    module _ (γ : σ-pres (hrefl _) (hrefl _)) (δ : ρ-pres (hrefl _) (hrefl _)) where
-
-      open coh (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) γ δ
-
-      module _ (ε : τ-pres) (a : A) where
-
---        _ : {!!} -- if α is refl (𝕁-∼), then β is, and then γ ≡ δ. But there's no way to show that γ, δ and ε are trivial.
---        _ = {!!}
-
+  Contr-result : (Σ β ꞉ p-pres id id , (Σ γ ꞉ σ-pres (hrefl _) β (hrefl _) (hrefl _) , (Σ δ ꞉ ρ-pres (hrefl _) β (hrefl _) (hrefl _) , τ-pres β (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) γ δ))) ≃ 𝟙
+  Contr-result = _
+    ≃⟨ Σ-assoc (p-pres id id) (λ β → σ-pres (hrefl _) β (hrefl _) (hrefl _)) _ ⟩
+    (Σ w ꞉ (Σ β ꞉ p-pres id id , σ-pres (hrefl _) β (hrefl _) (hrefl _)) , _)
+    ≃⟨ Σ-over-Contr-base-is-fib _ _ aux-contr ⟩
+    (Σ δ ꞉ ρ-pres (hrefl _) (hrefl _) (hrefl _) (hrefl _) , τ-pres (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) (hrefl _) δ)
+    ≃⟨ ≃-of-Contr-types _ _ aux-contr' (⋆ , (𝟙-induction _ (refl _))) ⟩
+    𝟙 ■
 
 module ≃-refl-case ⦃ fe : FunExt ⦄ (A B : 𝓤 ̇) where
 
@@ -166,17 +159,35 @@ module ≃-refl-case ⦃ fe : FunExt ⦄ (A B : 𝓤 ̇) where
   ϕ∘ψ : (f₁ f₂ : A → B) → ϕ f₁ f₂ ∘ ψ f₁ f₂ ∼ id
   ϕ∘ψ f f (refl f) = fun-refl _ ⁻¹
 
-  ψ∘ϕ : (f₁ f₂ : A → B) → ψ f₁ f₂ ∘ ϕ f₁ f₂ ∼ id
-  ψ∘ϕ f₁ f₂ = Σ-induction (𝕁-∼ (λ (f₂ f₁ : A → B) α → (etc : _) → ψ f₁ f₂ (ϕ f₁ f₂ (α , etc)) ≡ (α , etc)) (λ f → Σ-induction λ β → Σ-induction λ γ → Σ-induction λ δ ε → dpair-≡ (ap (pr₁ ∘ (ψ f f)) (fun-refl _ ⁻¹) , {!!})) f₂ f₁)
+--   ψ∘ϕ : (f₁ f₂ : A → B) → ψ f₁ f₂ ∘ ϕ f₁ f₂ ∼ id
+--   ψ∘ϕ f₁ f₂ = Σ-induction (𝕁-∼ (λ (f₂ f₁ : A → B) α → (etc : _) → ψ f₁ f₂ (ϕ f₁ f₂ (α , etc)) ≡ (α , etc)) (λ f → Σ-induction λ β → Σ-induction λ γ → Σ-induction λ δ ε → dpair-≡ (ap (pr₁ ∘ (ψ f f)) (fun-refl _ ⁻¹) , {!!})) f₂ f₁)
   
---   _ : hae-pres (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂ ≃ (f₂ ≡ f₁)  
---   _ = {!!}
+  equiv : (f₁ f₂ : A → B) → hae-pres (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂ ≃ (f₂ ∼ f₁)  
+  equiv f₁ f₂ = Σ-of-Contr-family-is-base _ _ (𝕁-∼ (λ f₂ f₁ α → isContr (hae-pres' (A , A , ≃-refl A) (B , B , ≃-refl B) f₁ f₂ α)) (λ f → ≃-preserves-Contr (≃-sym (Contr-result A B f)) (⋆ , (𝟙-induction _ (refl _)))) f₂ f₁)
 
 -- simple-homs : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (A₁ A₂ : 𝓤 ̇) (e : A₁ ≃ A₂) (B₁ B₂ : 𝓥 ̇) (e' : B₁ ≃ B₂) (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) → hae-pres (A₁ , A₂ , e) (B₁ , B₂ , e') f₁ f₂ ≃ (f₂ ∘ pr₁ e ≡ pr₁ e' ∘ f₁)
 -- simple-homs {𝓤} {𝓥} = 𝕁-≃ (λ A₁ A₂ e → (B₁ B₂ : 𝓥 ̇) (e' : B₁ ≃ B₂) (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) → hae-pres (A₁ , A₂ , e) (B₁ , B₂ , e') f₁ f₂ ≃ (f₂ ∘ pr₁ e ≡ pr₁ e' ∘ f₁)) λ A →
 --   𝕁-≃ (λ B₁ B₂ e' → (f₁ : A → B₁) (f₂ : A → B₂) → hae-pres (A , A , ≃-refl A) (B₁ , B₂ , e') f₁ f₂ ≃ (f₂ ∘ id ≡ pr₁ e' ∘ f₁))
 --   λ B f₁ f₂ →
 --     {!!}
+
+
+-- General definitions / results.
+
+PathOver² : {A : 𝓤 ̇} (P : A → 𝓥 ̇) {x y : A} {p q : x ≡ y} (r : p ≡ q) {u : P x} {v : P y} (h : u ≡ v [ P ↓ p ]) (k : u ≡ v [ P ↓ q ]) → 𝓥 ̇
+PathOver² P {x} {y} r {u} {v} h k = h ≡ k [ (λ (- : x ≡ y) → u ≡ v [ P ↓ - ]) ↓ r ]
+
+infix 0 PathOver²
+
+syntax PathOver² P r h k = h ≡ k [ P ⇊ r ]
+
+
+ap-over : {X : 𝓤 ̇} {Y : 𝓥 ̇} (P : X → 𝓦 ̇) (Q : Y → 𝓣 ̇) (f : X → Y) (g : (x : X) → P x → Q (f x)) {x₁ x₂ : X} (p : x₁ ≡ x₂) {u₁ : P x₁} {u₂ : P x₂} → u₁ ≡ u₂ [ P ↓ p ] → g x₁ u₁ ≡ g x₂ u₂ [ Q ↓ ap f p ]
+ap-over P Q f g (refl _) q = ap (g _) q
+
+
+ap-dpair : {X : 𝓤 ̇} {Y : X → 𝓥 ̇} (f : X → X) (g : (x : X) → Y x → Y (f x)) {x x' : X} {y : Y x} {y' : Y x'} (p : x ≡ x') (q : y ≡ y' [ Y ↓ p ]) → ap {_} {_} {Σ Y} {Σ Y} (Σ-induction (λ x y → f x , g x y)) (dpair-≡ (p , q)) ≡ dpair-≡ ((ap f p) , ap-over Y Y f g p q)
+ap-dpair f g (refl _) (refl _) = refl _
 
 
 -- -- Fibered ℤ-algebras and their sections

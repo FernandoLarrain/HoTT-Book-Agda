@@ -47,7 +47,6 @@ record Univalence : 𝓤ω where
 
 open Univalence ⦃ ... ⦄ public
 
-
 module _ ⦃ univ : Univalence ⦄ where
 
   -- Quasi-inverse of idtoeqv

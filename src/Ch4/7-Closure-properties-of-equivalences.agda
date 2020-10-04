@@ -176,7 +176,7 @@ module fiberwise-≃-iff-total-≃ {A : 𝓤 ̇} {P : A → 𝓥 ̇} {Q : A → 
     necessity : ishae (total f) → ((x : A) → ishae (f x))
     necessity t-is-hae x = isContrMap-to-ishae (f x) (pr₂ ContrMap (ishae-to-isContrMap (total f) t-is-hae) x)
 
-  Biinv : ⦃ fe : FunExt ⦄ → (((x : A) → biinv (f x)) ⇔ biinv (total f))
+  Biinv : (((x : A) → biinv (f x)) ⇔ biinv (total f))
   Biinv = sufficiency , necessity where
     sufficiency : ((x : A) → biinv (f x)) → biinv (total f)
     sufficiency f-is-hae = isContrMap-to-biinv (total f) (pr₁ ContrMap (λ x → biinv-to-isContrMap (f x) (f-is-hae x)))
