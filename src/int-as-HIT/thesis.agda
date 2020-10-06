@@ -251,11 +251,7 @@ module Fibered-Algebras where
   total↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) → ((a : A) → P a → Q (f a)) → Σ P → Σ Q
   total↓ Q f g (a , u) = f a , g a u
 
-  {- Note: the following definition of FibAlg is unconventional but convenient for the derivation of inductivity from initiality. In practice, a more direct definition will be used, such as
-
-[Import stuff from ℤ-Algebras]
-
-Ultimately, however, any representation which is to be justified by the argument below should map into our definition of FibAlg. More precisely, it should induce an algebra structure on the total space of the type family and a morphism structure on the projection. The reason why we can use the more abstract definition is that the notion of algebra section is independent of these details, to a certain extent (the propositional computation rules for higher constructors aren't).  -}
+  {- Note: the following definition of FibAlg is unconventional but convenient for the derivation of inductivity from initiality. In practice, a more direct definition will be used, such as the one in Cubical Agda. Ultimately, however, any representation which is to be justified by the argument below should map into our definition of FibAlg. More precisely, it should induce an algebra structure on the total space of the type family and a morphism structure on the projection. The reason why we can use the more abstract definition is that the notion of algebra section is independent of these details, to a certain extent (the propositional computation rules for higher constructors aren't).  -}
 
   -- Fibered Algebras
 
