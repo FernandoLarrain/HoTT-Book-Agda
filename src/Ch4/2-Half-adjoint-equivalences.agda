@@ -26,6 +26,8 @@ module ishae {A : 𝓤 ̇} {B : 𝓥 ̇} {f : A → B} where
   ishae₄ : (h : ishae f) → (x : A) → ap f (ishae₂ h x) ≡ ishae₃ h (f x)
   ishae₄ (g , η , ε , τ) = τ
 
+open ishae public
+
 ishae' : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → 𝓤 ⊔ 𝓥 ̇
 ishae' {𝓤} {𝓥} {A} {B} f = Σ g ꞉ (B → A) , Σ η ꞉ g ∘ f ∼ id , Σ ε ꞉ f ∘ g ∼ id , ((y : B) → ap g (ε y) ≡ η (g y))
 
