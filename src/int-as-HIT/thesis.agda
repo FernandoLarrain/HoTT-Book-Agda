@@ -330,11 +330,11 @@ open Inductive-Algebras public
 
 module Homotopy-Initial-Algebras where
 
-  ishinit : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
-  ishinit 𝓥 A = (B : Alg 𝓥) → isContr (Hom A B)
+  isinit : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
+  isinit 𝓥 A = (B : Alg 𝓥) → isContr (Hom A B)
 
-  ishinit-is-Prop : (𝓥 : Universe) (A : Alg 𝓤) → isProp (ishinit 𝓥 A)
-  ishinit-is-Prop 𝓥 A = Π-preserves-Props _ (λ B → isContr-is-Prop _)
+  isinit-is-Prop : (𝓥 : Universe) (A : Alg 𝓤) → isProp (isinit 𝓥 A)
+  isinit-is-Prop 𝓥 A = Π-preserves-Props _ (λ B → isContr-is-Prop _)
 
   hasrec : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
   hasrec 𝓥 A = (B : Alg 𝓥) → Hom A B
@@ -414,7 +414,7 @@ module ℤω-is-initial where
     f-s (strneg (succ n)) = ρ _ ⁻¹
 
   ℤω-has-rec-unique : hasrecunique 𝓤 ℤω-alg
-  ℤω-has-rec-unique {𝓤} (A , a₀ , s , p , σ , ρ , τ) (f , f₀ , f-s) (g , g₀ , g-s) = Hom-≡-intro ℤω-alg A' _ _ ({!!} , {!!} , {!!}) where
+  ℤω-has-rec-unique {𝓤} (A , a₀ , s , p , σ , ρ , τ) (f , f₀ , f-s) (g , g₀ , g-s) = Hom-≡-intro ℤω-alg A' _ _ (H , H₀ , H-s) where
     A' : Alg 𝓤
     A' = (A , a₀ , s , p , σ , ρ , τ)
     e : A ≃ A
@@ -444,286 +444,262 @@ module ℤω-is-initial where
     H₀ :  (f₀ ∙ g₀ ⁻¹) ⁻¹ ∙ f₀ ≡ g₀
     H₀ = (distr _ _ ∙ᵣ f₀) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (g₀ ⁻¹ ⁻¹ ∙ₗ linv _) ∙ ru _ ⁻¹ ∙ ⁻¹-invol _
     H-s :  (z : ℤω) → f-s z ∙ ap s (H z) ≡  H (succω z) ∙ g-s z
-    H-s 0ω = ru _ ∙ ((f-s 0ω ∙ ap s (H 0ω)) ∙ₗ linv _ ⁻¹) ∙ ∙-assoc _ _ _ 
+    H-s 0ω = ru _ ∙ ((f-s 0ω ∙ ap s (H 0ω)) ∙ₗ linv _ ⁻¹) ∙ ∙-assoc _ _ _
     H-s (strpos zero) = ru _ ∙ ((f-s (strpos zero) ∙ ap s (f-s 0ω ∙ ap s (f₀ ∙ g₀ ⁻¹) ∙ g-s 0ω ⁻¹)) ∙ₗ linv _ ⁻¹) ∙ ∙-assoc _ _ _ 
     H-s (strpos (succ n)) = ru _ ∙ ((f-s (strpos (succ n)) ∙ ap s (f-s (strpos n) ∙ ap s (H (strpos n)) ∙ g-s (strpos n) ⁻¹)) ∙ₗ linv _ ⁻¹) ∙ ∙-assoc _ _ _ 
     H-s (strneg zero) =
-      f-s (strneg zero) ∙ ap s (f-p 0ω ∙ ap p (f₀ ∙ g₀ ⁻¹) ∙ g-p 0ω ⁻¹)
+      f-s (strneg zero) ∙ ap s (f-p 0ω ∙ ap p (H 0ω) ∙ g-p 0ω ⁻¹)
         ≡⟨ f-s (strneg zero) ∙ₗ ap-∙ s _ _ ⟩
-      f-s (strneg zero) ∙ (ap s (f-p 0ω ∙ ap p (f₀ ∙ g₀ ⁻¹)) ∙ ap s (g-p 0ω ⁻¹))
-        ≡⟨ {!!} ⟩
-      {!!}
-        ≡⟨ {!!} ⟩
-      {!!}
-        ≡⟨ {!!} ⟩
-      {!!}
-        ≡⟨ {!!} ⟩
-      {!!}
-        ≡⟨ {!!} ⟩
-      f₀ ∙ g₀ ⁻¹ ∙ g-s (strneg zero) ∎ 
-    H-s (strneg (succ n)) = {!!}
+      f-s (strneg zero) ∙ (ap s (f-p 0ω ∙ ap p (H 0ω)) ∙ ap s (g-p 0ω ⁻¹))
+        ≡⟨ ap (λ - → f-s (strneg zero) ∙ (- ∙ ap s (g-p 0ω ⁻¹))) (ap-∙ s _ _) ⟩
+      f-s (strneg zero) ∙ (ap s (f-p 0ω) ∙ ap s (ap p (H 0ω)) ∙ ap s (g-p 0ω ⁻¹))
+        ≡⟨ ∙-assoc _ _ _ ∙ (∙-assoc _ _ _ ∙ᵣ ap s (g-p 0ω ⁻¹)) ⟩
+      f-s (strneg zero) ∙ ap s (f-p 0ω) ∙ ap s (ap p (H 0ω)) ∙ ap s (g-p 0ω ⁻¹)
+        ≡⟨ ap (λ - → - ∙ ap s (ap p (H 0ω)) ∙ ap s (g-p 0ω ⁻¹)) ((lu _ ∙ (f-ρ 0ω ∙ᵣ ρ (f 0ω) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ ((f-s (strneg zero) ∙ ap s (f-p 0ω)) ∙ₗ rinv _) ∙ ru _ ⁻¹) ⁻¹ ) ⟩
+      ρ (f 0ω) ⁻¹ ∙ ap s (ap p (H 0ω)) ∙ ap s (g-p 0ω ⁻¹)
+        ≡⟨ ap (λ - → ρ (f 0ω) ⁻¹ ∙ - ∙ ap s (g-p 0ω ⁻¹)) (ap-∘ p s (H 0ω))  ⟩
+      ρ (f 0ω) ⁻¹ ∙ ap (s ∘ p) (H 0ω) ∙ ap s (g-p 0ω ⁻¹)
+        ≡⟨ hnat (hsym ρ) (H 0ω) ∙ᵣ ap s (g-p 0ω ⁻¹) ⟩
+      ap id (H 0ω) ∙ ρ (g 0ω) ⁻¹ ∙ ap s (g-p 0ω ⁻¹)
+        ≡⟨ ∙-assoc _ _ _ ⁻¹ ∙ (ap-id _ ✦ ((ρ (g 0ω) ⁻¹ ∙ₗ ap-⁻¹  s _) ∙ distr _ _ ⁻¹ ∙ lu _ ∙ ((g-ρ 0ω ∙ ∙-assoc _ _ _ ⁻¹) ∙ᵣ ((ap s (g-p 0ω) ∙ ρ (g 0ω)) ⁻¹)) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (g-s (strneg zero) ∙ₗ rinv _) ∙ ru _ ⁻¹)) ⟩
+      H 0ω ∙ g-s (strneg zero) ∎ 
+    H-s (strneg (succ n)) =
+      f-s (strneg (succ n)) ∙ ap s (f-p (strneg n) ∙ ap p (H (strneg n)) ∙ g-p (strneg n) ⁻¹)
+        ≡⟨ f-s (strneg (succ n)) ∙ₗ ap-∙ s _ _ ⟩
+      f-s (strneg (succ n)) ∙ (ap s (f-p (strneg n) ∙ ap p (H (strneg n))) ∙ ap s (g-p (strneg n) ⁻¹))
+        ≡⟨ ap (λ - → f-s (strneg (succ n)) ∙ (- ∙ ap s (g-p (strneg n) ⁻¹))) (ap-∙ s _ _) ⟩
+      f-s (strneg (succ n)) ∙ (ap s (f-p (strneg n)) ∙ ap s (ap p (H (strneg n))) ∙ ap s (g-p (strneg n) ⁻¹))
+        ≡⟨ ∙-assoc _ _ _ ∙ (∙-assoc _ _ _ ∙ᵣ ap s (g-p (strneg n) ⁻¹)) ⟩
+      f-s (strneg (succ n)) ∙ ap s (f-p (strneg n)) ∙ ap s (ap p (H (strneg n))) ∙ ap s (g-p (strneg n) ⁻¹)
+        ≡⟨ ap (λ - → - ∙ ap s (ap p (H (strneg n))) ∙ ap s (g-p (strneg n) ⁻¹)) ((lu _ ∙ (f-ρ (strneg n) ∙ᵣ ρ (f (strneg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ ((f-s (strneg (succ n)) ∙ ap s (f-p (strneg n))) ∙ₗ rinv _) ∙ ru _ ⁻¹) ⁻¹ ) ⟩
+      ρ (f (strneg n)) ⁻¹ ∙ ap s (ap p (H (strneg n))) ∙ ap s (g-p (strneg n) ⁻¹)
+        ≡⟨ ap (λ - → ρ (f (strneg n)) ⁻¹ ∙ - ∙ ap s (g-p (strneg n) ⁻¹)) (ap-∘ p s (H (strneg n)))  ⟩
+      ρ (f (strneg n)) ⁻¹ ∙ ap (s ∘ p) (H (strneg n)) ∙ ap s (g-p (strneg n) ⁻¹)
+        ≡⟨ hnat (hsym ρ) (H (strneg n)) ∙ᵣ ap s (g-p (strneg n) ⁻¹) ⟩
+      ap id (H (strneg n)) ∙ ρ (g (strneg n)) ⁻¹ ∙ ap s (g-p (strneg n) ⁻¹)
+        ≡⟨ ∙-assoc _ _ _ ⁻¹ ∙ (ap-id _ ✦ ((ρ (g (strneg n)) ⁻¹ ∙ₗ ap-⁻¹  s _) ∙ distr _ _ ⁻¹ ∙ lu _ ∙ ((g-ρ (strneg n) ∙ ∙-assoc _ _ _ ⁻¹) ∙ᵣ ((ap s (g-p (strneg n)) ∙ ρ (g (strneg n))) ⁻¹)) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (g-s (strneg (succ n)) ∙ₗ rinv _) ∙ ru _ ⁻¹)) ⟩
+      H (strneg n) ∙ g-s (strneg (succ n)) ∎
+
+  ℤω-is-init : isinit 𝓤 ℤω-alg
+  ℤω-is-init A = pr₂ isContr-iff-is-inhabited-Prop (ℤω-has-rec A , ℤω-has-rec-unique A)
 
 
--- -- IX. Initial algebras are inductive
+-- IX. Initial algebras are inductive
 
--- module Initial-to-Inductive where
+module Initial-to-Inductive where
 
---   ishinit-to-isind : (A : Alg 𝓤) → ishinit 𝓤 A → isind 𝓤 A
---   ishinit-to-isind {𝓤} (A , a₀ , s , i) init (E , e₀ , s' , j) = g , g₀ , g-s
+  isinit-to-isind : (A : Alg 𝓤) → isinit 𝓤 A → isind 𝓤 A
+  isinit-to-isind {𝓤} (A , a₀ , s , i) init (E , e₀ , s' , j) = g , g₀ , g-s
  
---     where
+    where
 
---     -- 1. Useful names
+    -- 1. Useful names
     
---     A' : Alg 𝓤
---     A' = (A , a₀ , s , i)
+    A' : Alg 𝓤
+    A' = (A , a₀ , s , i)
     
---     E' : FibAlg 𝓤 A'
---     E' = (E , e₀ , s' , j)
+    E' : FibAlg 𝓤 A'
+    E' = (E , e₀ , s' , j)
     
---     T : Alg 𝓤
---     T = TotAlg A' E'
+    T : Alg 𝓤
+    T = TotAlg A' E'
 
---     -- 2. Initiality gives morphism f into T
+    -- 2. Initiality gives morphism f into T
     
---     A-rec : Hom A' T
---     A-rec = pr₁ (init T)
+    A-rec : Hom A' T
+    A-rec = pr₁ (init T)
 
---     f : A → Σ E
---     f = pr₁ A-rec
+    f : A → Σ E
+    f = pr₁ A-rec
     
---     f₀ : f a₀ ≡ (a₀ , e₀)
---     f₀ = pr₁ (pr₂ A-rec)
+    f₀ : f a₀ ≡ (a₀ , e₀)
+    f₀ = pr₁ (pr₂ A-rec)
 
---     f-s : f ∘ s ∼ total↓ E s s' ∘ f
---     f-s = pr₂ (pr₂ A-rec)
+    f-s : f ∘ s ∼ total↓ E s s' ∘ f
+    f-s = pr₂ (pr₂ A-rec)
 
---     -- 2.1 First components of f
+    -- 2.1 First components of f
 
---     f₁ : A → A
---     f₁ = pr₁ ∘ f
+    f₁ : A → A
+    f₁ = pr₁ ∘ f
 
---     f₀₁ : f₁ a₀ ≡ a₀
---     f₀₁ = pr₁ (dpr-≡ f₀)
+    f₀₁ : f₁ a₀ ≡ a₀
+    f₀₁ = pr₁ (dpr-≡ f₀)
 
---     f-s₁ : f₁ ∘ s ∼ s ∘ f₁
---     f-s₁ a = pr₁ (dpr-≡ (f-s a))
+    f-s₁ : f₁ ∘ s ∼ s ∘ f₁
+    f-s₁ a = pr₁ (dpr-≡ (f-s a))
 
---     -- 2.2 Second components of f
+    -- 2.2 Second components of f
 
---     f₂ : (a : A) → E (f₁ a)
---     f₂ = pr₂ ∘ f
+    f₂ : (a : A) → E (f₁ a)
+    f₂ = pr₂ ∘ f
 
---     f₀₂ : transport E f₀₁ (f₂ a₀) ≡ e₀
---     f₀₂ = pr₂ (dpr-≡ f₀)
+    f₀₂ : transport E f₀₁ (f₂ a₀) ≡ e₀
+    f₀₂ = pr₂ (dpr-≡ f₀)
 
---     f-s₂ : (a : A) → transport E (f-s₁ a) (f₂ (s a)) ≡ s' (f₁ a) (f₂ a)
---     f-s₂ a = pr₂ (dpr-≡ (f-s a))
+    f-s₂ : (a : A) → transport E (f-s₁ a) (f₂ (s a)) ≡ s' (f₁ a) (f₂ a)
+    f-s₂ a = pr₂ (dpr-≡ (f-s a))
 
---     -- 3. Description of composite morphism π₁∘f
+    -- 3. Description of composite morphism π₁∘f
 
---     π₁∘f : Hom A' A'
---     π₁∘f = comp A' T A' (π₁ A' E') A-rec
+    π₁∘f : Hom A' A'
+    π₁∘f = comp A' T A' (π₁ A' E') A-rec
 
---     _ : pr₁ (π₁∘f) ≡ f₁
---     _ = refl _
+    _ : pr₁ (π₁∘f) ≡ f₁
+    _ = refl _
 
---     f₁₀ : f₁ a₀ ≡ a₀
---     f₁₀ = ap pr₁ f₀ ∙ refl a₀
+    f₁₀ : f₁ a₀ ≡ a₀
+    f₁₀ = ap pr₁ f₀ ∙ refl a₀
     
---     _ : f₁₀ ≡ pr₁ (pr₂ π₁∘f)
---     _ = refl _
+    _ : f₁₀ ≡ pr₁ (pr₂ π₁∘f)
+    _ = refl _
 
---     f₁-β : f₁ ∘ s ∼ s ∘ f₁
---     f₁-β a = ap pr₁ (f-s a) ∙ refl _
---     _ : f₁-β ≡ pr₂ (pr₂ π₁∘f)
---     _ = refl _
+    f₁-β : f₁ ∘ s ∼ s ∘ f₁
+    f₁-β a = ap pr₁ (f-s a) ∙ refl _
+    _ : f₁-β ≡ pr₂ (pr₂ π₁∘f)
+    _ = refl _
 
---     -- 3.1 First components of f agree with composite π₁∘f
+    -- 3.1 First components of f agree with composite π₁∘f
 
---     path-agreement : f₀₁ ≡ f₁₀
---     path-agreement = ap pr₁ (dpr-≡-agreement f₀) ∙ ru _
+    path-agreement : f₀₁ ≡ f₁₀
+    path-agreement = ap pr₁ (dpr-≡-agreement f₀) ∙ ru _
 
---     htpy-agreement : f-s₁ ∼ f₁-β
---     htpy-agreement a = ap pr₁ (dpr-≡-agreement (f-s a)) ∙ ru _
+    htpy-agreement : f-s₁ ∼ f₁-β
+    htpy-agreement a = ap pr₁ (dpr-≡-agreement (f-s a)) ∙ ru _
 
---     -- 4. Initiality gives path from π₁∘f to algid A'
+    -- 4. Initiality gives path from π₁∘f to algid A'
 
---     A-uniqueness : isProp (Hom A' A')
---     A-uniqueness = pr₂ (pr₁ isContr-iff-is-inhabited-Prop (init A'))    
+    A-uniqueness : isProp (Hom A' A')
+    A-uniqueness = pr₂ (pr₁ isContr-iff-is-inhabited-Prop (init A'))    
     
---     path : (comp A' T A' (π₁ A' E') A-rec) ≡ algid A'
---     path = A-uniqueness _ _
+    path : (comp A' T A' (π₁ A' E') A-rec) ≡ algid A'
+    path = A-uniqueness _ _
 
---     -- 4.1 Extension of path
+    -- 4.1 Extension of path
 
---     pathext : HomId A' A' (comp A' T A' (π₁ A' E') A-rec) (algid A')
---     pathext = Hom-≡-elim A' A' _ _ path
+    pathext : HomId A' A' (comp A' T A' (π₁ A' E') A-rec) (algid A')
+    pathext = Hom-≡-elim A' A' _ _ path
 
---     H : f₁ ∼ id
---     H = pr₁ pathext
+    H : f₁ ∼ id
+    H = pr₁ pathext
 
---     H₀ : H a₀ ⁻¹ ∙ f₁₀ ≡ refl a₀
---     H₀ = pr₁ (pr₂ pathext)
+    H₀ : H a₀ ⁻¹ ∙ f₁₀ ≡ refl a₀
+    H₀ = pr₁ (pr₂ pathext)
 
---     H-β : (a : A) → f₁-β a ∙ ap s (H a) ≡ H (s a) ∙ refl (s a) 
---     H-β = pr₂ (pr₂ pathext)
+    H-β : (a : A) → f₁-β a ∙ ap s (H a) ≡ H (s a) ∙ refl (s a) 
+    H-β = pr₂ (pr₂ pathext)
 
---     -- 4.2 Rearranging
+    -- 4.2 Rearranging
 
---     H₀' : H a₀ ≡ f₁₀
---     H₀' = ru _ ∙ (H a₀ ∙ₗ H₀ ⁻¹) ∙ ∙-assoc _ _ _ ∙ (rinv _ ∙ᵣ f₁₀) ∙ lu _ ⁻¹
+    H₀' : H a₀ ≡ f₁₀
+    H₀' = ru _ ∙ (H a₀ ∙ₗ H₀ ⁻¹) ∙ ∙-assoc _ _ _ ∙ (rinv _ ∙ᵣ f₁₀) ∙ lu _ ⁻¹
 
---     H-β' : (a : A) → H (s a) ≡ f₁-β a ∙ ap s (H a)
---     H-β' a = ru _ ∙ H-β a ⁻¹
+    H-β' : (a : A) → H (s a) ≡ f₁-β a ∙ ap s (H a)
+    H-β' a = ru _ ∙ H-β a ⁻¹
 
---     -- 5. Construction of section
+    -- 5. Construction of section
 
---     g : (a : A) → E a
---     g a = transport E (H a) (f₂ a)
+    g : (a : A) → E a
+    g a = transport E (H a) (f₂ a)
 
---     g₀ : g a₀ ≡ e₀
---     g₀ = transport E (H a₀) (f₂ a₀)
---              ≡⟨ ap (λ - → transport E - (f₂ a₀)) H₀' ⟩
---            transport E f₁₀ (f₂ a₀)
---              ≡⟨ ap (λ - → transport E - (f₂ a₀)) (path-agreement ⁻¹) ⟩
---            transport E f₀₁ (f₂ a₀)
---              ≡⟨ f₀₂ ⟩
---            e₀ ∎
+    g₀ : g a₀ ≡ e₀
+    g₀ = transport E (H a₀) (f₂ a₀)
+             ≡⟨ ap (λ - → transport E - (f₂ a₀)) H₀' ⟩
+           transport E f₁₀ (f₂ a₀)
+             ≡⟨ ap (λ - → transport E - (f₂ a₀)) (path-agreement ⁻¹) ⟩
+           transport E f₀₁ (f₂ a₀)
+             ≡⟨ f₀₂ ⟩
+           e₀ ∎
            
---     g-s : (a : A) → g (s a) ≡ s' a (g a)
---     g-s a = transport E (H (s a)) (f₂ (s a))
---               ≡⟨ ap (λ - → transport E - (f₂ (s a))) (H-β' a) ⟩
---             transport E (f₁-β a ∙ ap s (H a)) (f₂ (s a))
---               ≡⟨ transport-∙ E (f₁-β a) (ap s (H a)) (f₂ (s a)) ⁻¹ ⟩
---             transport E (ap s (H a)) (transport E (f₁-β a) (f₂ (s a)))
---               ≡⟨ ap (λ - → transport E (ap s (H a)) (transport E - (f₂ (s a)))) (htpy-agreement a ⁻¹)  ⟩
---             transport E (ap s (H a)) (transport E (f-s₁ a) (f₂ (s a)))
---               ≡⟨ ap (transport E (ap s (H a))) (f-s₂ a) ⟩
---             transport E (ap s (H a)) (s' (f₁ a) (f₂ a))
---               ≡⟨ ℍ (f₁ a) (λ b p → transport E (ap s p) (s' (f₁ a) (f₂ a)) ≡ s' b (transport E p (f₂ a))) (refl _) a (H a) ⟩
---             s' a (transport E (H a) (f₂ a)) ∎
+    g-s : (a : A) → g (s a) ≡ s' a (g a)
+    g-s a = transport E (H (s a)) (f₂ (s a))
+              ≡⟨ ap (λ - → transport E - (f₂ (s a))) (H-β' a) ⟩
+            transport E (f₁-β a ∙ ap s (H a)) (f₂ (s a))
+              ≡⟨ transport-∙ E (f₁-β a) (ap s (H a)) (f₂ (s a)) ⁻¹ ⟩
+            transport E (ap s (H a)) (transport E (f₁-β a) (f₂ (s a)))
+              ≡⟨ ap (λ - → transport E (ap s (H a)) (transport E - (f₂ (s a)))) (htpy-agreement a ⁻¹)  ⟩
+            transport E (ap s (H a)) (transport E (f-s₁ a) (f₂ (s a)))
+              ≡⟨ ap (transport E (ap s (H a))) (f-s₂ a) ⟩
+            transport E (ap s (H a)) (s' (f₁ a) (f₂ a))
+              ≡⟨ ℍ (f₁ a) (λ b p → transport E (ap s p) (s' (f₁ a) (f₂ a)) ≡ s' b (transport E p (f₂ a))) (refl _) a (H a) ⟩
+            s' a (transport E (H a) (f₂ a)) ∎
 
 
--- -- X. Inductive algebras are initial 
+-- X. Inductive algebras are initial 
 
--- module Inductive-to-Initial where
+module Inductive-to-Initial where
 
---   isind-to-hasrec : (A : Alg 𝓤) → isind 𝓤 A → hasrec 𝓤 A
---   isind-to-hasrec A A-ind B = A-ind (Alg-to-FibAlg A B)
+  isind-to-hasrec : (A : Alg 𝓤) → isind 𝓤 A → hasrec 𝓤 A
+  isind-to-hasrec A A-ind B = A-ind (Alg-to-FibAlg A B)
 
---   isind-to-hasrecunique : (A : Alg 𝓤) → isind 𝓤 A → hasrecunique 𝓤 A
---   isind-to-hasrecunique {𝓤} (A , a₀ , s , p , σ , ρ , τ)  A-ind (B , b₀ , s' , p' , σ' , ρ' , τ') (f , f₀ , f-s) (g , g₀ , g-s) = Hom-≡-intro A' B' _ _ (H , H₀' , H-s') where
---     A' : Alg 𝓤
---     A' = (A , a₀ , s , p , σ , ρ , τ)
---     B' : Alg 𝓤
---     B' = (B , b₀ , s' , p' , σ' , ρ' , τ')
---     f-i : ishae-pres A A (s , p , σ , ρ , τ) B B (s' , p' , σ' , ρ' , τ') f f f-s
---     f-i = pr₁ (ishae-pres-is-Contr A A (s , p , σ , ρ , τ) B B (s' , p' , σ' , ρ' , τ') f f f-s)
---     f-p : f ∘ p ∼ p' ∘ f
---     f-p = pr₁ f-i
---     f-σ : (a : A) → ap f (σ a) ≡ f-p (s a) ∙ ap p' (f-s a) ∙ σ' (f a)
---     f-σ = pr₁ (pr₂ f-i)
---     f-ρ : (a : A) → ap f (ρ a) ≡ f-s (p a) ∙ ap s' (f-p a) ∙ ρ' (f a)
---     f-ρ = pr₁ (pr₂ (pr₂ f-i))
---     g-i : ishae-pres A A (s , p , σ , ρ , τ) B B (s' , p' , σ' , ρ' , τ') g g g-s
---     g-i = pr₁ (ishae-pres-is-Contr A A (s , p , σ , ρ , τ) B B (s' , p' , σ' , ρ' , τ') g g g-s)
---     g-p : g ∘ p ∼ p' ∘ g
---     g-p = pr₁ g-i
---     g-σ : (a : A) → ap g (σ a) ≡ g-p (s a) ∙ ap p' (g-s a) ∙ σ' (g a)
---     g-σ = pr₁ (pr₂ g-i)
---     g-ρ : (a : A) → ap g (ρ a) ≡ g-s (p a) ∙ ap s' (g-p a) ∙ ρ' (g a)
---     g-ρ = pr₁ (pr₂ (pr₂ g-i))
---     ϕ : (Σ a ꞉ A , f a ≡ g a) → (Σ a ꞉ A , f a ≡ g a)
---     ϕ (a , ih) = (s a) , (f-s a ∙ ap s' ih ∙ g-s a ⁻¹)
---     ψ : (Σ a ꞉ A , f a ≡ g a) → (Σ a ꞉ A , f a ≡ g a)
---     ψ (a , ih) = p a , (f-p a ∙ ap p' ih ∙ g-p a ⁻¹) 
---     α : ϕ ∘ ψ ∼ id
---     α (a , ih) = dpair-≡ (ρ a , (transport-funval-≡ f g (ρ a) (f-s (p a) ∙ ap s' (f-p a ∙ ap p' ih ∙ g-p a ⁻¹) ∙ g-s (p a) ⁻¹) ∙ ((ap _⁻¹ (f-ρ a)  ✦ refl _ ✦ g-ρ a) ∙ aux-path (f-s (p a)) (g-s (p a)) (f-p a) (g-p a) ih))) where
---       aux-path : {b₁ b₂ b₃ b₄ x y : B} (p₁ : b₁ ≡ _) (p₂ : b₂ ≡ _) (p₃ : b₃ ≡ _) (p₄ : b₄ ≡ _) (ih : x ≡ y) → (p₁ ∙ ap s' p₃ ∙ ρ' x) ⁻¹ ∙ (p₁ ∙ ap s' (p₃ ∙ ap p' ih ∙ p₄ ⁻¹) ∙ p₂ ⁻¹) ∙ (p₂ ∙ ap s' p₄ ∙ ρ' y) ≡ ih
---       aux-path (refl _) (refl _) (refl _) (refl _) (refl _) = (ru _ ⁻¹ ∙ᵣ (refl _ ∙ ρ' _)) ∙ linv _ 
---     β : ψ ∘ ϕ ∼ id
---     β (a , ih) = dpair-≡ (σ a , (transport-funval-≡ f g (σ a) (f-p (s a) ∙ ap p' (f-s a ∙ ap s' ih ∙ g-s a ⁻¹) ∙ g-p (s a) ⁻¹) ∙ ((ap _⁻¹ (f-σ a) ✦ refl _ ✦ g-σ a) ∙ aux-path (f-p (s a)) (g-p (s a)) (f-s a) (g-s a) ih))) where
---       aux-path : {b₁ b₂ b₃ b₄ x y : B} (p₁ : b₁ ≡ _) (p₂ : b₂ ≡ _) (p₃ : b₃ ≡ _) (p₄ : b₄ ≡ _) (ih : x ≡ y) → (p₁ ∙ ap p' p₃ ∙ σ' x) ⁻¹ ∙ (p₁ ∙ ap p' (p₃ ∙ ap s' ih ∙ p₄ ⁻¹) ∙ p₂ ⁻¹) ∙ (p₂ ∙ ap p' p₄ ∙ σ' y) ≡ ih
---       aux-path (refl _) (refl _) (refl _) (refl _) (refl _) = (ru _ ⁻¹ ∙ᵣ (refl _ ∙ σ' _)) ∙ linv _
---     E : FibAlg 𝓤 A'
---     E = (λ a → f a ≡ g a) , (f₀ ∙ g₀ ⁻¹) , (λ a ih → f-s a ∙ ap s' ih ∙ g-s a ⁻¹) , qinv-to-isequiv (ψ , α , β)
---     H : f ∼ g
---     H = pr₁ (A-ind E)
---     H₀ : H a₀ ≡ f₀ ∙ g₀ ⁻¹
---     H₀ = pr₁ (pr₂ (A-ind E))
---     H-s : (a : A) → H (s a) ≡ f-s a ∙ ap s' (H a) ∙ g-s a ⁻¹
---     H-s = pr₂ (pr₂ (A-ind E))
---     H₀' : H a₀ ⁻¹ ∙ f₀ ≡ g₀
---     H₀' = ((ap _⁻¹ H₀ ∙ distr _ _) ∙ᵣ f₀) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (g₀ ⁻¹ ⁻¹ ∙ₗ linv _) ∙ ru _ ⁻¹ ∙ ⁻¹-invol _
---     H-s' : (a : A) → f-s a ∙ ap s' (H a) ≡ H (s a) ∙ g-s a
---     H-s' a = ((H-s a ∙ᵣ g-s a) ∙ ∙-assoc _ _ _ ⁻¹ ∙ ((f-s a ∙ ap s' (H a)) ∙ₗ linv _) ∙ ru _ ⁻¹) ⁻¹
+  isind-to-hasrecunique : (A : Alg 𝓤) → isind 𝓤 A → hasrecunique 𝓤 A
+  isind-to-hasrecunique {𝓤} (A , a₀ , s , p , σ , ρ , τ)  A-ind (B , b₀ , s' , p' , σ' , ρ' , τ') (f , f₀ , f-s) (g , g₀ , g-s) = Hom-≡-intro A' B' _ _ (H , H₀' , H-s') where
+    A' : Alg 𝓤
+    A' = (A , a₀ , s , p , σ , ρ , τ)
+    B' : Alg 𝓤
+    B' = (B , b₀ , s' , p' , σ' , ρ' , τ')
+    f-i : ishae-pres A A (s , p , σ , ρ , τ) B B (s' , p' , σ' , ρ' , τ') f f f-s
+    f-i = pr₁ (ishae-pres-is-Contr A A (s , p , σ , ρ , τ) B B (s' , p' , σ' , ρ' , τ') f f f-s)
+    f-p : f ∘ p ∼ p' ∘ f
+    f-p = pr₁ f-i
+    f-σ : (a : A) → ap f (σ a) ≡ f-p (s a) ∙ ap p' (f-s a) ∙ σ' (f a)
+    f-σ = pr₁ (pr₂ f-i)
+    f-ρ : (a : A) → ap f (ρ a) ≡ f-s (p a) ∙ ap s' (f-p a) ∙ ρ' (f a)
+    f-ρ = pr₁ (pr₂ (pr₂ f-i))
+    g-i : ishae-pres A A (s , p , σ , ρ , τ) B B (s' , p' , σ' , ρ' , τ') g g g-s
+    g-i = pr₁ (ishae-pres-is-Contr A A (s , p , σ , ρ , τ) B B (s' , p' , σ' , ρ' , τ') g g g-s)
+    g-p : g ∘ p ∼ p' ∘ g
+    g-p = pr₁ g-i
+    g-σ : (a : A) → ap g (σ a) ≡ g-p (s a) ∙ ap p' (g-s a) ∙ σ' (g a)
+    g-σ = pr₁ (pr₂ g-i)
+    g-ρ : (a : A) → ap g (ρ a) ≡ g-s (p a) ∙ ap s' (g-p a) ∙ ρ' (g a)
+    g-ρ = pr₁ (pr₂ (pr₂ g-i))
+    ϕ : (Σ a ꞉ A , f a ≡ g a) → (Σ a ꞉ A , f a ≡ g a)
+    ϕ (a , ih) = (s a) , (f-s a ∙ ap s' ih ∙ g-s a ⁻¹)
+    ψ : (Σ a ꞉ A , f a ≡ g a) → (Σ a ꞉ A , f a ≡ g a)
+    ψ (a , ih) = p a , (f-p a ∙ ap p' ih ∙ g-p a ⁻¹) 
+    α : ϕ ∘ ψ ∼ id
+    α (a , ih) = dpair-≡ (ρ a , (transport-funval-≡ f g (ρ a) (f-s (p a) ∙ ap s' (f-p a ∙ ap p' ih ∙ g-p a ⁻¹) ∙ g-s (p a) ⁻¹) ∙ ((ap _⁻¹ (f-ρ a)  ✦ refl _ ✦ g-ρ a) ∙ aux-path (f-s (p a)) (g-s (p a)) (f-p a) (g-p a) ih))) where
+      aux-path : {b₁ b₂ b₃ b₄ x y : B} (p₁ : b₁ ≡ _) (p₂ : b₂ ≡ _) (p₃ : b₃ ≡ _) (p₄ : b₄ ≡ _) (ih : x ≡ y) → (p₁ ∙ ap s' p₃ ∙ ρ' x) ⁻¹ ∙ (p₁ ∙ ap s' (p₃ ∙ ap p' ih ∙ p₄ ⁻¹) ∙ p₂ ⁻¹) ∙ (p₂ ∙ ap s' p₄ ∙ ρ' y) ≡ ih
+      aux-path (refl _) (refl _) (refl _) (refl _) (refl _) = (ru _ ⁻¹ ∙ᵣ (refl _ ∙ ρ' _)) ∙ linv _ 
+    β : ψ ∘ ϕ ∼ id
+    β (a , ih) = dpair-≡ (σ a , (transport-funval-≡ f g (σ a) (f-p (s a) ∙ ap p' (f-s a ∙ ap s' ih ∙ g-s a ⁻¹) ∙ g-p (s a) ⁻¹) ∙ ((ap _⁻¹ (f-σ a) ✦ refl _ ✦ g-σ a) ∙ aux-path (f-p (s a)) (g-p (s a)) (f-s a) (g-s a) ih))) where
+      aux-path : {b₁ b₂ b₃ b₄ x y : B} (p₁ : b₁ ≡ _) (p₂ : b₂ ≡ _) (p₃ : b₃ ≡ _) (p₄ : b₄ ≡ _) (ih : x ≡ y) → (p₁ ∙ ap p' p₃ ∙ σ' x) ⁻¹ ∙ (p₁ ∙ ap p' (p₃ ∙ ap s' ih ∙ p₄ ⁻¹) ∙ p₂ ⁻¹) ∙ (p₂ ∙ ap p' p₄ ∙ σ' y) ≡ ih
+      aux-path (refl _) (refl _) (refl _) (refl _) (refl _) = (ru _ ⁻¹ ∙ᵣ (refl _ ∙ σ' _)) ∙ linv _
+    E : FibAlg 𝓤 A'
+    E = (λ a → f a ≡ g a) , (f₀ ∙ g₀ ⁻¹) , (λ a ih → f-s a ∙ ap s' ih ∙ g-s a ⁻¹) , qinv-to-isequiv (ψ , α , β)
+    H : f ∼ g
+    H = pr₁ (A-ind E)
+    H₀ : H a₀ ≡ f₀ ∙ g₀ ⁻¹
+    H₀ = pr₁ (pr₂ (A-ind E))
+    H-s : (a : A) → H (s a) ≡ f-s a ∙ ap s' (H a) ∙ g-s a ⁻¹
+    H-s = pr₂ (pr₂ (A-ind E))
+    H₀' : H a₀ ⁻¹ ∙ f₀ ≡ g₀
+    H₀' = ((ap _⁻¹ H₀ ∙ distr _ _) ∙ᵣ f₀) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (g₀ ⁻¹ ⁻¹ ∙ₗ linv _) ∙ ru _ ⁻¹ ∙ ⁻¹-invol _
+    H-s' : (a : A) → f-s a ∙ ap s' (H a) ≡ H (s a) ∙ g-s a
+    H-s' a = ((H-s a ∙ᵣ g-s a) ∙ ∙-assoc _ _ _ ⁻¹ ∙ ((f-s a ∙ ap s' (H a)) ∙ₗ linv _) ∙ ru _ ⁻¹) ⁻¹
 
---   isind-to-ishinit : (A : Alg 𝓤) → isind 𝓤 A → ishinit 𝓤 A
---   isind-to-ishinit A A-ind B = pr₂ isContr-iff-is-inhabited-Prop (isind-to-hasrec A A-ind B , isind-to-hasrecunique A A-ind B)
+  isind-to-isinit : (A : Alg 𝓤) → isind 𝓤 A → isinit 𝓤 A
+  isind-to-isinit A A-ind B = pr₂ isContr-iff-is-inhabited-Prop (isind-to-hasrec A A-ind B , isind-to-hasrecunique A A-ind B)
 
--- open Inductive-to-Initial public
+open Inductive-to-Initial public
 
 
--- --------------------------------------------------------------------------------
--- {-
--- module ℤω-is-initial where
+--------------------------------------------------------------------------------
 
---   -- ℤω is initial
+-- Fibered Algebras Revisited
 
---   ℤω-rec : (A : Alg 𝓤) → Hom ℤω-alg A
---   ℤω-rec (A , a₀ , s , p , σ , ρ , τ) = f , refl _ , f-s where
---     strpos-A : ℕ → A
---     strpos-A zero = s a₀
---     strpos-A (succ n) = s (strpos-A n)
---     strneg-A : ℕ → A
---     strneg-A zero = p a₀
---     strneg-A (succ n) = p (strneg-A n)
---     f : ℤω → A
---     f 0ω = a₀
---     f (strpos n) = strpos-A n
---     f (strneg n) = strneg-A n
---     f-s : f ∘ succω ∼ s ∘ f
---     f-s 0ω = refl _
---     f-s (strpos x) = refl _
---     f-s (strneg zero) = ρ _ ⁻¹
---     f-s (strneg (succ x)) = ρ _ ⁻¹
+-- Induction Revisited
 
---   ℤω-uniqueness-pple : (A : Alg 𝓤) (g : Hom ℤω-alg A) → ℤω-rec A ≡ g
---   ℤω-uniqueness-pple (A , a₀ , s , p , etc) (g , g₀ , g-s) = Hom-≡-intro ℤω-alg (A , a₀ , s , p , etc) _ _ (H , (ru _ ⁻¹ ∙ ⁻¹-invol _) , H-β) where
---     f : ℤω → A
---     f = pr₁ (ℤω-rec (A , a₀ , s , p , etc))
---     f-s : f ∘ succω ∼ s ∘ f
---     f-s = pr₂ (pr₂ (ℤω-rec (A , a₀ , s , p , etc)))
---     g-p : g ∘ predω ∼ p ∘ g
---     g-p = pr₁ (pr₁ (ishae-pres-is-Contr ℤω ℤω ℤω-≃ A A (s , p , etc) g g g-s))
---     H : f ∼ g
---     H 0ω = g₀ ⁻¹
---     H (strpos zero) = ap s (g₀ ⁻¹) ∙ g-s 0ω ⁻¹
---     H (strpos (succ n)) = ap s (H (strpos n)) ∙ g-s (strpos n) ⁻¹
---     H (strneg zero) = ap p (g₀ ⁻¹) ∙ g-p 0ω ⁻¹
---     H (strneg (succ n)) = ap p (H (strneg n)) ∙ g-p (strneg n) ⁻¹
---     H-β : (z : ℤω) → f-s z ∙ ap s (H z) ≡ H (succω z) ∙ g-s z
---     H-β 0ω = lu _ ⁻¹ ∙ ru _ ∙ (ap s (g₀ ⁻¹) ∙ₗ linv _ ⁻¹) ∙ ∙-assoc _ _ _
---     H-β (strpos zero) = lu _ ⁻¹ ∙ (ru _ ∙ (ap s (ap s (g₀ ⁻¹) ∙ g-s 0ω ⁻¹) ∙ₗ (linv _ ⁻¹))) ∙ ∙-assoc _ _ _
---     H-β (strpos (succ n)) = lu _ ⁻¹ ∙ (ru _ ∙ (ap s (ap s (H (strpos n)) ∙ g-s (strpos n) ⁻¹) ∙ₗ linv _ ⁻¹)) ∙ ∙-assoc _ _ _
---     H-β (strneg zero) = {!!} -- we might need to work with the higher computation rules
---     H-β (strneg (succ n)) = {!!}
--- -}
+{- Define induction as usual -}
 
--- -- Fibered Algebras Revisited
+-- Initial algebras are inductive, again.
 
--- -- Induction Revisited
+{- Prove initiality implies inductivity with the new definition. Perhaps show equivalence bewteen definitions of inductivity. -} {- Perhaps explicitly separate proof for ℕ and then experiment with diferent notions of fibered algebra / induction -}
 
--- {- Define induction as usual -}
+-- Initial algebras are equivalent
 
--- -- Initial algebras are inductive, again.
+-- ℤ as HIT: First, characterize computational behavior of sections on predecessor to justify definitional computation rule.
 
--- {- Prove initiality implies inductivity with the new definition. Perhaps show equivalence bewteen definitions of inductivity. -} {- Perhaps explicitly separate proof for ℕ and then experiment with diferent notions of fibered algebra / induction -}
-
--- -- Initial algebras are equivalent
-
--- -- ℤ as HIT: First, characterize computational behavior of sections on predecessor to justify definitional computation rule.
-
--- {- Postulate ℤ as a HIT with simple computation rules. Deduce the rest. Prove initiality -}
+{- Postulate ℤ as a HIT with simple computation rules. Deduce the rest. Prove initiality -}
 
