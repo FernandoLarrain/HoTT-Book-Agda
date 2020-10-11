@@ -308,7 +308,32 @@ module Fibered-Algebras where
     α (a , b) = dpair-≡ (ρ a , (transportconst B (ρ a) (s' (p' b)) ∙ ρ' b))
     β : g ∘ f ∼ id
     β (a , b) = dpair-≡ (σ a , (transportconst B (σ a) (p' (s' b)) ∙ σ' b))
-    
+
+  -- Homomorphisms induce a fibered algebra
+  {-
+  Hom-to-FibAlg : (A : Alg 𝓤) (B : Alg 𝓥) → Hom A B → FibAlg (𝓤 ⊔ 𝓥) B
+  Hom-to-FibAlg {𝓤} {𝓥} (A , a₀ , s , p , σ , ρ , τ) (B , b₀ , s' , p' , σ' , ρ' , τ') (f , f₀ , f-s) = fib f , (a₀ , f₀) , (s'' , {!!}) where
+    f-p : f ∘ p ∼ p' ∘ f
+    f-p = {!!}
+    f-σ : (a : A) → ap f (σ a) ≡ f-p (s a) ∙ ap p' (f-s a) ∙ σ' (f a)
+    f-σ = {!!}
+    f-ρ : (a : A) → ap f (ρ a) ≡ f-s (p a) ∙ ap s' (f-p a) ∙ ρ' (f a)
+    f-ρ = {!!}
+    s'' : (b : B) → fib f b → fib f (s' b)
+    s'' b (a , q) = (s a) , (f-s a ∙ ap s' q)
+    ϕ : Σ (fib f) → Σ (fib f)
+    ϕ = total↓ (fib f) s' s''
+    ψ : Σ (fib f) → Σ (fib f)
+    ψ (b , (a , q)) = (p' b) , ((p a) , (f-p a ∙ ap p' q))
+    α : ϕ ∘ ψ ∼ id
+    α (b , (a , q)) = dpair-≡ ((ρ' b) , {!!}) -- similar to what we already have below?
+    -- characterize transport in fib f using path induction
+    -- use characterization of identity type of fibers
+    -- First try to prove that isind is a prop. What are the complications in the proof of the uniqueness pple for sections?
+    β : ψ ∘ ϕ ∼ id
+    β (b , (a , q)) = {!!}
+  -}
+
 open Fibered-Algebras public
 
 
