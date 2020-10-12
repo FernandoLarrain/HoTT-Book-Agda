@@ -332,7 +332,7 @@ module Fibered-Algebras where
     -- First try to prove that isind is a prop. What are the complications in the proof of the uniqueness pple for sections?
     β : ψ ∘ ϕ ∼ id
     β (b , (a , q)) = {!!}
-  -}
+  -}  
 
 open Fibered-Algebras public
 
