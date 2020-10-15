@@ -1,0 +1,46 @@
+{-# OPTIONS --without-K --exact-split #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+open import Ch5.8-Id-types-and-id-systems
+
+module int-as-HIT.thesis where
+
+postulate
+  instance
+    fe : FunExt
+    univ : Univalence
+
+-- I. The (Wild) Category of ℤ-Algebras
+
+module ℤ-Algebras where
+
+  -- Objects
+
+  AlgStr : 𝓤 ̇ → 𝓤 ̇
+  AlgStr A = A × (Σ s ꞉ (A → A) , ishae s)
+  
+  Alg : (𝓤 : Universe) → 𝓤 ⁺ ̇
+  Alg 𝓤 = Σ A ꞉ (𝓤 ̇) , AlgStr A
+
+  -- Morphisms
+
+  HomStr : (A : Alg 𝓤) (B : Alg 𝓥) → (pr₁ A → pr₁ B) → 𝓤 ⊔ 𝓥 ̇
+  HomStr (A , a₀ , s , i) (B , b₀ , t , j) f = (f a₀ ≡ b₀) × (f ∘ s ∼ t ∘ f)
+  
+  Hom : Alg 𝓤 → Alg 𝓥 → 𝓤 ⊔ 𝓥 ̇
+  Hom A B = Σ f ꞉ (pr₁ A → pr₁ B) , HomStr A B f 
+
+  -- Composition
+
+  comp : (A : Alg 𝓤) (B : Alg 𝓥) (C : Alg 𝓦) → Hom B C → Hom A B → Hom A C
+  comp A B C (g , g₀ , g-s) (f , f₀ , f-β) = g ∘ f , (ap g f₀ ∙ g₀) , λ a → ap g (f-β a) ∙ g-s (f a)
+
+  -- Identity
+
+  algid : (A : Alg 𝓤) → Hom A A
+  algid A = id , refl _ , hrefl _
+
+open ℤ-Algebras public
