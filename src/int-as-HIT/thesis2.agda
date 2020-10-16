@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -6,12 +6,8 @@ open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 open import Ch5.8-Id-types-and-id-systems
 
-module int-as-HIT.thesis2 where
+module int-as-HIT.thesis2 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 
-postulate
-  instance
-    fe : FunExt
-    univ : Univalence
 
 -- ?. The Category of ℤ-Algebras
 
@@ -49,29 +45,6 @@ algid A = id , refl _ , hrefl _
 total↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) → ((a : A) → P a → Q (f a)) → Σ P → Σ Q
 total↓ Q f g (a , u) = f a , g a u
 
-{-
-ishae↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) → ((a : A) → P a → Q (f a)) → 𝓤 ⊔ 𝓦 ⊔ 𝓣 ̇
-ishae↓ {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {P} Q f g =
-  Σ ginv ꞉ ((a : A) → Q (f a) → P a) ,
-  Σ η ꞉ ((a : A) → (ginv a) ∘ (g a) ∼ id) ,
-  Σ ε ꞉ ((a : A) → (g a) ∘ (ginv a) ∼ id) ,
-  ((a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u) )
-
-ishae↓-to-fiberwise-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) (g : (a : A) → P a → Q (f a)) → ishae↓ Q f g → ((a : A) → ishae (g a)) 
-ishae↓-to-fiberwise-≃ Q f g (ginv , η , ε , τ) a = ginv a , η a , ε a , τ a
-
-fiberwise-≃-to-ishae↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) (g : (a : A) → P a → Q (f a)) → ((a : A) → ishae (g a)) → ishae↓ Q f g
-fiberwise-≃-to-ishae↓ {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {P} Q f g i = {!!} where
-  ginv : ((a : A) → Q (f a) → P a)
-  ginv a = ishae₁ (i a)
-  η : ((a : A) → (ginv a) ∘ (g a) ∼ id)
-  η a = ishae₂ (i a)
-  ε : ((a : A) → (g a) ∘ (ginv a) ∼ id)
-  ε a = ishae₃ (i a)
-  τ : (a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u)
-  τ a = ishae₄ (i a)
--}
-
 FibAlgStr : (A : Alg 𝓤) → (pr₁ A → 𝓥 ̇) → 𝓤 ⊔ 𝓥 ̇
 FibAlgStr (A , a₀ , s , i) E = E a₀ × (Σ s' ꞉ ((a : A) → E a → E (s a)) , ((a : A) → ishae (s' a)))
 
@@ -98,13 +71,13 @@ AlgSec A E = Σ f ꞉ Π (pr₁ E) , AlgSecStr A E f
 
 -- Section induces morphism into associated algebra
 
-sec-to-hom : (A : Alg 𝓤) (E : FibAlg 𝓥 A) → AlgSec A E → Hom A (TotAlg A E)
-sec-to-hom (A , a₀ , s , i) (E , e₀ , s' , j) (f , f₀ , f-s) = (λ a → a , f a) , dpair-≡ (refl a₀ , f₀) , λ a → dpair-≡ (refl (s a) , f-s a)
+Sec-to-Hom : (A : Alg 𝓤) (E : FibAlg 𝓥 A) → AlgSec A E → Hom A (TotAlg A E)
+Sec-to-Hom (A , a₀ , s , i) (E , e₀ , s' , j) (f , f₀ , f-s) = (λ a → a , f a) , dpair-≡ (refl a₀ , f₀) , λ a → dpair-≡ (refl (s a) , f-s a)
 
 -- Fibered algebra induced by a constant algebra
 
-Alg-to-FibAlg : (A : Alg 𝓤) (B : Alg 𝓥) → FibAlg 𝓥 A
-Alg-to-FibAlg {𝓤} {𝓥} (A , a₀ , s , i) (B , b₀ , s'  , j) = (λ a → B) , b₀ , (λ a b → s' b) , (λ a → j)
+ConstFibAlg : (A : Alg 𝓤) (B : Alg 𝓥) → FibAlg 𝓥 A
+ConstFibAlg {𝓤} {𝓥} (A , a₀ , s , i) (B , b₀ , s'  , j) = (λ a → B) , b₀ , (λ a b → s' b) , (λ a → j)
 
 
 -- ?. Identity Type of Sections and Morphisms
@@ -159,7 +132,7 @@ HomId : (A : Alg 𝓤) (B : Alg 𝓥) → Hom A B → Hom A B → 𝓤 ⊔ 𝓥 
 HomId (A , a₀ , s , i) (B , b₀ , s' , j) (f , f₀ , f-s) (g , g₀ , g-s) = Σ H ꞉ (f ∼ g) , (H a₀ ≡ f₀ ∙ g₀ ⁻¹) × ((a : A) → H (s a) ≡ f-s a ∙ ap s' (H a) ∙ g-s a ⁻¹)
 
 IdHom-≃-HomId : (A : Alg 𝓤) (B : Alg 𝓥) (f g : Hom A B) → (f ≡ g) ≃ HomId A B f g
-IdHom-≃-HomId A B = IdSec-≃-SecId A (Alg-to-FibAlg A B)
+IdHom-≃-HomId A B = IdSec-≃-SecId A (ConstFibAlg A B)
 
 Hom-≡-intro : (A : Alg 𝓤) (B : Alg 𝓥) (f g : Hom A B) → HomId A B f g → f ≡ g
 Hom-≡-intro A B f g = inv (IdHom-≃-HomId A B f g)
@@ -169,12 +142,38 @@ Hom-≡-elim A B f g = pr₁ (IdHom-≃-HomId A B f g)
 
 -- Sections are sections 
 
-sec-to-hom-gives-section : (A : Alg 𝓤) (E : FibAlg 𝓥 A) (f : AlgSec A E) → comp A (TotAlg A E) A (π₁ A E) (sec-to-hom A E f) ≡ algid A
-sec-to-hom-gives-section (A , a₀ , s , i) (E , e₀ , s' , j) (f , f₀ , f-s) = Hom-≡-intro (A , a₀ , s , i) (A , a₀ , s , i) _ _ (
+Sec-to-Hom-gives-section : (A : Alg 𝓤) (E : FibAlg 𝓥 A) (f : AlgSec A E) → comp A (TotAlg A E) A (π₁ A E) (Sec-to-Hom A E f) ≡ algid A
+Sec-to-Hom-gives-section (A , a₀ , s , i) (E , e₀ , s' , j) (f , f₀ , f-s) = Hom-≡-intro (A , a₀ , s , i) (A , a₀ , s , i) _ _ (
   hrefl _ ,
   (dpr₁-≡-β (refl a₀) f₀ ⁻¹ ∙ ru _ ∙ ru _) ,
   λ a → dpr₁-≡-β (refl (s a)) (f-s a) ⁻¹ ∙ ru _ ∙ ru _ ∙ ru _
   )
+
+
+-- ?. Identity Type of Algebras
+
+isiso : (A : Alg 𝓤) (B : Alg 𝓥) → Hom A B → 𝓤 ⊔ 𝓥 ̇
+isiso A B f = Σ g ꞉ Hom B A , (comp B A B f g ≡ algid B) × (comp A B A g f ≡ algid A)
+
+_≅_ : Alg 𝓤 → Alg 𝓥 → 𝓤 ⊔ 𝓥 ̇
+A ≅ B = Σ f ꞉ Hom A B , isiso A B f
+
+isiso-to-isequiv : (A : Alg 𝓤) (B : Alg 𝓥) (f : Hom A B) → isiso A B f → isequiv (pr₁ f)
+isiso-to-isequiv A B f (g , qfg , qgf) with Hom-≡-elim B B _ _ qfg | Hom-≡-elim A A _ _ qgf
+... | (H , H-etc) | (K , K-etc) = qinv-to-isequiv (pr₁ g , H , K) 
+
+AlgId : Alg 𝓤 → Alg 𝓥 → 𝓤 ⊔ 𝓥 ̇
+AlgId (A , Str-A) (B , Str-B) = Σ e ꞉ A ≃ B , HomStr (A , Str-A) (B , Str-B) (pr₁ e)
+ 
+IdAlg-≃-AlgId : (A B : Alg 𝓤) → (A ≡ B) ≃ (AlgId A B)
+IdAlg-≃-AlgId {𝓤} (A , a₀ , s , i) (B , b₀ , s' , j) = Σ-≡-≃ ● Σ-preserves-≃ _ _ (idtoeqv , idtoeqv-is-equiv {𝓤}) (aux-equiv A' B') where
+  A' = (A , a₀ , s , i)
+  B' = (B , b₀ , s' , j)
+  aux-equiv : (A B : Alg 𝓤) (p : pr₁ A ≡ pr₁ B) → (transport AlgStr p (pr₂ A) ≡ pr₂ B) ≃ HomStr A B (coe p)
+  aux-equiv (A , a₀ , s , i) (.A , b₀ , s' , j) (refl .A) = ((a₀ , s , i) ≡ (b₀ , s' , j)) ≃⟨ ×-≡-≃ ● ×-preserves-≃ (≃-refl _) (Σ-over-predicate' (ishae-is-Prop) _ _ ● happly , happly-is-equiv {𝓤}) ⟩ ((a₀ ≡ b₀) × (s ∼ s')) ■  
+
+≅-to-≡ : (A B : Alg 𝓤) → A ≅ B → A ≡ B
+≅-to-≡ A B ((f , Str-f) , i) = inv (IdAlg-≃-AlgId A B) ((f , isiso-to-isequiv A B (f , Str-f) i) , Str-f)
 
 
 -- ?. Inductive Algebras
@@ -240,14 +239,27 @@ hasrec 𝓥 A = (B : Alg 𝓥) → Hom A B
 hasrecunique : (𝓥 : Universe) (A : Alg 𝓤) → 𝓤 ⊔ 𝓥 ⁺ ̇
 hasrecunique 𝓥 A = (B : Alg 𝓥) → isProp (Hom A B)
 
+-- Maybe strengthen to unique up to a unique path.
+
+InitAlg : (𝓤 : Universe) → 𝓤 ⁺ ̇
+InitAlg 𝓤 = Σ A ꞉ Alg 𝓤 , isinit 𝓤 A
+
+InitAlg-is-Prop : (𝓤 : Universe) → isProp (InitAlg 𝓤)
+InitAlg-is-Prop 𝓤 (A , A-init) (B , B-init)  = Σ-over-predicate (isinit-is-Prop 𝓤) (≅-to-≡ A B (
+  pr₁ (A-init B) ,
+  pr₁ (B-init A) ,
+  isContr-to-isProp (B-init B) _ _ ,
+  isContr-to-isProp (A-init A) _ _
+  ))
+
 
 -- ?. Every Inductive Algebra is Initial
 
 isind-to-hasrec : (A : Alg 𝓤) → isind 𝓤 A → hasrec 𝓤 A
-isind-to-hasrec A A-ind B = A-ind (Alg-to-FibAlg A B)
+isind-to-hasrec A A-ind B = A-ind (ConstFibAlg A B)
 
 isind-to-hasrecunique : (A : Alg 𝓤) → isind 𝓤 A → hasrecunique 𝓤 A
-isind-to-hasrecunique {𝓤} A A-ind B = uniqueness-pple A A-ind (Alg-to-FibAlg A B)
+isind-to-hasrecunique {𝓤} A A-ind B = uniqueness-pple A A-ind (ConstFibAlg A B)
 
 isind-to-isinit : (A : Alg 𝓤) → isind 𝓤 A → isinit 𝓤 A
 isind-to-isinit A A-ind B = pr₂ isContr-iff-is-inhabited-Prop (isind-to-hasrec A A-ind B , isind-to-hasrecunique A A-ind B)
@@ -554,22 +566,108 @@ cohω (strneg (succ n)) = refl _
   f-s (strneg (succ n)) = ρ _ ⁻¹
 
 ℤω-has-rec-unique : hasrecunique 𝓤 ℤω-alg
-ℤω-has-rec-unique {𝓤} (A , a₀ , s , p , σ , ρ , τ) (f , f₀ , f-s) (g , g₀ , g-s) with fun-pres-to-hae-pres ℤω-≃ (s , p , σ , ρ , τ) f f f-s
-... | (f-s , f-p , f-σ , f-ρ , f-τ) = Hom-≡-intro ℤω-alg A' _ _ {!!}
+ℤω-has-rec-unique {𝓤} (A , a₀ , s , p , σ , ρ , τ) (f , f₀ , f-s) (g , g₀ , g-s) with pr₂ (fun-pres-to-hae-pres ℤω-≃ (s , p , σ , ρ , τ) f f f-s) | pr₂ (fun-pres-to-hae-pres ℤω-≃ (s , p , σ , ρ , τ) g g g-s)
+... | (f-p , f-σ , f-ρ , f-τ) | (g-p , g-σ , g-ρ , g-τ) = Hom-≡-intro ℤω-alg (A , a₀ , s , p , σ , ρ , τ) _ _ (H , H₀ , H-s)
   where
-  A' : Alg 𝓤
-  A' = (A , a₀ , s , p , σ , ρ , τ)
-  e : A ≃ A
-  e = (s , p , σ , ρ , τ)
   H : f ∼ g
   H 0ω = f₀ ∙ g₀ ⁻¹
   H (strpos zero) = f-s 0ω ∙ ap s (H 0ω) ∙ g-s 0ω ⁻¹
   H (strpos (succ n)) = f-s (strpos n) ∙ ap s (H (strpos n)) ∙ g-s (strpos n) ⁻¹
-  H (strneg zero) = {!!}
-  H (strneg (succ n)) = {!!}
+  H (strneg zero) = f-p 0ω ∙ ap p (H 0ω) ∙ g-p 0ω ⁻¹
+  H (strneg (succ n)) = f-p (strneg n) ∙ ap p (H (strneg n)) ∙ g-p (strneg n) ⁻¹
   H₀ : H 0ω ≡ f₀ ∙ g₀ ⁻¹
   H₀ = refl _
+  aux1 : {a₁ a₂ a₃ a₄ x y : A} (p₁ : a₁ ≡ _) (p₂ : a₂ ≡ _) (p₃ : a₃ ≡ _) (p₄ : a₄ ≡ _) (q : x ≡ y) → (p₂ ∙ ap s p₁) ∙ ap (s ∘ p) q ∙ (p₄ ∙ ap s p₃) ⁻¹ ≡ p₂ ∙ ap s (p₁ ∙ ap p q ∙ p₃ ⁻¹) ∙ p₄ ⁻¹
+  aux1 (refl _) (refl _) (refl _) (refl _) (refl _) = refl _
+  H-s : (z : ℤω) → H (succω z) ≡ f-s z ∙ ap s (H z) ∙ g-s z ⁻¹
+  H-s 0ω = refl _
+  H-s (strpos n) = refl _
+  H-s (strneg zero) = ap-id (H 0ω) ⁻¹ ∙ hnat' ρ (H 0ω) ⁻¹ ∙ (aux2 ✦ refl _ ✦ aux3) ∙ aux1 _ _ _ _ _ where
+    aux2 : ρ (f 0ω) ⁻¹ ≡ f-s (strneg zero) ∙ ap s (f-p 0ω)
+    aux2 = lu _ ∙ (f-ρ 0ω ∙ᵣ ρ (f 0ω) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹
+    aux3 : ρ (g 0ω) ≡ (g-s (strneg zero) ∙ ap s (g-p 0ω)) ⁻¹
+    aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ 0ω ∙ᵣ ρ (g 0ω) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
+  H-s (strneg (succ n)) = ap-id (H (strneg n)) ⁻¹ ∙ hnat' ρ (H (strneg n)) ⁻¹ ∙ (aux2 ✦ refl _ ✦ aux3) ∙ aux1 _ _ _ _ _ where
+    aux2 : ρ (f (strneg n)) ⁻¹ ≡ f-s (strneg (succ n)) ∙ ap s (f-p (strneg n))
+    aux2 = lu _ ∙ (f-ρ (strneg n) ∙ᵣ ρ (f (strneg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹
+    aux3 : ρ (g (strneg n)) ≡ (g-s (strneg (succ n)) ∙ ap s (g-p (strneg n))) ⁻¹
+    aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ (strneg n) ∙ᵣ ρ (g (strneg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
 
--- Can we prove uniqueness pple w/o hae-pres? Can we prove inductive directly?
 
--- If not, try to use with to pattern-match on full morphisms
+{-
+-- ?. Integers as HIT
+
+module Int-as-HIT
+  (ℤₕ : 𝓤₀ ̇)
+  (0ₕ : ℤₕ)
+  (succₕ : ℤₕ → ℤₕ)
+  (predₕ : ℤₕ → ℤₕ)
+  (secₕ : predₕ ∘ succₕ ∼ id)
+  (retₕ : succₕ ∘ predₕ ∼ id)
+  (cohₕ : (z : ℤₕ) → ap succₕ (secₕ z) ≡ retₕ (succₕ z))
+  (ℤₕ-ind : isind 𝓤₀ (ℤₕ , 0ₕ , succₕ , predₕ , secₕ , retₕ , cohₕ))   
+  where
+
+  -- ℤₕ is inductive, so intial, so equal to ℤω
+
+
+-- ?. Integers as HIT (judgmental rules)
+
+-- Postulate type and constructors
+
+-- Postulate induction principle : every ℤ-algebra has a section where the computation rules are judgmental for 0 and successor (and maybe predecessor?)  
+-}
+
+
+-- FIX UNIVALENCE: ISSUE IS WITH UNIVERSE
+
+-- -- ?. Fibered Algebras and the Slice Categories
+-- {-
+-- χ : (B : Alg 𝓤) → (Σ A ꞉ Alg 𝓤 , Hom A B) → FibAlg 𝓤 B
+-- χ (B , b₀ , s' , p' , σ' , ρ' , τ') ((A , a₀ , s , p , σ , ρ , τ) , (f , f₀ , f-s)) with pr₂ (fun-pres-to-hae-pres (s , p , σ , ρ , τ) (s' , p' , σ' , ρ' , τ') f f f-s)
+-- ... | (f-p , f-ρ , f-σ , f-τ) = (fib f) , (a₀ , f₀) , ({!!} , {!!}) where
+--   t : (b : B) → fib f b → fib f (s' b)
+--   t b (a , q) = (s a) , (f-s a ∙ ap s' q)
+--   tinv : (b : B) → fib f (s' b) → fib f b
+--   tinv b (a , q) = p a , (f-p a ∙ ap p' q ∙ σ' b)
+--   α : (b : B) → t b ∘ tinv b ∼ id
+--   α b (a , q) = inv (path-space-fib _ _) (ρ a , {!!}) --doable
+--   β : (b : B) → tinv b ∘ t b ∼ id
+--   β b (a , q) = {!!} --doable
+
+-- ψ : (B : Alg 𝓤) → FibAlg 𝓤 B → (Σ A ꞉ Alg 𝓤 , Hom A B)
+-- ψ B E = (TotAlg B E) , (π₁ B E) 
+
+-- χ∘ψ : (B : Alg 𝓤) → χ B ∘ ψ B ∼ id
+-- χ∘ψ B E = {!!} -- identity of fibered algebras?
+
+-- ψ∘χ : (B : Alg 𝓤) → ψ B ∘ χ B ∼ id
+-- ψ∘χ B (A , f) = {!!} -- identity of (A , f) pairs? Have to transport f
+
+-- equiv : (B : Alg 𝓤) → FibAlg 𝓤 B ≃ (Σ A ꞉ Alg 𝓤 , Hom A B)
+-- equiv B = {!!} 
+-- -}
+-- -- Seems easier to work with equivalences and then contract...
+
+-- {- Extra stuff
+-- ishae↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) → ((a : A) → P a → Q (f a)) → 𝓤 ⊔ 𝓦 ⊔ 𝓣 ̇
+-- ishae↓ {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {P} Q f g =
+--   Σ ginv ꞉ ((a : A) → Q (f a) → P a) ,
+--   Σ η ꞉ ((a : A) → (ginv a) ∘ (g a) ∼ id) ,
+--   Σ ε ꞉ ((a : A) → (g a) ∘ (ginv a) ∼ id) ,
+--   ((a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u) )
+
+-- ishae↓-to-fiberwise-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) (g : (a : A) → P a → Q (f a)) → ishae↓ Q f g → ((a : A) → ishae (g a)) 
+-- ishae↓-to-fiberwise-≃ Q f g (ginv , η , ε , τ) a = ginv a , η a , ε a , τ a
+
+-- fiberwise-≃-to-ishae↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) (g : (a : A) → P a → Q (f a)) → ((a : A) → ishae (g a)) → ishae↓ Q f g
+-- fiberwise-≃-to-ishae↓ {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {P} Q f g i = {!!} where
+--   ginv : ((a : A) → Q (f a) → P a)
+--   ginv a = ishae₁ (i a)
+--   η : ((a : A) → (ginv a) ∘ (g a) ∼ id)
+--   η a = ishae₂ (i a)
+--   ε : ((a : A) → (g a) ∘ (ginv a) ∼ id)
+--   ε a = ishae₃ (i a)
+--   τ : (a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u)
+--   τ a = ishae₄ (i a)
+-- -}
