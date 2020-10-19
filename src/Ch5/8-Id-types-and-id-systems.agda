@@ -42,10 +42,10 @@ ppmap-id (R , r₀) = (λ a → id) , (refl r₀)
 
 ppmap-≡ : ⦃ fe : FunExt ⦄ (A : 𝓤 ⊙) (R : pted-pred A 𝓥) (S : pted-pred A 𝓦) (g h : ppmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a : pr₁ A) (r : pr₁ R a) → pr₁ g a r ≡ pr₁ h a r) , (α (pr₂ A) (pr₂ R) ⁻¹ ∙ pr₂ g ≡ pr₂ h))
 
-ppmap-≡ (A , a₀) (R , r₀) (S , s₀) (g , gr) (h , hr) =
+ppmap-≡ {𝓤} {𝓥} (A , a₀) (R , r₀) (S , s₀) (g , gr) (h , hr) =
   Σ-≡-≃ ●
   Σ-preserves-≃ _ _
-    ((happly , happly-is-equiv) ● Π-preserves-family-≃ (λ a → happly , happly-is-equiv))
+    ((happly , happly-is-equiv {𝓤}) ● Π-preserves-family-≃ (λ a → happly , happly-is-equiv {𝓥}))
     λ p → pre-∙-≃ _ (transport-lemma p gr ⁻¹)
 
   where
@@ -270,11 +270,11 @@ ppmap-≃-rrmap {𝓤} {𝓥} {𝓦} {A} (R , r₀) (S , s₀) = _ , (dep-Σ-UMP
 -- Identity type of rrmap
 
 rrmap-≡ : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (R : refl-rel A 𝓥) (S : refl-rel A 𝓦) (g h : rrmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a b : A) (r : pr₁ R a b) → pr₁ g a b r ≡ pr₁ h a b r) , ((a : A) → α a a (pr₂ R a) ⁻¹ ∙ pr₂ g a ≡ pr₂ h a))
-rrmap-≡ A (R , r₀) (S , s₀) (g , gr) (h , hr) =
+rrmap-≡ {𝓤} {𝓥} A (R , r₀) (S , s₀) (g , gr) (h , hr) =
   Σ-≡-≃ ●
   Σ-preserves-≃ _ _
-    ((happly , happly-is-equiv) ● Π-preserves-family-≃ (λ a → (happly , happly-is-equiv) ● Π-preserves-family-≃ (λ b → happly , happly-is-equiv)))
-    λ p → (happly , happly-is-equiv) ● Π-preserves-family-≃ (λ a → pre-∙-≃ _ (transport-lemma p gr a ⁻¹))
+    ((happly , happly-is-equiv {𝓤}) ● Π-preserves-family-≃ (λ a → (happly , happly-is-equiv {𝓤}) ● Π-preserves-family-≃ (λ b → happly , happly-is-equiv {𝓥})))
+    λ p → (happly , happly-is-equiv {𝓤}) ● Π-preserves-family-≃ (λ a → pre-∙-≃ _ (transport-lemma p gr a ⁻¹))
 
   where
 
@@ -428,32 +428,34 @@ module thm-5-8-4 ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (R' : refl-rel A 𝓥) where
 
 module equivalence-induction ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 
-  idtoeqv' : {A B : 𝓤 ̇} → (A ≡ B) → (A ≃ B)
-  idtoeqv' {𝓤} {A} {B} p = transport (λ B → A ≃ B) p (≃-refl A)
+  abstract 
 
-  idtoeqv-agreement : {A B : 𝓤 ̇} → idtoeqv {𝓤} {A} {B} ∼ idtoeqv'
-  idtoeqv-agreement (refl _) = refl _ 
+    idtoeqv' : {A B : 𝓤 ̇} → (A ≡ B) → (A ≃ B)
+    idtoeqv' {𝓤} {A} {B} p = transport (λ B → A ≃ B) p (≃-refl A)
 
-  idtoeqv'-is-equiv : {A B : 𝓤 ̇} → isequiv (idtoeqv' {𝓤} {A} {B})
-  idtoeqv'-is-equiv = transport isequiv (funext idtoeqv-agreement) idtoeqv-is-equiv 
+    idtoeqv-agreement : {A B : 𝓤 ̇} → idtoeqv {𝓤} {A} {B} ∼ idtoeqv'
+    idtoeqv-agreement (refl _) = refl _ 
 
-  ≃-is-id-system : is-id-system {𝓤 ⁺} {𝓤} {𝓥} {𝓤 ̇} (_≃_ , ≃-refl)
-  ≃-is-id-system {𝓤} {𝓥} = thm-5-8-4.iv-to-i (𝓤 ̇) (_≃_ {𝓤} {𝓤} , ≃-refl) (λ A B → idtoeqv'-is-equiv)
+    idtoeqv'-is-equiv : {A B : 𝓤 ̇} → isequiv (idtoeqv' {𝓤} {A} {B})
+    idtoeqv'-is-equiv {𝓤} = transport isequiv (funext idtoeqv-agreement) (idtoeqv-is-equiv {𝓤})
 
-  𝕁-≃ : (D : (A B : 𝓤 ̇) → A ≃ B → 𝓥 ̇) → ((A : 𝓤 ̇) → D A A (≃-refl A)) → (A B : 𝓤 ̇) (e : A ≃ B) → D A B e
-  𝕁-≃ D d = pr₁ (≃-is-id-system D d)
+    ≃-is-id-system : is-id-system {𝓤 ⁺} {𝓤} {𝓥} {𝓤 ̇} (_≃_ , ≃-refl)
+    ≃-is-id-system {𝓤} {𝓥} = thm-5-8-4.iv-to-i (𝓤 ̇) (_≃_ {𝓤} {𝓤} , ≃-refl) (λ A B → idtoeqv'-is-equiv)
 
-  𝕁-≃-β : (D : (A B : 𝓤 ̇) (e : A ≃ B) → 𝓥 ̇) (d : (A : 𝓤 ̇) → D A A (≃-refl A)) (A : 𝓤 ̇) → 𝕁-≃ D d A A (≃-refl A) ≡ d A
-  𝕁-≃-β D d = pr₂ (≃-is-id-system D d)
+    𝕁-≃ : (D : (A B : 𝓤 ̇) → A ≃ B → 𝓥 ̇) → ((A : 𝓤 ̇) → D A A (≃-refl A)) → (A B : 𝓤 ̇) (e : A ≃ B) → D A B e
+    𝕁-≃ D d = pr₁ (≃-is-id-system D d)
 
-  ≃-is-based-id-system : (A : 𝓤 ̇) → is-based-id-system {_} {_} {𝓥} ((A ≃_) , ≃-refl A)
-  ≃-is-based-id-system {𝓤} {𝓥} A = thm-5-8-2.iii-to-i ((𝓤 ̇) , A) ((A ≃_) , ≃-refl A) (λ B → idtoeqv'-is-equiv)
+    𝕁-≃-β : (D : (A B : 𝓤 ̇) (e : A ≃ B) → 𝓥 ̇) (d : (A : 𝓤 ̇) → D A A (≃-refl A)) (A : 𝓤 ̇) → 𝕁-≃ D d A A (≃-refl A) ≡ d A
+    𝕁-≃-β D d = pr₂ (≃-is-id-system D d)
 
-  ℍ-≃ : (A : 𝓤 ̇) (D : (B : 𝓤 ̇) → A ≃ B → 𝓥 ̇) → D A (≃-refl A) → (B : 𝓤 ̇) (e : A ≃ B) → D B e
-  ℍ-≃ A D d = pr₁ (≃-is-based-id-system A D d)
+    ≃-is-based-id-system : (A : 𝓤 ̇) → is-based-id-system {_} {_} {𝓥} ((A ≃_) , ≃-refl A)
+    ≃-is-based-id-system {𝓤} {𝓥} A = thm-5-8-2.iii-to-i ((𝓤 ̇) , A) ((A ≃_) , ≃-refl A) (λ B → idtoeqv'-is-equiv)
 
-  ℍ-≃-β : (A : 𝓤 ̇) (D : (B : 𝓤 ̇) → A ≃ B → 𝓥 ̇) (d : D A (≃-refl A)) → ℍ-≃ A D d A (≃-refl A) ≡ d
-  ℍ-≃-β A D d = pr₂ (≃-is-based-id-system A D d)
+    ℍ-≃ : (A : 𝓤 ̇) (D : (B : 𝓤 ̇) → A ≃ B → 𝓥 ̇) → D A (≃-refl A) → (B : 𝓤 ̇) (e : A ≃ B) → D B e
+    ℍ-≃ A D d = pr₁ (≃-is-based-id-system A D d)
+
+    ℍ-≃-β : (A : 𝓤 ̇) (D : (B : 𝓤 ̇) → A ≃ B → 𝓥 ̇) (d : D A (≃-refl A)) → ℍ-≃ A D d A (≃-refl A) ≡ d
+    ℍ-≃-β A D d = pr₂ (≃-is-based-id-system A D d)
 
 open equivalence-induction using (𝕁-≃ ; 𝕁-≃-β ; ℍ-≃ ; ℍ-≃-β) public
 
@@ -468,7 +470,7 @@ module homotopy-induction ⦃ fe : FunExt ⦄ where
   happly-agreement (refl _) = refl _
 
   happly'-is-equiv : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → isequiv (happly' {𝓤} {𝓥} {A} {B} {f} {g})
-  happly'-is-equiv = transport isequiv (funext happly-agreement) happly-is-equiv
+  happly'-is-equiv {𝓤} = transport isequiv (funext happly-agreement) (happly-is-equiv {𝓤})
 
   ∼-is-id-system : {A : 𝓤 ̇} {B : A → 𝓥 ̇} → is-id-system {_} {_} {𝓦} {Π B} ((_∼_) , hrefl) 
   ∼-is-id-system {𝓤} {𝓥} {𝓦} {A} {B} = thm-5-8-4.iv-to-i (Π B) (_∼_ , hrefl) (λ f g → happly'-is-equiv)

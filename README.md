@@ -205,3 +205,5 @@ The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences fro
 * Simplify lifting arguments using universe polymorphism (see, e.g., UMP of products in Ch2.15).
 
 * Universe polymorphism is used explicitly in some proofs about inductive principles / universal mapping properties. To get actual equivalences (rather than mere logical equivalences) it is best to avoid it and use lifting or multiple hypotheses.
+
+* Fix performance issues with funext and univ: passing universe explicitly seems to help a lot (see 5.8-Id-types-and-id-systems).

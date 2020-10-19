@@ -163,7 +163,7 @@ A ≅ B = Σ f ꞉ Hom A B , isiso A B f
 
 isiso-to-isequiv : (A : Alg 𝓤) (B : Alg 𝓥) (f : Hom A B) → isiso A B f → isequiv (pr₁ f)
 isiso-to-isequiv A B f (g , qfg , qgf) with Hom-≡-elim B B _ _ qfg | Hom-≡-elim A A _ _ qgf
-... | (H , H-etc) | (K , K-etc) = qinv-to-isequiv (pr₁ g , H , K) 
+... | (H , H-etc) | (K , K-etc) = qinv-to-isequiv (pr₁ g , H , K)
 
 AlgId : Alg 𝓤 → Alg 𝓥 → 𝓤 ⊔ 𝓥 ̇
 AlgId (A , Str-A) (B , Str-B) = Σ e ꞉ A ≃ B , HomStr (A , Str-A) (B , Str-B) (pr₁ e)
@@ -230,11 +230,11 @@ isind-is-Prop {𝓤} A A-ind = aux A-ind
 
 -- ?. Initial Algebras
 
-isinit : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
-isinit 𝓥 A = (B : Alg 𝓥) → isContr (Hom A B)
+ishinit : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
+ishinit 𝓥 A = (B : Alg 𝓥) → isContr (Hom A B)
 
-isinit-is-Prop : (𝓥 : Universe) (A : Alg 𝓤) → isProp (isinit 𝓥 A)
-isinit-is-Prop 𝓥 A = Π-preserves-Props _ (λ B → isContr-is-Prop _)
+ishinit-is-Prop : (𝓥 : Universe) (A : Alg 𝓤) → isProp (ishinit 𝓥 A)
+ishinit-is-Prop 𝓥 A = Π-preserves-Props _ (λ B → isContr-is-Prop _)
 
 hasrec : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
 hasrec 𝓥 A = (B : Alg 𝓥) → Hom A B
@@ -243,10 +243,10 @@ hasrecunique : (𝓥 : Universe) (A : Alg 𝓤) → 𝓤 ⊔ 𝓥 ⁺ ̇
 hasrecunique 𝓥 A = (B : Alg 𝓥) → isProp (Hom A B)
 
 InitAlg : (𝓤 : Universe) → 𝓤 ⁺ ̇
-InitAlg 𝓤 = Σ A ꞉ Alg 𝓤 , isinit 𝓤 A
+InitAlg 𝓤 = Σ A ꞉ Alg 𝓤 , ishinit 𝓤 A
 
 InitAlg-is-Prop : (𝓤 : Universe) → isProp (InitAlg 𝓤)
-InitAlg-is-Prop 𝓤 (A , A-init) (B , B-init)  = Σ-over-predicate (isinit-is-Prop 𝓤) (≅-to-≡ A B (
+InitAlg-is-Prop 𝓤 (A , A-init) (B , B-init)  = Σ-over-predicate (ishinit-is-Prop 𝓤) (≅-to-≡ A B (
   pr₁ (A-init B) ,
   pr₁ (B-init A) ,
   isContr-to-isProp (B-init B) _ _ ,
@@ -262,14 +262,14 @@ isind-to-hasrec A A-ind B = A-ind (ConstFibAlg A B)
 isind-to-hasrecunique : (A : Alg 𝓤) → isind 𝓤 A → hasrecunique 𝓤 A
 isind-to-hasrecunique {𝓤} A A-ind B = uniqueness-pple A A-ind (ConstFibAlg A B)
 
-isind-to-isinit : (A : Alg 𝓤) → isind 𝓤 A → isinit 𝓤 A
-isind-to-isinit A A-ind B = pr₂ isContr-iff-is-inhabited-Prop (isind-to-hasrec A A-ind B , isind-to-hasrecunique A A-ind B)
+isind-to-ishinit : (A : Alg 𝓤) → isind 𝓤 A → ishinit 𝓤 A
+isind-to-ishinit A A-ind B = pr₂ isContr-iff-is-inhabited-Prop (isind-to-hasrec A A-ind B , isind-to-hasrecunique A A-ind B)
 
 
 -- ?. Every Initial Algebra is Inductive
 
-isinit-to-isind : (A : Alg 𝓤) → isinit 𝓤 A → isind 𝓤 A
-isinit-to-isind {𝓤} (A , a₀ , s , i) init (E , e₀ , s' , j) = g , g₀ , g-s
+ishinit-to-isind : (A : Alg 𝓤) → ishinit 𝓤 A → isind 𝓤 A
+ishinit-to-isind {𝓤} (A , a₀ , s , i) init (E , e₀ , s' , j) = g , g₀ , g-s
 
   where
 
@@ -397,11 +397,11 @@ isinit-to-isind {𝓤} (A , a₀ , s , i) init (E , e₀ , s' , j) = g , g₀ , 
           s' a (transport E (H a) (f₂ a)) ∎
 
 
-isind-iff-isinit : (A : Alg 𝓤) → isind 𝓤 A ⇔ isinit 𝓤 A
-isind-iff-isinit A = (isind-to-isinit A) , (isinit-to-isind A)
+isind-iff-ishinit : (A : Alg 𝓤) → isind 𝓤 A ⇔ ishinit 𝓤 A
+isind-iff-ishinit A = (isind-to-ishinit A) , (ishinit-to-isind A)
 
-isind-≃-isinit : (A : Alg 𝓤) → isind 𝓤 A ≃ isinit 𝓤 A
-isind-≃-isinit {𝓤} A = ⇔-to-≃ (isind-is-Prop A) (isinit-is-Prop 𝓤 A) (isind-iff-isinit A)
+isind-≃-ishinit : (A : Alg 𝓤) → isind 𝓤 A ≃ ishinit 𝓤 A
+isind-≃-ishinit {𝓤} A = ⇔-to-≃ (isind-is-Prop A) (ishinit-is-Prop 𝓤 A) (isind-iff-ishinit A)
 
 
 -- ?. Preservation of Equivalences
@@ -594,7 +594,7 @@ cohω (strneg (succ n)) = refl _
     aux3 : ρ (g (strneg n)) ≡ (g-s (strneg (succ n)) ∙ ap s (g-p (strneg n))) ⁻¹
     aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ (strneg n) ∙ᵣ ρ (g (strneg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
 
-ℤω-is-init : (𝓤 : Universe) → isinit 𝓤 ℤω-alg
+ℤω-is-init : (𝓤 : Universe) → ishinit 𝓤 ℤω-alg
 ℤω-is-init 𝓤 A = pr₂ isContr-iff-is-inhabited-Prop ((ℤω-has-rec A) , (ℤω-has-rec-unique A))
 
 
@@ -642,8 +642,8 @@ postulate
 ℤₕ-is-ind 𝓤 (E , e₀ , s' , j) = let f = ℤₕ-ind (E , e₀ , s' , j) in
   f , (refl _) , (λ z → refl _)
 
-ℤₕ-is-init : isinit 𝓤₀ ℤₕ-alg
-ℤₕ-is-init = isind-to-isinit ℤₕ-alg (ℤₕ-is-ind 𝓤₀)
+ℤₕ-is-init : ishinit 𝓤₀ ℤₕ-alg
+ℤₕ-is-init = isind-to-ishinit ℤₕ-alg (ℤₕ-is-ind 𝓤₀)
 
 ℤₕ-is-ℤω : ℤₕ-alg ≡ ℤω-alg
 ℤₕ-is-ℤω = ap pr₁ (InitAlg-is-Prop 𝓤₀ (ℤₕ-alg , ℤₕ-is-init) (ℤω-alg , ℤω-is-init 𝓤₀))
