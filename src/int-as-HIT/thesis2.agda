@@ -1,10 +1,11 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split --rewriting #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 open import Ch5.8-Id-types-and-id-systems
+open import Rewrite
 
 module int-as-HIT.thesis2 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
 
@@ -79,6 +80,8 @@ Sec-to-Hom (A , a₀ , s , i) (E , e₀ , s' , j) (f , f₀ , f-s) = (λ a → a
 ConstFibAlg : (A : Alg 𝓤) (B : Alg 𝓥) → FibAlg 𝓥 A
 ConstFibAlg {𝓤} {𝓥} (A , a₀ , s , i) (B , b₀ , s'  , j) = (λ a → B) , b₀ , (λ a b → s' b) , (λ a → j)
 
+_ : (A : Alg 𝓤) (B : Alg 𝓥) → AlgSec A (ConstFibAlg A B) ≡ Hom A B
+_ = λ A B → refl _
 
 -- ?. Identity Type of Sections and Morphisms
 
@@ -238,8 +241,6 @@ hasrec 𝓥 A = (B : Alg 𝓥) → Hom A B
 
 hasrecunique : (𝓥 : Universe) (A : Alg 𝓤) → 𝓤 ⊔ 𝓥 ⁺ ̇
 hasrecunique 𝓥 A = (B : Alg 𝓥) → isProp (Hom A B)
-
--- Maybe strengthen to unique up to a unique path.
 
 InitAlg : (𝓤 : Universe) → 𝓤 ⁺ ̇
 InitAlg 𝓤 = Σ A ꞉ Alg 𝓤 , isinit 𝓤 A
@@ -593,30 +594,59 @@ cohω (strneg (succ n)) = refl _
     aux3 : ρ (g (strneg n)) ≡ (g-s (strneg (succ n)) ∙ ap s (g-p (strneg n))) ⁻¹
     aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ (strneg n) ∙ᵣ ρ (g (strneg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
 
+ℤω-is-init : (𝓤 : Universe) → isinit 𝓤 ℤω-alg
+ℤω-is-init 𝓤 A = pr₂ isContr-iff-is-inhabited-Prop ((ℤω-has-rec A) , (ℤω-has-rec-unique A))
 
-{-
+
 -- ?. Integers as HIT
 
-module Int-as-HIT
-  (ℤₕ : 𝓤₀ ̇)
-  (0ₕ : ℤₕ)
-  (succₕ : ℤₕ → ℤₕ)
-  (predₕ : ℤₕ → ℤₕ)
-  (secₕ : predₕ ∘ succₕ ∼ id)
-  (retₕ : succₕ ∘ predₕ ∼ id)
-  (cohₕ : (z : ℤₕ) → ap succₕ (secₕ z) ≡ retₕ (succₕ z))
-  (ℤₕ-ind : isind 𝓤₀ (ℤₕ , 0ₕ , succₕ , predₕ , secₕ , retₕ , cohₕ))   
-  where
+postulate
 
-  -- ℤₕ is inductive, so intial, so equal to ℤω
+  -- (i) Type formation
+  
+  ℤₕ : 𝓤₀ ̇
+
+  -- (ii) Constructors
+  
+  0ₕ : ℤₕ
+  succₕ : ℤₕ → ℤₕ
+  predₕ : ℤₕ → ℤₕ
+  secₕ : predₕ ∘ succₕ ∼ id
+  retₕ : succₕ ∘ predₕ ∼ id
+  cohₕ : (z : ℤₕ) → ap succₕ (secₕ z) ≡ retₕ (succₕ z)
+
+ℤₕ-≃ : ℤₕ ≃ ℤₕ
+ℤₕ-≃ = (succₕ , predₕ , secₕ , retₕ , cohₕ)
+
+ℤₕ-alg : Alg 𝓤₀
+ℤₕ-alg = (ℤₕ , 0ₕ , succₕ , predₕ , secₕ , retₕ , cohₕ)
+
+postulate
+
+  -- (iii) Eliminator
+
+  ℤₕ-ind : (E : FibAlg 𝓥 ℤₕ-alg) → (z : ℤₕ) → (pr₁ E) z
+
+  -- (iv) Computation rules
+
+  0-β : (E : FibAlg 𝓥 ℤₕ-alg) → ℤₕ-ind E 0ₕ ↦ pr₁ (pr₂ E)  
+
+  {-# REWRITE 0-β #-}
+
+  succ-β : (E : FibAlg 𝓥 ℤₕ-alg) (z : ℤₕ) → ℤₕ-ind E (succₕ z) ↦ pr₁ (pr₂ (pr₂ E)) z (ℤₕ-ind E z)
+
+  {-# REWRITE succ-β #-}
 
 
--- ?. Integers as HIT (judgmental rules)
+ℤₕ-is-ind : (𝓤 : Universe) → isind 𝓤 ℤₕ-alg
+ℤₕ-is-ind 𝓤 (E , e₀ , s' , j) = let f = ℤₕ-ind (E , e₀ , s' , j) in
+  f , (refl _) , (λ z → refl _)
 
--- Postulate type and constructors
+ℤₕ-is-init : isinit 𝓤₀ ℤₕ-alg
+ℤₕ-is-init = isind-to-isinit ℤₕ-alg (ℤₕ-is-ind 𝓤₀)
 
--- Postulate induction principle : every ℤ-algebra has a section where the computation rules are judgmental for 0 and successor (and maybe predecessor?)  
--}
+ℤₕ-is-ℤω : ℤₕ-alg ≡ ℤω-alg
+ℤₕ-is-ℤω = ap pr₁ (InitAlg-is-Prop 𝓤₀ (ℤₕ-alg , ℤₕ-is-init) (ℤω-alg , ℤω-is-init 𝓤₀))
 
 
 -- FIX UNIVALENCE: ISSUE IS WITH UNIVERSE
