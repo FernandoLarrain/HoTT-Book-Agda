@@ -178,6 +178,9 @@ IdAlg-≃-AlgId {𝓤} (A , a₀ , s , i) (B , b₀ , s' , j) = Σ-≡-≃ ● �
 ≅-to-≡ : (A B : Alg 𝓤) → A ≅ B → A ≡ B
 ≅-to-≡ A B ((f , Str-f) , i) = inv (IdAlg-≃-AlgId A B) ((f , isiso-to-isequiv A B (f , Str-f) i) , Str-f)
 
+≡-to-≅ : (A B : Alg 𝓤) → A ≡ B → A ≅ B
+≡-to-≅ A .A (refl .A) = (id , refl _ , hrefl _) , ((id , refl _ , hrefl _) , ((refl _) , (refl _)))
+
 
 -- ?. Inductive Algebras
 
@@ -252,6 +255,9 @@ InitAlg-is-Prop 𝓤 (A , A-init) (B , B-init)  = Σ-over-predicate (ishinit-is-
   isContr-to-isProp (B-init B) _ _ ,
   isContr-to-isProp (A-init A) _ _
   ))
+
+≅-is-Contr : (A B : InitAlg 𝓤) → isContr (pr₁ A ≅ pr₁ B)
+≅-is-Contr (A , A-init) (B , B-init) = ≃-preserves-Contr (≃-sym (Σ-over-Contr-base-is-fib (Hom A B) (isiso A B) (A-init B) ● Σ-over-Contr-base-is-fib (Hom B A) _ (B-init A))) (×-preserves-Contr _ _ (pr₁ Prop-iff-Contr-≡ (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (B-init B))) _ _) (pr₁ Prop-iff-Contr-≡ (pr₂ (pr₁ isContr-iff-is-inhabited-Prop (A-init A))) _ _))
 
 
 -- ?. Every Inductive Algebra is Initial
