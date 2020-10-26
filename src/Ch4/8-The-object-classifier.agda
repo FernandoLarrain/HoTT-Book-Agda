@@ -60,7 +60,7 @@ module thm-4-8-3 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) whe
 
 module object-classifier ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ {A B : 𝓤 ̇} (f : A → B) where
 
-  open module M = thm-4-8-3 B using (χ)
+  open thm-4-8-3 B using (χ)
 
   ϑ : A → 𝓤 ⊙
   ϑ a = (fib f (f a)) , (a , (refl (f a)))
