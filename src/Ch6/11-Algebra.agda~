@@ -1,0 +1,10 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+open import Ch5.1-Introduction-to-inductive-types
+
+module Ch6.11-Algebra where
+

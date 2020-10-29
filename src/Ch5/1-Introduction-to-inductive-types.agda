@@ -11,7 +11,7 @@ module Ch5.1-Introduction-to-inductive-types where
 
 data List {𝓤} (A : 𝓤 ̇) : 𝓤 ̇ where
   nil : List A
-  cons : A → List A → List A
+  _∷_ : A → List A → List A
 
 
 -- Theorem 5.1.1 (Uniqueness principle for ℕ)

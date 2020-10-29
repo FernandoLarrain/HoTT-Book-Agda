@@ -89,7 +89,8 @@ The file `Induction` imports `Ch4`.
 7. `9-Truncations`
 8. `8-Pushouts`
 9. `10-Quotients`
-10. `Exercises`
+10. `11-Algebra`
+11. `Exercises`
 
 #### Chapter 7 (src\Ch7)
 

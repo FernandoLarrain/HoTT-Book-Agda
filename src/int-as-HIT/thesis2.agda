@@ -846,3 +846,30 @@ postulate
 --   τ : (a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u)
 --   τ a = ishae₄ (i a)
 -- -}
+
+-- -- Theorem 4.8.3 for pointed maps
+
+-- module thm-4-8-3⊙ ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) (b₀ : B) where
+
+--   χ : (Σ A ꞉ 𝓤 ⊙ , Map⊙ A (B , b₀)) → Σ P ꞉ (B → 𝓤 ̇) , P b₀
+--   χ ((A , a₀) , (f , p)) = fib f , (a₀ , p)
+
+--   ψ : (Σ P ꞉ (B → 𝓤 ̇) , P b₀) → Σ A ꞉ 𝓤 ⊙ , Map⊙ A (B , b₀)
+--   ψ (P , u₀) = ((Σ P) , (b₀ , u₀)) , (pr₁ , (refl _))
+
+--   α : χ ∘ ψ ∼ id
+--   α (P , u₀) = dpair-≡ ((funext λ b → ua (fibs-of-pr₁-are-values b)) ,
+--     (transport (λ - → - b₀) (funext (λ b → ua (fibs-of-pr₁-are-values b))) ((b₀ , u₀) , refl b₀) 
+--       ≡⟨ aux (funext (λ b → ua (fibs-of-pr₁-are-values b))) ((b₀ , u₀) , refl b₀) ⟩
+--     coe (happly (funext (λ b → ua (fibs-of-pr₁-are-values b))) b₀) ((b₀ , u₀) , refl b₀) 
+--       ≡⟨ ap (λ - → coe - ((b₀ , u₀) , refl b₀)) (happly-β (λ b → ua (fibs-of-pr₁-are-values b)) b₀) ⟩
+--     coe (ua (fibs-of-pr₁-are-values b₀)) ((b₀ , u₀) , refl b₀)
+--       ≡⟨ idtoeqv-β (fibs-of-pr₁-are-values b₀) _ ⟩
+--     u₀ ∎)
+--     )
+--     where
+--     aux : {P Q : B → 𝓤 ̇} (p : P ≡ Q) (x : P b₀) → transport (λ - → - b₀) p x ≡ coe (happly p b₀) x
+--     aux (refl _) x = refl _
+
+--   β : ψ ∘ χ ∼ id
+--   β ((A , a₀) , f , refl .(f a₀)) = let g = pr₂ (ψ (χ ((A , a₀) , (f , refl _)))) in dpair-≡ ((dpair-≡ ((ua (dom-is-sum-of-fibs f)) , (idtoeqv-β (dom-is-sum-of-fibs f) _))) , {!!})
