@@ -1,0 +1,8 @@
+{-# OPTIONS --without-K --exact-split --rewriting #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+
+module int-as-HIT.wildcats where
