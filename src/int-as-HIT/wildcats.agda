@@ -7,7 +7,7 @@ open import Ch4.Equivalences
 
 module int-as-HIT.wildcats
 
-  -- Fix a universe
+ -- Fix a universe
   
  (𝓤 : Universe)
 
@@ -28,7 +28,7 @@ module int-as-HIT.wildcats
  (p₂ : {A B : Obj} → Hom (prod A B) B)
  (prod-UMP : (A B X : Obj) → isequiv {_} {_} {Hom X (prod A B)} {Hom X A × Hom X B} λ f → (p₁ · f) , (p₂ · f))
 
-  -- and equalizers
+ -- and equalizers
 
  (eq : {A B : Obj} → Hom A B → Hom A B → Obj)
  (m : {A B : Obj} (f g : Hom A B) → Hom (eq f g) A)
