@@ -11,7 +11,7 @@ module int-as-HIT.wildcats
   
  (𝓤 : Universe)
 
- -- Definition of ``wild cat''
+ -- Fix a wild cat
 
  (Obj : 𝓤 ̇)
  (Hom : Obj → Obj → 𝓤 ̇)
@@ -21,26 +21,33 @@ module int-as-HIT.wildcats
  (run : {A B : Obj} (f : Hom A B) → f · ide A ≡ f)
  (lun : {A B : Obj} (f : Hom A B) → ide B · f ≡ f)
 
- -- with finite ``limits''
+ -- with binary products
 
  (prod : Obj → Obj → Obj)
  (p₁ : {A B : Obj} → Hom (prod A B) A)
  (p₂ : {A B : Obj} → Hom (prod A B) B)
  (prod-UMP : (A B X : Obj) → isequiv {_} {_} {Hom X (prod A B)} {Hom X A × Hom X B} λ f → (p₁ · f) , (p₂ · f))
- 
+
+  -- and equalizers
+
  (eq : {A B : Obj} → Hom A B → Hom A B → Obj)
  (m : {A B : Obj} (f g : Hom A B) → Hom (eq f g) A)
  (meq : {A B : Obj} (f g : Hom A B) → f · m f g  ≡ g · m f g)
  (eq-UMP : (A B X : Obj) (f g : Hom A B) → isequiv {_} {_} {Hom X (eq f g)} {Σ h ꞉ Hom X A , f · h ≡ g · h} λ u → (m f g · u) , (assoc _ _ _ ∙ ap (_· u) (meq f g) ∙ assoc _ _ _ ⁻¹))
 
- 
  where
+
+-- unique map into product
 
 prod! : {A B X : Obj} → Hom X A → Hom X B → Hom X (prod A B)
 prod! {A} {B} {X} f g = isequiv₁ (prod-UMP A B X) (f , g)
 
+-- unique map into equalizer
+
 eq! : {A B X : Obj} (f g : Hom A B) (h : Hom X A) → f · h ≡ g · h → Hom X (eq f g)
 eq! {A} {B} {X} f g h p = isequiv₁ (eq-UMP A B X f g) (h , p) 
+
+-- the theorem
 
 ishinit : Obj → 𝓤 ̇
 ishinit A = (B : Obj) → isContr (Hom A B)
