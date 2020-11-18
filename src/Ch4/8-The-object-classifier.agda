@@ -38,7 +38,7 @@ fib-of-!𝟙 {𝓤} {A} = ≃-sym (Σ-over-𝟙 (λ u → fib (!𝟙 A) u)) ● 
 module thm-4-8-3 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) where
 
   χ : (Σ A ꞉ 𝓤 ̇ , (A → B)) → B → 𝓤 ̇
-  χ (A , f) b = fib f b
+  χ (A , f) = fib f
 
   ψ : (B → 𝓤 ̇) → (Σ A ꞉ 𝓤 ̇ , (A → B))
   ψ P = (Σ P) , pr₁
@@ -60,7 +60,7 @@ module thm-4-8-3 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) whe
 
 module object-classifier ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ {A B : 𝓤 ̇} (f : A → B) where
 
-  open module M = thm-4-8-3 B using (χ)
+  open thm-4-8-3 B using (χ)
 
   ϑ : A → 𝓤 ⊙
   ϑ a = (fib f (f a)) , (a , (refl (f a)))
