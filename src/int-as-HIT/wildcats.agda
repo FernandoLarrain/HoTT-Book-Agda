@@ -37,15 +37,15 @@ module int-as-HIT.wildcats
 
  where
 
--- unique map into product
+-- -- unique map into product
 
-prod! : {A B X : Obj} → Hom X A → Hom X B → Hom X (prod A B)
-prod! {A} {B} {X} f g = isequiv₁ (prod-UMP A B X) (f , g)
+-- prod! : {A B X : Obj} → Hom X A → Hom X B → Hom X (prod A B)
+-- prod! {A} {B} {X} f g = isequiv₁ (prod-UMP A B X) (f , g)
 
--- unique map into equalizer
+-- -- unique map into equalizer
 
-eq! : {A B X : Obj} (f g : Hom A B) (h : Hom X A) → f · h ≡ g · h → Hom X (eq f g)
-eq! {A} {B} {X} f g h p = isequiv₁ (eq-UMP A B X f g) (h , p) 
+-- eq! : {A B X : Obj} (f g : Hom A B) (h : Hom X A) → f · h ≡ g · h → Hom X (eq f g)
+-- eq! {A} {B} {X} f g h p = isequiv₁ (eq-UMP A B X f g) (h , p) 
 
 -- the theorem
 
@@ -60,10 +60,12 @@ ishinit-to-isind A A-hinit B f = (pr₁ (A-hinit B)) , (isContr-to-isProp (A-hin
 
 isind-to-ishinit : (A : Obj) → isind A → ishinit A
 isind-to-ishinit A A-ind B with A-ind (prod A B) p₁
-... | (p₂⁻¹ , q) = pr₂ isContr-iff-is-inhabited-Prop ((p₂ · p₂⁻¹) , Hom-is-Prop)
+... | (p₁⁻¹ , q) = f , contraction
   where
-  Hom-is-Prop : isProp (Hom A B)
-  Hom-is-Prop f g with A-ind (eq f g) (m f g)
+  f : Hom A B
+  f = p₂ · p₁⁻¹
+  contraction : (g : Hom A B) → f ≡ g
+  contraction g with A-ind (eq f g) (m f g)
   ... | (m⁻¹ , q') = run _ ⁻¹ ∙ ap (f ·_) (q' ⁻¹) ∙ assoc _ _ _ ∙ ap (_· m⁻¹) (meq f g) ∙ assoc _ _ _ ⁻¹ ∙ (ap (g ·_) q' ∙ run _)
 
 ishinit-is-Prop : ⦃ fe : FunExt ⦄ (A : Obj) → isProp (ishinit A)

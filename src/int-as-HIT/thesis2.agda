@@ -154,6 +154,51 @@ Sec-to-Hom-gives-section (A , a₀ , s , i) (E , e₀ , s' , j) (f , f₀ , f-s)
   )
 
 
+-- ?. Associativity and Unit Laws for Morphism Composition
+
+associator : (A : Alg 𝓤) (B : Alg 𝓥) (C : Alg 𝓦) (D : Alg 𝓣) (f : Hom A B) (g : Hom B C) (h : Hom C D) → comp A C D h (comp A B C g f) ≡ comp A B D (comp B C D h g) f -- h (g f) ≡ (h g) f
+associator (A , a₀ , sA , iA) (B , b₀ , sB , iB) (C , c₀ , sC , iC)  (D , d₀ , sD , iD) (f , f₀ , f-s) (g , g₀ , g-s) (h , h₀ , h-s) = Hom-≡-intro A' D' (comp A'  C' D' h' (comp A' B' C' g' f')) (comp A' B' D' (comp B' C' D' h' g') f') (hrefl _ , H₀ f₀ g₀ h₀ , H-s)
+  where
+  A' = (A , a₀ , sA , iA)
+  B' = (B , b₀ , sB , iB)
+  C' = (C , c₀ , sC , iC)
+  D' = (D , d₀ , sD , iD)
+  f' = (f , f₀ , f-s)
+  g' = (g , g₀ , g-s)
+  h' = (h , h₀ , h-s)
+  H₀ : (f₀ : f a₀ ≡ b₀) (g₀ : g b₀ ≡ c₀) (h₀ : h c₀ ≡ d₀) → refl _ ≡ ap h (ap g f₀ ∙ g₀) ∙ h₀ ∙ ((ap (h ∘ g) f₀ ∙ (ap h g₀ ∙ h₀)) ⁻¹)
+  H₀ (refl .(f a₀)) (refl .(g (f a₀))) (refl .(h (g (f a₀)))) = refl _
+  H-s : (a : A) → refl _ ≡  (ap h (ap g (f-s a) ∙ g-s (f a)) ∙ h-s (g (f a)) ∙ refl _  ∙ (ap (h ∘ g) (f-s a) ∙ (ap h (g-s (f a)) ∙ h-s (g (f a)))) ⁻¹)
+  H-s a = aux (f-s a) (g-s (f a)) (h-s (g (f a)))
+    where
+    aux : {b₁ b₂ : B} {c : C} {d : D} (f-sa : b₁ ≡ b₂) (g-sfa : _ ≡ c) (h-sgfa : _ ≡ d) → refl _ ≡  (ap h (ap g f-sa ∙ g-sfa) ∙ h-sgfa ∙ refl _  ∙ (ap (h ∘ g) f-sa ∙ (ap h g-sfa ∙ h-sgfa)) ⁻¹)
+    aux (refl _) (refl .(g _)) (refl .(h (g _))) = refl _
+
+left-unitor : (A : Alg 𝓤) (B : Alg 𝓥) (f : Hom A B) → comp A B B (algid B) f ≡ f
+left-unitor (A , a₀ , s , i) (B , .(f a₀) , s' , j) (f , refl .(f a₀) , f-s) = Hom-≡-intro A' B' (comp A' B' B' (algid B') f') f' (hrefl _ , refl _ , H-s)
+  where
+  A' = (A , a₀ , s , i)
+  B' = (B , (f a₀) , s' , j)
+  f' = (f , refl (f a₀) , f-s)
+  H-s : (a : A) → refl _ ≡ ap id (f-s a) ∙ refl _ ∙ refl _ ∙ f-s a ⁻¹
+  H-s a = aux (f-s a)
+    where
+    aux : {x y : B} (p : x ≡ y) → refl _ ≡ ap id p ∙ refl _ ∙ refl _ ∙ p ⁻¹
+    aux (refl _) = refl _
+
+right-unitor : (A : Alg 𝓤) (B : Alg 𝓥) (f : Hom A B) → comp A A B f (algid A) ≡ f
+right-unitor (A , a₀ , s , i) (B , .(f a₀) , s' , j) (f , refl .(f a₀) , f-s) = Hom-≡-intro A' B' (comp A' A' B' f' (algid A')) f' (hrefl _ , refl _ , H-s)
+  where
+  A' = (A , a₀ , s , i)
+  B' = (B , (f a₀) , s' , j)
+  f' = (f , refl (f a₀) , f-s)
+  H-s : (a : A) → refl _ ≡ refl _ ∙ f-s a ∙ refl _ ∙ f-s a ⁻¹
+  H-s a = aux (f-s a)
+    where
+    aux : {x y : B} (p : x ≡ y) → refl _ ≡ refl _ ∙ p ∙ refl _ ∙ p ⁻¹
+    aux (refl _) = refl _
+
+
 -- ?. Identity Type of Algebras
 
 isiso : (A : Alg 𝓤) (B : Alg 𝓥) → Hom A B → 𝓤 ⊔ 𝓥 ̇
