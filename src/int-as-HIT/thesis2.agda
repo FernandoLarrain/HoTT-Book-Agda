@@ -668,40 +668,40 @@ fun-pres-to-hae-pres {𝓤} {𝓥} {A₁} {A₂} e {B₁} {B₂} e' f₁ f₂ = 
 
 data ℤω : 𝓤₀ ̇ where
   0ω : ℤω
-  strpos : ℕ → ℤω
-  strneg : ℕ → ℤω
+  pos : ℕ → ℤω
+  neg : ℕ → ℤω
 
 -- ℤω is a ℤ-algebra
 
 succω : ℤω → ℤω
-succω 0ω = strpos 0
-succω (strpos n) = strpos (succ n)
-succω (strneg 0) = 0ω
-succω (strneg (succ n)) = strneg n
+succω 0ω = pos 0
+succω (pos n) = pos (succ n)
+succω (neg 0) = 0ω
+succω (neg (succ n)) = neg n
 
 predω : ℤω → ℤω
-predω 0ω = strneg 0
-predω (strpos 0) = 0ω
-predω (strpos (succ n)) = strpos n
-predω (strneg n) = strneg (succ n)
+predω 0ω = neg 0
+predω (pos 0) = 0ω
+predω (pos (succ n)) = pos n
+predω (neg n) = neg (succ n)
 
 secω : (z : ℤω) → predω (succω z) ≡ z
 secω 0ω = refl _
-secω (strpos n) = refl _
-secω (strneg 0) = refl _
-secω (strneg (succ n)) = refl _
+secω (pos n) = refl _
+secω (neg 0) = refl _
+secω (neg (succ n)) = refl _
 
 retω : (z : ℤω) → succω (predω z) ≡ z
 retω 0ω = refl _
-retω (strpos 0) = refl _
-retω (strpos (succ n)) = refl _
-retω (strneg n) = refl _
+retω (pos 0) = refl _
+retω (pos (succ n)) = refl _
+retω (neg n) = refl _
 
 cohω : (z : ℤω) → ap succω (secω z) ≡ retω (succω z)
 cohω 0ω = refl _
-cohω (strpos n) = refl _
-cohω (strneg 0) = refl _
-cohω (strneg (succ n)) = refl _
+cohω (pos n) = refl _
+cohω (neg 0) = refl _
+cohω (neg (succ n)) = refl _
 
 ℤω-≃ : ℤω ≃ ℤω
 ℤω-≃ = (succω , predω , secω , retω , cohω)
@@ -716,15 +716,15 @@ cohω (strneg (succ n)) = refl _
 ℤω-has-rec (A , a₀ , s , p , σ , ρ , τ) = f , refl _ , f-s where
   f : ℤω → A
   f 0ω = a₀
-  f (strpos zero) = s a₀
-  f (strpos (succ n)) = s (f (strpos n))
-  f (strneg zero) = p a₀
-  f (strneg (succ n)) = p (f (strneg n))
+  f (pos zero) = s a₀
+  f (pos (succ n)) = s (f (pos n))
+  f (neg zero) = p a₀
+  f (neg (succ n)) = p (f (neg n))
   f-s : f ∘ succω ∼ s ∘ f
   f-s 0ω = refl (s a₀)
-  f-s (strpos n) = refl (s (f (strpos n)))
-  f-s (strneg zero) = ρ a₀ ⁻¹
-  f-s (strneg (succ n)) = ρ (f (strneg n)) ⁻¹ 
+  f-s (pos n) = refl (s (f (pos n)))
+  f-s (neg zero) = ρ a₀ ⁻¹
+  f-s (neg (succ n)) = ρ (f (neg n)) ⁻¹ 
 
 ℤω-has-rec-unique : hasrecunique 𝓤 ℤω-alg
 ℤω-has-rec-unique {𝓤} (A , a₀ , s , p , σ , ρ , τ) (f , f₀ , f-s) (g , g₀ , g-s) with pr₂ (fun-pres-to-hae-pres ℤω-≃ (s , p , σ , ρ , τ) f f f-s) | pr₂ (fun-pres-to-hae-pres ℤω-≃ (s , p , σ , ρ , τ) g g g-s)
@@ -732,27 +732,27 @@ cohω (strneg (succ n)) = refl _
   where
   H : f ∼ g
   H 0ω = f₀ ∙ g₀ ⁻¹
-  H (strpos zero) = f-s 0ω ∙ ap s (H 0ω) ∙ g-s 0ω ⁻¹
-  H (strpos (succ n)) = f-s (strpos n) ∙ ap s (H (strpos n)) ∙ g-s (strpos n) ⁻¹
-  H (strneg zero) = f-p 0ω ∙ ap p (H 0ω) ∙ g-p 0ω ⁻¹
-  H (strneg (succ n)) = f-p (strneg n) ∙ ap p (H (strneg n)) ∙ g-p (strneg n) ⁻¹
+  H (pos zero) = f-s 0ω ∙ ap s (H 0ω) ∙ g-s 0ω ⁻¹
+  H (pos (succ n)) = f-s (pos n) ∙ ap s (H (pos n)) ∙ g-s (pos n) ⁻¹
+  H (neg zero) = f-p 0ω ∙ ap p (H 0ω) ∙ g-p 0ω ⁻¹
+  H (neg (succ n)) = f-p (neg n) ∙ ap p (H (neg n)) ∙ g-p (neg n) ⁻¹
   H₀ : H 0ω ≡ f₀ ∙ g₀ ⁻¹
   H₀ = refl _
   aux1 : {a₁ a₂ a₃ a₄ x y : A} (p₁ : a₁ ≡ _) (p₂ : a₂ ≡ _) (p₃ : a₃ ≡ _) (p₄ : a₄ ≡ _) (q : x ≡ y) → (p₂ ∙ ap s p₁) ∙ ap (s ∘ p) q ∙ (p₄ ∙ ap s p₃) ⁻¹ ≡ p₂ ∙ ap s (p₁ ∙ ap p q ∙ p₃ ⁻¹) ∙ p₄ ⁻¹
   aux1 (refl _) (refl _) (refl _) (refl _) (refl _) = refl _
   H-s : (z : ℤω) → H (succω z) ≡ f-s z ∙ ap s (H z) ∙ g-s z ⁻¹
   H-s 0ω = refl (f-s 0ω ∙ ap s (H 0ω) ∙ g-s 0ω ⁻¹)
-  H-s (strpos n) = refl (f-s (strpos n) ∙ ap s (H (strpos n)) ∙ g-s (strpos n) ⁻¹)
-  H-s (strneg zero) = ap-id (H 0ω) ⁻¹ ∙ hnat' ρ (H 0ω) ⁻¹ ∙ (aux2 ✦ refl _ ✦ aux3) ∙ aux1 _ _ _ _ _ where
-    aux2 : ρ (f 0ω) ⁻¹ ≡ f-s (strneg zero) ∙ ap s (f-p 0ω)
+  H-s (pos n) = refl (f-s (pos n) ∙ ap s (H (pos n)) ∙ g-s (pos n) ⁻¹)
+  H-s (neg zero) = ap-id (H 0ω) ⁻¹ ∙ hnat' ρ (H 0ω) ⁻¹ ∙ (aux2 ✦ refl _ ✦ aux3) ∙ aux1 _ _ _ _ _ where
+    aux2 : ρ (f 0ω) ⁻¹ ≡ f-s (neg zero) ∙ ap s (f-p 0ω)
     aux2 = lu _ ∙ (f-ρ 0ω ∙ᵣ ρ (f 0ω) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹
-    aux3 : ρ (g 0ω) ≡ (g-s (strneg zero) ∙ ap s (g-p 0ω)) ⁻¹
+    aux3 : ρ (g 0ω) ≡ (g-s (neg zero) ∙ ap s (g-p 0ω)) ⁻¹
     aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ 0ω ∙ᵣ ρ (g 0ω) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
-  H-s (strneg (succ n)) = ap-id (H (strneg n)) ⁻¹ ∙ hnat' ρ (H (strneg n)) ⁻¹ ∙ (aux2 ✦ refl _ ✦ aux3) ∙ aux1 _ _ _ _ _ where
-    aux2 : ρ (f (strneg n)) ⁻¹ ≡ f-s (strneg (succ n)) ∙ ap s (f-p (strneg n))
-    aux2 = lu _ ∙ (f-ρ (strneg n) ∙ᵣ ρ (f (strneg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹
-    aux3 : ρ (g (strneg n)) ≡ (g-s (strneg (succ n)) ∙ ap s (g-p (strneg n))) ⁻¹
-    aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ (strneg n) ∙ᵣ ρ (g (strneg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
+  H-s (neg (succ n)) = ap-id (H (neg n)) ⁻¹ ∙ hnat' ρ (H (neg n)) ⁻¹ ∙ (aux2 ✦ refl _ ✦ aux3) ∙ aux1 _ _ _ _ _ where
+    aux2 : ρ (f (neg n)) ⁻¹ ≡ f-s (neg (succ n)) ∙ ap s (f-p (neg n))
+    aux2 = lu _ ∙ (f-ρ (neg n) ∙ᵣ ρ (f (neg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹
+    aux3 : ρ (g (neg n)) ≡ (g-s (neg (succ n)) ∙ ap s (g-p (neg n))) ⁻¹
+    aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ (neg n) ∙ᵣ ρ (g (neg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
 
 ℤω-is-init : (𝓤 : Universe) → ishinit 𝓤 ℤω-alg
 ℤω-is-init 𝓤 A = pr₂ isContr-iff-is-inhabited-Prop ((ℤω-has-rec A) , (ℤω-has-rec-unique A))
@@ -809,112 +809,127 @@ postulate
 ℤₕ-is-ℤω = ap pr₁ (InitAlg-is-Prop 𝓤₀ (ℤₕ-alg , ℤₕ-is-init) (ℤω-alg , ℤω-is-init 𝓤₀))
 
 
--- FIX UNIVALENCE: ISSUE IS WITH UNIVERSE
+-- -- ?. Properties of the integers
 
--- -- ?. Fibered Algebras and the Slice Categories
--- {-
--- χ : (B : Alg 𝓤) → (Σ A ꞉ Alg 𝓤 , Hom A B) → FibAlg 𝓤 B
--- χ (B , b₀ , s' , p' , σ' , ρ' , τ') ((A , a₀ , s , p , σ , ρ , τ) , (f , f₀ , f-s)) with pr₂ (fun-pres-to-hae-pres (s , p , σ , ρ , τ) (s' , p' , σ' , ρ' , τ') f f f-s)
--- ... | (f-p , f-ρ , f-σ , f-τ) = (fib f) , (a₀ , f₀) , ({!!} , {!!}) where
---   t : (b : B) → fib f b → fib f (s' b)
---   t b (a , q) = (s a) , (f-s a ∙ ap s' q)
---   tinv : (b : B) → fib f (s' b) → fib f b
---   tinv b (a , q) = p a , (f-p a ∙ ap p' q ∙ σ' b)
---   α : (b : B) → t b ∘ tinv b ∼ id
---   α b (a , q) = inv (path-space-fib _ _) (ρ a , {!!}) --doable
---   β : (b : B) → tinv b ∘ t b ∼ id
---   β b (a , q) = {!!} --doable
+-- ℤω-is-Set : isSet ℤω
+-- ℤω-is-Set = {!!}
 
--- ψ : (B : Alg 𝓤) → FibAlg 𝓤 B → (Σ A ꞉ Alg 𝓤 , Hom A B)
--- ψ B E = (TotAlg B E) , (π₁ B E) 
+-- add : ℕ → ℕ → ℕ
+-- add m zero = m
+-- add m (succ n) = succ (add m n)
 
--- χ∘ψ : (B : Alg 𝓤) → χ B ∘ ψ B ∼ id
--- χ∘ψ B E = {!!} -- identity of fibered algebras?
-
--- ψ∘χ : (B : Alg 𝓤) → ψ B ∘ χ B ∼ id
--- ψ∘χ B (A , f) = {!!} -- identity of (A , f) pairs? Have to transport f
-
--- equiv : (B : Alg 𝓤) → FibAlg 𝓤 B ≃ (Σ A ꞉ Alg 𝓤 , Hom A B)
--- equiv B = {!!} 
--- -}
--- -- Seems easier to work with equivalences and then contract...
-
--- module slice (𝓤 : Universe) where
-
---   Eqv⊙ : 𝓤 ⁺ ̇ 
---   Eqv⊙ = Σ A₁ ꞉ (𝓤 ̇) , Σ A₂ ꞉ (𝓤 ̇) , A₁ × (A₁ ≃ A₂)
-
---   -- Eqv⊙ is equivalent to the type of pointed maps
-
---   HomEqv⊙ : Eqv⊙ → Eqv⊙ → 𝓤 ̇
---   HomEqv⊙ (A₁ , A₂ , a₀ , s , i) (B₁ , B₂ , b₀ , s' , j) = Σ f₁ ꞉ (A₁ → B₁) , Σ f₂ ꞉ (A₂ → B₂) , (f₁ a₀ ≡ b₀) × (f₂ ∘ s ∼ s' ∘ f₁)
-
---   -- Once we contract the pointed equivalences to pointed types, we can contract the homotopies to pointed maps.
-
---   FibEqv⊙ : Eqv⊙ → 𝓤 ⁺ ̇
---   FibEqv⊙ (A₁ , A₂ , a₀ , s , i) = Σ E₁ ꞉ (A₁ → 𝓤 ̇) , Σ E₂ ꞉ (A₂ → 𝓤 ̇) , E₁ a₀ × (Σ s' ꞉ ((a₁ : A₁) → E₁ a₁ → E₂ (s a₁)) , ((a₁ : A₁) → isequiv (s' a₁)))
-
---   SecEqv⊙ : (A : Eqv⊙) → FibEqv⊙ A → 𝓤 ̇
---   SecEqv⊙ (A₁ , A₂ , a₀ , s , i) (E₁ , E₂ , e₀ , s' , j) = Σ f₁ ꞉ Π E₁ , Σ f₂ ꞉ Π E₂ , (f₁ a₀ ≡ e₀) × ((a₁ : A₁) → f₂ (s a₁) ≡ s' a₁ (f₁ a₁))
-
---   lemma1 : (A : 𝓤 ̇) (a₀ : A) → FibEqv⊙ (A , A , a₀ , ≃-refl A) ≃ (Σ E ꞉ (A → 𝓤 ̇) , E a₀)
---   lemma1 A a₀ = {!!}
-
---   lemma₂ : (B : 𝓤 ̇) (b₀ : B) → (Σ A ꞉ Eqv⊙ , HomEqv⊙ A (B , B , b₀ , ≃-refl B)) ≃ {!!}
---   lemma₂ = {!!}
-
---   claim : (B : Eqv⊙) → (Σ A ꞉ Eqv⊙ , HomEqv⊙ A B) ≃ FibEqv⊙ B
---   claim (B₁ , B₂ , b₀ , t) = ℍ-≃ B₁ (λ B₂ t → (b₀ : B₁) → (Σ A ꞉ Eqv⊙ , HomEqv⊙ A (B₁ , B₂ , b₀ , t)) ≃ FibEqv⊙ (B₁ , B₂ , b₀ , t)) (λ b₀ → {!!} ● ≃-sym (lemma1 B₁ b₀)) B₂ t b₀
-
---   -- The claim ultimately reduces to the case of pointed types.
+-- prod : ℕ → ℕ → ℕ
+-- prod m zero = zero
+-- prod m (succ n) = add (prod m n) n
 
 
--- {- Extra stuff
--- ishae↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) → ((a : A) → P a → Q (f a)) → 𝓤 ⊔ 𝓦 ⊔ 𝓣 ̇
--- ishae↓ {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {P} Q f g =
---   Σ ginv ꞉ ((a : A) → Q (f a) → P a) ,
---   Σ η ꞉ ((a : A) → (ginv a) ∘ (g a) ∼ id) ,
---   Σ ε ꞉ ((a : A) → (g a) ∘ (ginv a) ∼ id) ,
---   ((a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u) )
 
--- ishae↓-to-fiberwise-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) (g : (a : A) → P a → Q (f a)) → ishae↓ Q f g → ((a : A) → ishae (g a)) 
--- ishae↓-to-fiberwise-≃ Q f g (ginv , η , ε , τ) a = ginv a , η a , ε a , τ a
+-- -- FIX UNIVALENCE: ISSUE IS WITH UNIVERSE
 
--- fiberwise-≃-to-ishae↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) (g : (a : A) → P a → Q (f a)) → ((a : A) → ishae (g a)) → ishae↓ Q f g
--- fiberwise-≃-to-ishae↓ {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {P} Q f g i = {!!} where
---   ginv : ((a : A) → Q (f a) → P a)
---   ginv a = ishae₁ (i a)
---   η : ((a : A) → (ginv a) ∘ (g a) ∼ id)
---   η a = ishae₂ (i a)
---   ε : ((a : A) → (g a) ∘ (ginv a) ∼ id)
---   ε a = ishae₃ (i a)
---   τ : (a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u)
---   τ a = ishae₄ (i a)
--- -}
+-- -- -- ?. Fibered Algebras and the Slice Categories
+-- -- {-
+-- -- χ : (B : Alg 𝓤) → (Σ A ꞉ Alg 𝓤 , Hom A B) → FibAlg 𝓤 B
+-- -- χ (B , b₀ , s' , p' , σ' , ρ' , τ') ((A , a₀ , s , p , σ , ρ , τ) , (f , f₀ , f-s)) with pr₂ (fun-pres-to-hae-pres (s , p , σ , ρ , τ) (s' , p' , σ' , ρ' , τ') f f f-s)
+-- -- ... | (f-p , f-ρ , f-σ , f-τ) = (fib f) , (a₀ , f₀) , ({!!} , {!!}) where
+-- --   t : (b : B) → fib f b → fib f (s' b)
+-- --   t b (a , q) = (s a) , (f-s a ∙ ap s' q)
+-- --   tinv : (b : B) → fib f (s' b) → fib f b
+-- --   tinv b (a , q) = p a , (f-p a ∙ ap p' q ∙ σ' b)
+-- --   α : (b : B) → t b ∘ tinv b ∼ id
+-- --   α b (a , q) = inv (path-space-fib _ _) (ρ a , {!!}) --doable
+-- --   β : (b : B) → tinv b ∘ t b ∼ id
+-- --   β b (a , q) = {!!} --doable
 
--- -- Theorem 4.8.3 for pointed maps
+-- -- ψ : (B : Alg 𝓤) → FibAlg 𝓤 B → (Σ A ꞉ Alg 𝓤 , Hom A B)
+-- -- ψ B E = (TotAlg B E) , (π₁ B E) 
 
--- module thm-4-8-3⊙ ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) (b₀ : B) where
+-- -- χ∘ψ : (B : Alg 𝓤) → χ B ∘ ψ B ∼ id
+-- -- χ∘ψ B E = {!!} -- identity of fibered algebras?
 
---   χ : (Σ A ꞉ 𝓤 ⊙ , Map⊙ A (B , b₀)) → Σ P ꞉ (B → 𝓤 ̇) , P b₀
---   χ ((A , a₀) , (f , p)) = fib f , (a₀ , p)
+-- -- ψ∘χ : (B : Alg 𝓤) → ψ B ∘ χ B ∼ id
+-- -- ψ∘χ B (A , f) = {!!} -- identity of (A , f) pairs? Have to transport f
 
---   ψ : (Σ P ꞉ (B → 𝓤 ̇) , P b₀) → Σ A ꞉ 𝓤 ⊙ , Map⊙ A (B , b₀)
---   ψ (P , u₀) = ((Σ P) , (b₀ , u₀)) , (pr₁ , (refl _))
+-- -- equiv : (B : Alg 𝓤) → FibAlg 𝓤 B ≃ (Σ A ꞉ Alg 𝓤 , Hom A B)
+-- -- equiv B = {!!} 
+-- -- -}
+-- -- -- Seems easier to work with equivalences and then contract...
 
---   α : χ ∘ ψ ∼ id
---   α (P , u₀) = dpair-≡ ((funext λ b → ua (fibs-of-pr₁-are-values b)) ,
---     (transport (λ - → - b₀) (funext (λ b → ua (fibs-of-pr₁-are-values b))) ((b₀ , u₀) , refl b₀) 
---       ≡⟨ aux (funext (λ b → ua (fibs-of-pr₁-are-values b))) ((b₀ , u₀) , refl b₀) ⟩
---     coe (happly (funext (λ b → ua (fibs-of-pr₁-are-values b))) b₀) ((b₀ , u₀) , refl b₀) 
---       ≡⟨ ap (λ - → coe - ((b₀ , u₀) , refl b₀)) (happly-β (λ b → ua (fibs-of-pr₁-are-values b)) b₀) ⟩
---     coe (ua (fibs-of-pr₁-are-values b₀)) ((b₀ , u₀) , refl b₀)
---       ≡⟨ idtoeqv-β (fibs-of-pr₁-are-values b₀) _ ⟩
---     u₀ ∎)
---     )
---     where
---     aux : {P Q : B → 𝓤 ̇} (p : P ≡ Q) (x : P b₀) → transport (λ - → - b₀) p x ≡ coe (happly p b₀) x
---     aux (refl _) x = refl _
+-- -- module slice (𝓤 : Universe) where
 
---   β : ψ ∘ χ ∼ id
---   β ((A , a₀) , f , refl .(f a₀)) = let g = pr₂ (ψ (χ ((A , a₀) , (f , refl _)))) in dpair-≡ ((dpair-≡ ((ua (dom-is-sum-of-fibs f)) , (idtoeqv-β (dom-is-sum-of-fibs f) _))) , {!!})
+-- --   Eqv⊙ : 𝓤 ⁺ ̇ 
+-- --   Eqv⊙ = Σ A₁ ꞉ (𝓤 ̇) , Σ A₂ ꞉ (𝓤 ̇) , A₁ × (A₁ ≃ A₂)
+
+-- --   -- Eqv⊙ is equivalent to the type of pointed maps
+
+-- --   HomEqv⊙ : Eqv⊙ → Eqv⊙ → 𝓤 ̇
+-- --   HomEqv⊙ (A₁ , A₂ , a₀ , s , i) (B₁ , B₂ , b₀ , s' , j) = Σ f₁ ꞉ (A₁ → B₁) , Σ f₂ ꞉ (A₂ → B₂) , (f₁ a₀ ≡ b₀) × (f₂ ∘ s ∼ s' ∘ f₁)
+
+-- --   -- Once we contract the pointed equivalences to pointed types, we can contract the homotopies to pointed maps.
+
+-- --   FibEqv⊙ : Eqv⊙ → 𝓤 ⁺ ̇
+-- --   FibEqv⊙ (A₁ , A₂ , a₀ , s , i) = Σ E₁ ꞉ (A₁ → 𝓤 ̇) , Σ E₂ ꞉ (A₂ → 𝓤 ̇) , E₁ a₀ × (Σ s' ꞉ ((a₁ : A₁) → E₁ a₁ → E₂ (s a₁)) , ((a₁ : A₁) → isequiv (s' a₁)))
+
+-- --   SecEqv⊙ : (A : Eqv⊙) → FibEqv⊙ A → 𝓤 ̇
+-- --   SecEqv⊙ (A₁ , A₂ , a₀ , s , i) (E₁ , E₂ , e₀ , s' , j) = Σ f₁ ꞉ Π E₁ , Σ f₂ ꞉ Π E₂ , (f₁ a₀ ≡ e₀) × ((a₁ : A₁) → f₂ (s a₁) ≡ s' a₁ (f₁ a₁))
+
+-- --   lemma1 : (A : 𝓤 ̇) (a₀ : A) → FibEqv⊙ (A , A , a₀ , ≃-refl A) ≃ (Σ E ꞉ (A → 𝓤 ̇) , E a₀)
+-- --   lemma1 A a₀ = {!!}
+
+-- --   lemma₂ : (B : 𝓤 ̇) (b₀ : B) → (Σ A ꞉ Eqv⊙ , HomEqv⊙ A (B , B , b₀ , ≃-refl B)) ≃ {!!}
+-- --   lemma₂ = {!!}
+
+-- --   claim : (B : Eqv⊙) → (Σ A ꞉ Eqv⊙ , HomEqv⊙ A B) ≃ FibEqv⊙ B
+-- --   claim (B₁ , B₂ , b₀ , t) = ℍ-≃ B₁ (λ B₂ t → (b₀ : B₁) → (Σ A ꞉ Eqv⊙ , HomEqv⊙ A (B₁ , B₂ , b₀ , t)) ≃ FibEqv⊙ (B₁ , B₂ , b₀ , t)) (λ b₀ → {!!} ● ≃-sym (lemma1 B₁ b₀)) B₂ t b₀
+
+-- --   -- The claim ultimately reduces to the case of pointed types.
+
+
+-- -- {- Extra stuff
+-- -- ishae↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) → ((a : A) → P a → Q (f a)) → 𝓤 ⊔ 𝓦 ⊔ 𝓣 ̇
+-- -- ishae↓ {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {P} Q f g =
+-- --   Σ ginv ꞉ ((a : A) → Q (f a) → P a) ,
+-- --   Σ η ꞉ ((a : A) → (ginv a) ∘ (g a) ∼ id) ,
+-- --   Σ ε ꞉ ((a : A) → (g a) ∘ (ginv a) ∼ id) ,
+-- --   ((a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u) )
+
+-- -- ishae↓-to-fiberwise-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) (g : (a : A) → P a → Q (f a)) → ishae↓ Q f g → ((a : A) → ishae (g a)) 
+-- -- ishae↓-to-fiberwise-≃ Q f g (ginv , η , ε , τ) a = ginv a , η a , ε a , τ a
+
+-- -- fiberwise-≃-to-ishae↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) (g : (a : A) → P a → Q (f a)) → ((a : A) → ishae (g a)) → ishae↓ Q f g
+-- -- fiberwise-≃-to-ishae↓ {𝓤} {𝓥} {𝓦} {𝓣} {A} {B} {P} Q f g i = {!!} where
+-- --   ginv : ((a : A) → Q (f a) → P a)
+-- --   ginv a = ishae₁ (i a)
+-- --   η : ((a : A) → (ginv a) ∘ (g a) ∼ id)
+-- --   η a = ishae₂ (i a)
+-- --   ε : ((a : A) → (g a) ∘ (ginv a) ∼ id)
+-- --   ε a = ishae₃ (i a)
+-- --   τ : (a : A) (u : P a) → ap (g a) (η a u) ≡ (ε a) (g a u)
+-- --   τ a = ishae₄ (i a)
+-- -- -}
+
+-- -- -- Theorem 4.8.3 for pointed maps
+
+-- -- module thm-4-8-3⊙ ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (B : 𝓤 ̇) (b₀ : B) where
+
+-- --   χ : (Σ A ꞉ 𝓤 ⊙ , Map⊙ A (B , b₀)) → Σ P ꞉ (B → 𝓤 ̇) , P b₀
+-- --   χ ((A , a₀) , (f , p)) = fib f , (a₀ , p)
+
+-- --   ψ : (Σ P ꞉ (B → 𝓤 ̇) , P b₀) → Σ A ꞉ 𝓤 ⊙ , Map⊙ A (B , b₀)
+-- --   ψ (P , u₀) = ((Σ P) , (b₀ , u₀)) , (pr₁ , (refl _))
+
+-- --   α : χ ∘ ψ ∼ id
+-- --   α (P , u₀) = dpair-≡ ((funext λ b → ua (fibs-of-pr₁-are-values b)) ,
+-- --     (transport (λ - → - b₀) (funext (λ b → ua (fibs-of-pr₁-are-values b))) ((b₀ , u₀) , refl b₀) 
+-- --       ≡⟨ aux (funext (λ b → ua (fibs-of-pr₁-are-values b))) ((b₀ , u₀) , refl b₀) ⟩
+-- --     coe (happly (funext (λ b → ua (fibs-of-pr₁-are-values b))) b₀) ((b₀ , u₀) , refl b₀) 
+-- --       ≡⟨ ap (λ - → coe - ((b₀ , u₀) , refl b₀)) (happly-β (λ b → ua (fibs-of-pr₁-are-values b)) b₀) ⟩
+-- --     coe (ua (fibs-of-pr₁-are-values b₀)) ((b₀ , u₀) , refl b₀)
+-- --       ≡⟨ idtoeqv-β (fibs-of-pr₁-are-values b₀) _ ⟩
+-- --     u₀ ∎)
+-- --     )
+-- --     where
+-- --     aux : {P Q : B → 𝓤 ̇} (p : P ≡ Q) (x : P b₀) → transport (λ - → - b₀) p x ≡ coe (happly p b₀) x
+-- --     aux (refl _) x = refl _
+
+-- --   β : ψ ∘ χ ∼ id
+-- --   β ((A , a₀) , f , refl .(f a₀)) = let g = pr₂ (ψ (χ ((A , a₀) , (f , refl _)))) in dpair-≡ ((dpair-≡ ((ua (dom-is-sum-of-fibs f)) , (idtoeqv-β (dom-is-sum-of-fibs f) _))) , {!!})
