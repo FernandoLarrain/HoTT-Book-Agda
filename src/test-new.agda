@@ -113,7 +113,7 @@ open import Ch6.5-Suspensions public
 open import Ch6.9-Truncations public
 open import Ch6.8-Pushouts public
 open import Ch6.10-Quotients public
-open import Ch6.11-Algerba public
+open import Ch6.11-Algebra public
 -- infixr 30 _++_
 open import Ch6.Exercises public
 

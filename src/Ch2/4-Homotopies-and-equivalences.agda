@@ -309,7 +309,7 @@ module old-equiv where
   infix 1 _■ 
 
 
--- II. New defintion of equivalence (used in Ch4.5 onwards). 
+-- II. New defintion of equivalence (used from Ch4.5 onward). 
 
 module new-equiv where
 
