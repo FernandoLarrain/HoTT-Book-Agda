@@ -2,7 +2,7 @@
 
 ## Authorship
 
-Most of the formalizations in this library are original work. However, while learning Agda and setting up the library, I imported code and ideas from other sources (in addition to, of course, the [HoTT Book](https://homotopytypetheory.org/book/)). It is, at this point, impossible for me to demarcate them precisely, because they have been modified and reorganized multiple times. However, I can provide a rough guide to where they played an essential role:
+Most of the formalizations in this library are original work. However, while learning Agda and setting up the library, I imported code and ideas from other sources (in addition to the [HoTT Book](https://homotopytypetheory.org/book/)), of course. It is, at this point, impossible for me to demarcate them precisely, because they have been modified and reorganized multiple times. However, I can provide a rough guide to where they played an essential role:
 
 1. [Martín Escardó's Lecture Notes](https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/index.html): fundamental notions, axioms and notation.
 2. [The HoTT-Agda Library](https://github.com/HoTT/HoTT-Agda): rewriting for Higher Inductive Types.
