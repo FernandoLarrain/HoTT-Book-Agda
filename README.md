@@ -1,8 +1,16 @@
 # HoTT-Book-Agda
 
+## Authorship
+
+Most of the formalizations in this library are original. However, while learning Agda and setting up the library, I imported code and ideas from other sources. It is, at this point, impossible for me to demarcate them precisely, because they have been modified and reorganized multiple times. However, I can provide a rough guide to where they played an essential role:
+
+1. [Martín Escardó's Lecture Notes](https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/index.html): fundamental notions, axioms and notation.
+2. [The HoTT-Agda Library](https://github.com/HoTT/HoTT-Agda): basics of rewriting and Higher Inductive Types.
+3. [Egbert Rijke's HoTT-Intro](https://github.com/EgbertRijke/HoTT-Intro): ideas about Singleton Induction and the Fundamental Theorem of Identity Types.
+
 ## The library
 
-The structure of the library follows closely that of the book. The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else), `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types), `Ch4.1` on `Ch4` and `Ch6.8` on `Ch6.9`. The following files are ordered lexicographically, first, by dependence, and second, by numbering.
+The structure of the library follows closely that of the [HoTT Book](https://homotopytypetheory.org/book/). The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else), `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types), `Ch4.1` on `Ch4` and `Ch6.8` on `Ch6.9`. The following files are ordered lexicographically, first, by dependence, and second, by numbering.
 
 #### Chapter 1 (src\Ch1)
 
@@ -111,100 +119,16 @@ Agda has some features that are inconsitent with HoTT. To avoid them,
 
 2. every file should begin with `{-# OPTIONS --without-K #-}`.
 
-For extra care, files can begin with `{-# OPTIONS --without-K --exact-split --safe #-}`. However, the `--safe` option is incompatible with the use of postulates and rewriting, so most of chapters 6 and 7 is unsafe (see below).
-
-
 ## The axioms
 
-1. Function extensionality, univalence, propositional and set truncations are assumed via modules. The last two become postulates in Ch7. 
+1. Function Extensionality is assumed via instance arguments until it is derived from Univalence in Ch4.9. Instance arguments generate some performance issues. 
 
-2. Higher inductive types with definitional equality for point constructors have to be postulated together with a rewrite relation which is defined in the file `Rewrite`.
+2. Univalence is postulated in Ch2.
+
+3. Propositional and set truncations are assumptions until they are derived from Higher Inductive Types in Ch7.
+
+4. Higher Inductive Types with definitional equality for point constructors have to be postulated together with a rewrite relation which is defined in the file `Rewrite`.
 
 ## The notion of equivalence
 
 The book uses bi-invertible maps up to `Ch4.5` and half-adjoint equivalences from then on. Accordingly, up to that point, the code works with both definitions, and from then on, only with the second. The default is the new definition. To use the old one, change `open new-equiv public` to `open old-equiv public` in `Ch2.4`.
-
-## Pending
-
-* Results about binary functions, including
-  * Simultaneous action on paths
-  * Iterated function extensionality
-  * Transport along function extensionality
-
-* Direct map from quasi-inverses to equivalences
-
-* Add right-unit law for paths in the other direction
-
-* Use modules (open using / hiding / renaming) and equational reasoning to increase readability of proofs.
-
-* Clean Ch2.Exercise.
-
-* Implement equivalence relations (including equational reasoning) as a type class.
-
-* Systematize description of path-spaces of type constructors (intro, elim, beta and eta rules). Similarly for univalence, function extensionality, propositional truncations, etc. Perhaps use records. Describe how action on paths and transport work on the equivalent descriptions.
-
-* Systematize HITs, perhaps using records. See Generic1HIT in HoTT std. lib.
-
-* Study std. lib. in detail to import other ideas.
-
-* Prove groupoid laws for homotopies (using equality or homotopy?) and equivalence relations.
-
-* Whiskering should bind more loosely than concatenation
-
-* Remove named implicit arguments
-
-* Modules with equivalence: .equiv
-
-* Finish / fix 2.14 (maybe change to magmas; the full associativity proof is in M. Escardo's notes.
-
-* Define equivalence with old 1-type definition
-
-* Use PROP and SET?
-
-* Improve readability of univalence and funext modules
-
-* Change where-lemmas to sublemmas
-
-* Generalize constructions that restrict to a single universe when possible. Restrict theorem hypotheses, not definitions (unless multiverse definitions don't make sense). E.g. N-Algebras in Ch5.
-
-* Results about the relation between path spaces in fibers and ap in Ch4.2 and "propositional maps" in Ch4.6 should be postponed until Ch7.
-
-* Develop groupoid structure and whiskering operations for homotopies.
-
-* Redefine retraction and section to be just witnesses of invertibility. Retract suffice for naming the triple.
-
-* Derive equivalences from quasi-inverse results to avoid repeated construction of equivalences.
-
-* Homotopy preserves isequiv.
-
-* inv preserves isequiv.
-
-* Homotopy and inv commute.
-
-* Section and retraction commutative triangles.
-
-* Functorial action of products, coproducts and universe lifting.
-
-* Spans, cones, cocones, functorial action of pullbacks and pushouts.
-
-* Constant function
-
-* Singleton induction
-
-* Unwhiskering operations and whiskering operations for homotopies
-
-* Rename \Sigma-over-Contr and \Sigma-of-Contr as left and right unit laws
-
-* Define maps over / total over (at least for thesis)
-
-* Fix Ch4.1. Does opening PropTrunc publicly help?
-
-* Prove 2-groupoid laws for whiskering and horizontal composition operations
-
-* Use rewrite only when necessary. Propositional computation rules suffice for UMPs.
-
-* Simplify lifting arguments using universe polymorphism (see, e.g., UMP of products in Ch2.15).
-
-* Universe polymorphism is used explicitly in some proofs about inductive principles / universal mapping properties. To get actual equivalences (rather than mere logical equivalences) it is best to avoid it and use lifting or multiple hypotheses.
-
-* Fix performance issues with funext and univ: passing universe explicitly seems to help a lot (see 5.8-Id-types-and-id-systems).

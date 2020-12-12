@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -11,7 +11,7 @@ module Ch3.2-Propositions-as-types where
 DNE∞ : (𝓤 : Universe) →  𝓤 ⁺ ̇
 DNE∞ 𝓤 = (A : 𝓤 ̇) → ¬ (¬ A) → A  
 
-module not-DNE∞ ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
+module not-DNE∞ ⦃ fe : FunExt ⦄ where
 
   -- (i) Some auxiliary lemmas:
   
@@ -75,7 +75,7 @@ open not-DNE∞ using (not-DNE∞)
 LEM∞ : (𝓤 : Universe) → 𝓤 ⁺ ̇
 LEM∞ 𝓤 = (A : 𝓤 ̇) → A + ¬ A
 
-not-LEM∞ : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → ¬ (LEM∞ 𝓤₀)
+not-LEM∞ : ⦃ fe : FunExt ⦄ → ¬ (LEM∞ 𝓤₀)
 not-LEM∞ lem = not-DNE∞ (λ A → +-recursion (λ a f → a) (λ w f → !𝟘 _ (f w)) (lem A))
 
 

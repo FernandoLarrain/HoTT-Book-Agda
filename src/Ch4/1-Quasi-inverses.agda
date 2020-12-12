@@ -3,15 +3,10 @@
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
+open import Ch4.9-Univalence-implies-funext
 open import Ch4.Exercises
 
-module Ch4.1-Quasi-inverses ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
-
-{- TO DO: the last module triggers a loop when using instance arguments. Fix, restore safe flag and restore open import in Ch4.Equivalences. -}
-
-instance
-  postulate
-    pt' : PropTrunc 
+module Ch4.1-Quasi-inverses ⦃ pt : PropTrunc ⦄ where
 
 
 -- Lemma 4.1.1 (If f is quasi-invertible, then qinv f ≃ (id ∼ id)

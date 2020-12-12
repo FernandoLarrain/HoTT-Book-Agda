@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -15,7 +15,7 @@ module exercise-2-4-continued where
 
   -- PathOver
 
-  module PathOver'-1-is-PathOver ⦃ univ : Univalence ⦄ where
+  module PathOver'-1-is-PathOver where
 
     open higher-paths
 
@@ -105,7 +105,7 @@ module exercise-2-4-continued where
   PathOver²-≡-PathOver-PathOver : {A : 𝓤 ̇} (P : A → 𝓥 ̇) {x y : A} {p q : x ≡ y} (r : p ≡ q) {u : P x} {v : P y} (h : u ≡ v [ P ↓ p ]) (k : u ≡ v [ P ↓ q ]) → (h ≡ k [ P ⇊ r ]) ≡ (h ≡ k [ (λ (- : x ≡ y) → u ≡ v [ P ↓ - ]) ↓ r ])
   PathOver²-≡-PathOver-PathOver P {x} {.x} {.(refl x)} {.(refl x)} (refl (refl x)) h (refl u) = refl _
 
-  module PathOver'-2-is-PathOver² ⦃ univ : Univalence ⦄ where
+  module PathOver'-2-is-PathOver² where
 
     open higher-paths
     open PathOver'-1-is-PathOver

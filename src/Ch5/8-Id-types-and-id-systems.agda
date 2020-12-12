@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -40,7 +40,7 @@ ppmap-id (R , r₀) = (λ a → id) , (refl r₀)
 
 -- Identity type of pointed families of maps
 
-ppmap-≡ : ⦃ fe : FunExt ⦄ (A : 𝓤 ⊙) (R : pted-pred A 𝓥) (S : pted-pred A 𝓦) (g h : ppmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a : pr₁ A) (r : pr₁ R a) → pr₁ g a r ≡ pr₁ h a r) , (α (pr₂ A) (pr₂ R) ⁻¹ ∙ pr₂ g ≡ pr₂ h))
+ppmap-≡ : (A : 𝓤 ⊙) (R : pted-pred A 𝓥) (S : pted-pred A 𝓦) (g h : ppmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a : pr₁ A) (r : pr₁ R a) → pr₁ g a r ≡ pr₁ h a r) , (α (pr₂ A) (pr₂ R) ⁻¹ ∙ pr₂ g ≡ pr₂ h))
 
 ppmap-≡ {𝓤} {𝓥} (A , a₀) (R , r₀) (S , s₀) (g , gr) (h , hr) =
   Σ-≡-≃ ●
@@ -56,7 +56,7 @@ ppmap-≡ {𝓤} {𝓥} (A , a₀) (R , r₀) (S , s₀) (g , gr) (h , hr) =
 
 -- Example
 
-ppendomap-Id⊙-is-Contr : ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) → isContr (ppmap (Id⊙ A') (Id⊙ A'))
+ppendomap-Id⊙-is-Contr : (A' : 𝓤 ⊙) → isContr (ppmap (Id⊙ A') (Id⊙ A'))
 ppendomap-Id⊙-is-Contr (A , a₀) = let A' = (A , a₀) in
   ppmap-id (Id⊙ A') ,
   Σ-induction (λ f fr → inv (ppmap-≡ A' (Id⊙ A') (Id⊙ A') (ppmap-id (Id⊙ A')) (f , fr)) ((ℍ a₀ (λ a p → pr₁ (ppmap-id (Id⊙ A')) a p ≡ f a p) (fr ⁻¹)) , (ru _ ⁻¹ ∙ ⁻¹-invol _)))
@@ -64,7 +64,7 @@ ppendomap-Id⊙-is-Contr (A , a₀) = let A' = (A , a₀) in
 
 -- Theorem 5.8.2 (Fundamental theorem of based identity types).
 
-module thm-5-8-2 ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (R' : pted-pred A' 𝓥) where
+module thm-5-8-2 (A' : 𝓤 ⊙) (R' : pted-pred A' 𝓥) where
 
   -- I. Lift bureaucracy
 
@@ -263,13 +263,13 @@ rrmap-id (R , r₀) = (λ a b → id) , (hrefl _)
 
 -- Relationship between ppmaps and rrmaps
 
-ppmap-≃-rrmap : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} (R : refl-rel A 𝓥) (S : refl-rel A 𝓦) → ((a₀ : A) → ppmap (pr₁ R a₀ , pr₂ R a₀) (pr₁ S a₀ , pr₂ S a₀)) ≃ (rrmap R S)
+ppmap-≃-rrmap : {A : 𝓤 ̇} (R : refl-rel A 𝓥) (S : refl-rel A 𝓦) → ((a₀ : A) → ppmap (pr₁ R a₀ , pr₂ R a₀) (pr₁ S a₀ , pr₂ S a₀)) ≃ (rrmap R S)
 ppmap-≃-rrmap {𝓤} {𝓥} {𝓦} {A} (R , r₀) (S , s₀) = _ , (dep-Σ-UMP A (λ a → (b : A) → R a b → S a b) (λ a ga → ga a (r₀ a) ≡ (s₀ a)))
 
 
 -- Identity type of rrmap
 
-rrmap-≡ : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (R : refl-rel A 𝓥) (S : refl-rel A 𝓦) (g h : rrmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a b : A) (r : pr₁ R a b) → pr₁ g a b r ≡ pr₁ h a b r) , ((a : A) → α a a (pr₂ R a) ⁻¹ ∙ pr₂ g a ≡ pr₂ h a))
+rrmap-≡ : (A : 𝓤 ̇) (R : refl-rel A 𝓥) (S : refl-rel A 𝓦) (g h : rrmap R S) → (g ≡ h) ≃ (Σ α ꞉ ((a b : A) (r : pr₁ R a b) → pr₁ g a b r ≡ pr₁ h a b r) , ((a : A) → α a a (pr₂ R a) ⁻¹ ∙ pr₂ g a ≡ pr₂ h a))
 rrmap-≡ {𝓤} {𝓥} A (R , r₀) (S , s₀) (g , gr) (h , hr) =
   Σ-≡-≃ ●
   Σ-preserves-≃ _ _
@@ -284,7 +284,7 @@ rrmap-≡ {𝓤} {𝓥} A (R , r₀) (S , s₀) (g , gr) (h , hr) =
 
 -- Example
 
-rrendomap-Id-is-Contr : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) → isContr (rrmap (Id A , refl) (Id A , refl))
+rrendomap-Id-is-Contr : (A : 𝓤 ̇) → isContr (rrmap (Id A , refl) (Id A , refl))
 rrendomap-Id-is-Contr A =
   (rrmap-id (Id A , refl)) ,
   (Σ-induction (λ f fr → inv (rrmap-≡ A (Id A , refl) (Id A , refl) (rrmap-id (Id A , refl)) (f , fr)) (
@@ -295,7 +295,7 @@ rrendomap-Id-is-Contr A =
 
 -- Theorem 5.8.4. (Fundamental theorem of identity types).
 
-module thm-5-8-4 ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (R' : refl-rel A 𝓥) where
+module thm-5-8-4 (A : 𝓤 ̇) (R' : refl-rel A 𝓥) where
 
   -- I. Lift bureaucracy
 
@@ -426,7 +426,7 @@ module thm-5-8-4 ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (R' : refl-rel A 𝓥) where
 
 -- Corollary 5.8.5 (Equivalence induction)
 
-module equivalence-induction ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
+module equivalence-induction where
 
   abstract 
 
@@ -461,7 +461,7 @@ open equivalence-induction using (𝕁-≃ ; 𝕁-≃-β ; ℍ-≃ ; ℍ-≃-β)
 
 -- Corollary 5.8.6 (Homotopy induction)
 
-module homotopy-induction ⦃ fe : FunExt ⦄ where
+module homotopy-induction where
 
   happly' : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → f ≡ g → f ∼ g
   happly' {𝓤} {𝓥} {A} {B} {f} {g} p = transport (λ - → f ∼ -) p (hrefl f) 

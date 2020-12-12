@@ -37,14 +37,13 @@ module hfunext {hfe : hfunext 𝓤 𝓥} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g 
 
 -- (ii) Axiom 2.9.3 (Function Extensionality)
 
-record FunExt : 𝓤ω where
-  field
-    happly-is-equiv : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → isequiv (happly {𝓤} {𝓥} {A} {B} {f} {g}) 
+FunExt : 𝓤ω
+FunExt = {𝓤 𝓥 : Universe} → hfunext 𝓤 𝓥
 
-open FunExt ⦃ ... ⦄ public
+module _ ⦃ fe : FunExt ⦄ where
 
-
-module _ ⦃ fe : FunExt ⦄ where 
+  happly-is-equiv : {𝓤 𝓥 : Universe} {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → isequiv (happly {𝓤} {𝓥} {A} {B} {f} {g}) 
+  happly-is-equiv = fe
 
   -- Quasi-inverse
 

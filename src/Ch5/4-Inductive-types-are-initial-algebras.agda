@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -33,7 +33,7 @@ is-ℕAlg-homomorphism {𝓤} (C , c₀ , cs) (D , d₀ , ds) h = (h c₀ ≡ d�
 
 -- Identity type of ℕ-homomorphisms
 
-module ℕHom-≡ ⦃ fe : FunExt ⦄  (C : 𝓤 ̇) (D : 𝓤 ̇) (cs : C → C) (ds : D → D) where
+module ℕHom-≡ (C : 𝓤 ̇) (D : 𝓤 ̇) (cs : C → C) (ds : D → D) where
 
   P : (C → D) → 𝓤 ̇
   P h = h ∘ cs ∼ ds ∘ h 
@@ -54,7 +54,7 @@ C ℕAlg-≅ D = Σ f ꞉ ℕHom C D , Σ g ꞉ ℕHom D C , (ℕHom-comp D C D 
 ℕAlg-≅-to-≃ ((f , f-is-hom) , (g , g-is-hom) , p , q) with dpr-≡ p | dpr-≡ q
 ... | (p' , p-etc) | (q' , q-etc) = f , qinv-to-isequiv (g , (happly p' , happly q'))
 
-ℕAlg-≅-to-≡ : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ {C D : ℕAlg 𝓤} → C ℕAlg-≅ D → C ≡ D
+ℕAlg-≅-to-≡ : {C D : ℕAlg 𝓤} → C ℕAlg-≅ D → C ≡ D
 ℕAlg-≅-to-≡ {𝓤} {C , c₀ , cs} {D , d₀ , ds} ((f , p , α) , (g , q , β) , p' , q') = dpair-≡ (carrier-≡ , (transport-pair id (λ X → X → X) carrier-≡ (c₀ , cs) ∙ pair-≡ (zero-≡ , succ-≡))) where
   carrier-≃ : C ≃ D
   carrier-≃ = ℕAlg-≅-to-≃ ((f , p , α) , (g , q , β) , p' , q')
@@ -75,7 +75,7 @@ module single-universe where
   isHinit-ℕ : ℕAlg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
   isHinit-ℕ {𝓤} {𝓥} I = (C : ℕAlg 𝓥) → isContr (ℕHom I C)
 
-  isHinit-ℕ-is-Prop : ⦃ fe : FunExt ⦄ (I : ℕAlg 𝓤) → isProp (isHinit-ℕ {𝓤} {𝓥} I)
+  isHinit-ℕ-is-Prop : (I : ℕAlg 𝓤) → isProp (isHinit-ℕ {𝓤} {𝓥} I)
   isHinit-ℕ-is-Prop I = Π-preserves-Props _ (λ C → isContr-is-Prop _)
 
   Hinit-ℕAlg : (𝓤 𝓥 : Universe) → (𝓤 ⊔ 𝓥) ⁺ ̇
@@ -84,7 +84,7 @@ module single-universe where
 
   -- Theorem 5.4.4 (h-inital ℕ-algebras are equal).
 
-  Hinit-ℕAlg-is-Prop : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → isProp (Hinit-ℕAlg 𝓤 𝓤)
+  Hinit-ℕAlg-is-Prop : isProp (Hinit-ℕAlg 𝓤 𝓤)
   Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
     let I = (UI , i₀ , is)
         J = (UJ , j₀ , js)
@@ -98,7 +98,7 @@ module single-universe where
 
   -- Theorem 5.4.5 ((ℕ , 0 , succ) is h-initial)
 
-  ℕ-is-h-initial : ⦃ fe : FunExt ⦄ → isHinit-ℕ (ℕ , 0 , succ)
+  ℕ-is-h-initial : isHinit-ℕ (ℕ , 0 , succ)
   ℕ-is-h-initial (C , c₀ , cs) = (f , p , α) , contraction where
 
     -- Center of contraction
@@ -186,7 +186,7 @@ module single-universe where
 
 {- The book does not treat the case of W-types in detail. The following follows "Homotopy-initial algebras in type theory" (Awodey, Gambino & Sojakova, 2016). -}
 
-module W-types ⦃ fe : FunExt ⦄ {𝓤 : Universe} (A : 𝓤 ̇) (B : A → 𝓤 ̇) where
+module W-types {𝓤 : Universe} (A : 𝓤 ̇) (B : A → 𝓤 ̇) where
 
   -- 1. P-algebras and their morphisms
 

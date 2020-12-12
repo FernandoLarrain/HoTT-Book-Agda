@@ -82,7 +82,7 @@ transport-dfun : {X : 𝓤 ̇} {A : X → 𝓥 ̇} {B : (x : X) → A x → 𝓥
 transport-dfun (refl _) f a = refl (f a)
 
 
--- Lemma 2.9.6 (Function extensionality with respect to dependent paths; equality of parameterized functions).
+-- Lemma 2.9.6 (Function extensionality with respect to dependent paths; equality of parameterized functions). (TO DO: generalize to multiple universes)
 
 module dpath-funext ⦃ fe : FunExt ⦄ {X : 𝓤 ̇} (A B : X → 𝓥 ̇) where
 
@@ -112,7 +112,7 @@ module dpath-funext ⦃ fe : FunExt ⦄ {X : 𝓤 ̇} (A B : X → 𝓥 ̇) wher
   dpath-funext-β (refl x) f g q a = lu _
 
 
--- Lemma 2.9.7 (Function extensionality with respect to dependent paths; equality of parameterized depedent functions).
+-- Lemma 2.9.7 (Function extensionality with respect to dependent paths; equality of parameterized depedent functions). (TO DO: generalize to multiple universes)
 
 module dpath-dfunext ⦃ fe : FunExt ⦄ {X : 𝓤 ̇} (A : X → 𝓥 ̇) (B : (x : X) → A x → 𝓥 ̇) where
 
@@ -140,3 +140,11 @@ module dpath-dfunext ⦃ fe : FunExt ⦄ {X : 𝓤 ̇} (A : X → 𝓥 ̇) (B : 
 
   dpath-dfunext-β : {x y : X} (p : x ≡ y) (f : P x) (g : P y) (q : transport P p f ≡ g) (a : A x) → happly q (transport A p a) ≡ ijk p f g q a
   dpath-dfunext-β (refl _) f g q a = lu _
+
+
+-- Particular case: dependent paths between homotopies. (TO DO: generalize to multiple universes)
+
+module dpath-∼ ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : A → 𝓤 ̇} {g : Π B} (P : (f : Π B) → f ∼ g) where
+
+  equiv : {f f' : Π B} (p : f ≡ f') (α : f ∼ g) (β : f' ∼ g) → (transport (_∼ g) p α ≡ β) ≃ ((a : A) → α a ≡ happly p a ∙ β a)
+  equiv (refl _) α β = (happly , happly-is-equiv) ● (λ x a → x a ∙ lu _) , (qinv-to-isequiv ((λ x a → x a ∙ lu _ ⁻¹) , ((λ x → funext (λ a → ∙-assoc _ _ _ ⁻¹ ∙ (x a ∙ₗ linv _) ∙ ru _ ⁻¹)) , λ x → funext λ a → ∙-assoc _ _ _ ⁻¹ ∙ ((x a ∙ₗ rinv _) ∙ ru _ ⁻¹))))

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -10,14 +10,14 @@ module Ch5.Exercises where
 
 -- Exercise: characterization of Π-types (a dependent function is a section of the projection of total space).
 
-module _ ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {g h : sec f} where
+module _ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {g h : sec f} where
 
   sec-≡ : (g ≡ h) ≃ (Σ α ꞉ pr₁ g ∼ pr₁ h , ((y : B) → ap f (α y) ⁻¹ ∙ pr₂ g y ≡ pr₂ h y)) 
   sec-≡ = Σ-≡-≃ ● Σ-preserves-≃ _ _ (happly , happly-is-equiv) λ p → (happly , happly-is-equiv) ● Π-preserves-family-≃ (λ y → (transport-lemma ⁻¹ ∙_) , (qinv-to-isequiv (qinv-pre-∙ _ _))) where
     transport-lemma : {p : pr₁ g ≡ pr₁ h} {y : B} →  transport (λ s → f ∘ s ∼ id) p (pr₂ g) y ≡ ap f (happly p y) ⁻¹ ∙ pr₂ g y
     transport-lemma {refl .(fst g)} = lu _
 
-module _ ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B : A → 𝓥 ̇) where
+module _ (A : 𝓤 ̇) (B : A → 𝓥 ̇) where
 
   ϕ : Π B → sec {_} {_} {Σ B} pr₁
   ϕ f = (λ a → a , (f a)) , (hrefl _)

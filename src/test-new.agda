@@ -93,7 +93,6 @@ open import Ch4.9-Univalence-implies-funext public
 open import Ch4.Exercises public
 open import Ch4.1-Quasi-inverses public
 
-
 -- Chapter 5
 
 open import Ch5.1-Introduction-to-inductive-types public

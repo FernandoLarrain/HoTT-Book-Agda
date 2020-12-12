@@ -75,10 +75,10 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
 
   -- (vii) Uniqueness principle
 
-  po-η' : ⦃ fe : FunExt ⦄ {D : 𝓣 ̇} (s : po f g → D) → po-rec D (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) ≡ s
+  po-η' : {D : 𝓣 ̇} (s : po f g → D) → po-rec D (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) ≡ s
   po-η' s = funext (po-ind _ (λ a → refl _) (λ b → refl _) λ c → transport-funval-≡ _ _ (glue c) (refl _) ∙ (((ru _ ⁻¹ ∙  ap _⁻¹ (γ-β' _ (s ∘ inlₚ) (s ∘ inrₚ) (λ c → ap s (glue c)) c)) ∙ᵣ ap s (glue c)) ∙ linv _))
 
-  po-uniqueness-pple : ⦃ fe : FunExt ⦄ {D : 𝓣 ̇} (s s' : po f g → D) (α : s ∘ inlₚ ∼ s' ∘ inlₚ) (β : s ∘ inrₚ ∼ s' ∘ inrₚ) → ((c : C) → α (f c) ∙ ap s' (glue c) ≡ ap s (glue c) ∙ β (g c)) → s ≡ s'   
+  po-uniqueness-pple : {D : 𝓣 ̇} (s s' : po f g → D) (α : s ∘ inlₚ ∼ s' ∘ inlₚ) (β : s ∘ inrₚ ∼ s' ∘ inrₚ) → ((c : C) → α (f c) ∙ ap s' (glue c) ≡ ap s (glue c) ∙ β (g c)) → s ≡ s'   
   po-uniqueness-pple {𝓣} {D} s s' α β θ = funext (po-ind _ α β (λ c → transport-funval-≡ s s' (glue c) (α (f c)) ∙ (∙-assoc _ _ _ ⁻¹ ∙ ((ap s (glue c) ⁻¹ ∙ₗ (θ c)) ∙ ∙-assoc _ _ _ ∙ (linv _ ∙ᵣ β (g c)) ∙ lu _ ⁻¹))))
 
 
@@ -90,7 +90,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
 
   -- Lemma 6.8.2 (UMP of pushout)
 
-  module po-UMP ⦃ fe : FunExt ⦄ (E : 𝓣 ̇) where
+  module po-UMP (E : 𝓣 ̇) where
 
     c⊔ : (po f g → E) → cocone E
     c⊔ t = t ∘ inlₚ , t ∘ inrₚ , λ c → ap t (glue c) 
@@ -110,7 +110,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : C → A) (g : C → B) w
 
   -- Lemma 6.9.3 (Set pushout).
 
-  Set-po-UMP : ⦃ fe : FunExt ⦄ ⦃ st : SetTrunc ⦄ {E : 𝓣 ̇} → isSet A → isSet B → isSet C → isSet E → (∥ po f g ∥₀ → E) ≃ cocone E
+  Set-po-UMP : ⦃ st : SetTrunc ⦄ {E : 𝓣 ̇} → isSet A → isSet B → isSet C → isSet E → (∥ po f g ∥₀ → E) ≃ cocone E
   Set-po-UMP {𝓣} {E} x x₁ x₂ x₃ = ∥∥₀-UMP.equiv _ x₃ ● po-UMP.equiv E
 
 
@@ -124,7 +124,7 @@ A * B = (A ⊔⟨ A × B ⟩ B) pr₁ pr₂
 
 -- -- Lemma 8.5.9 (Join is associative).
 
--- module *-assoc ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B : 𝓥 ̇) (C : 𝓦 ̇) where
+-- module *-assoc (A : 𝓤 ̇) (B : 𝓥 ̇) (C : 𝓦 ̇) where
 
 --   -- A * B
   
