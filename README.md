@@ -2,7 +2,7 @@
 
 ## Authorship
 
-Most of the formalizations in this library are original. However, while learning Agda and setting up the library, I imported code and ideas from other sources. It is, at this point, impossible for me to demarcate them precisely, because they have been modified and reorganized multiple times. However, I can provide a rough guide to where they played an essential role:
+Most of the formalizations in this library are original. However, while learning Agda and setting up the library, I imported code and ideas from other sources (in addition to, of course, the [HoTT Book](https://homotopytypetheory.org/book/)). It is, at this point, impossible for me to demarcate them precisely, because they have been modified and reorganized multiple times. However, I can provide a rough guide to where they played an essential role:
 
 1. [Martín Escardó's Lecture Notes](https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/index.html): fundamental notions, axioms and notation.
 2. [The HoTT-Agda Library](https://github.com/HoTT/HoTT-Agda): basics of rewriting and Higher Inductive Types.
@@ -10,7 +10,7 @@ Most of the formalizations in this library are original. However, while learning
 
 ## The library
 
-The structure of the library follows closely that of the [HoTT Book](https://homotopytypetheory.org/book/). The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else), `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types), `Ch4.1` on `Ch4` and `Ch6.8` on `Ch6.9`. The following files are ordered lexicographically, first, by dependence, and second, by numbering.
+The structure of the library follows closely that of the HoTT Book. The only nonlinearities are the dependency of `Ch1.2` on `Ch1.3` (universes form the basis of everything else), `Ch1.6` on `Ch1.5` (binary products are defined as a particular case of dependent-pair types), `Ch4.1` on `Ch4` and `Ch6.8` on `Ch6.9`. The following files are ordered lexicographically, first, by dependence, and second, by numbering.
 
 #### Chapter 1 (src\Ch1)
 
