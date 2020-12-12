@@ -12,7 +12,7 @@ module Ch6.4-Circles-and-spheres where
 
 -- Lemma 6.4.1 (The circle is nontrivial).
 
-𝕊¹-is-nontrivial : ⦃ univ : Univalence ⦄ → ¬ (loop₁ ≡ refl base₁)
+𝕊¹-is-nontrivial : ¬ (loop₁ ≡ refl base₁)
 𝕊¹-is-nontrivial s = 𝓤-is-not-Set 𝓤₀ λ x y p q → ∙ₗ-inv (q ⁻¹) p q (loop₁-β' y (q ⁻¹ ∙ p) ⁻¹ ∙ ap (ap (𝕊¹-rec y (q ⁻¹ ∙ p))) s ∙ (linv q ⁻¹))
 
 
@@ -21,13 +21,13 @@ module Ch6.4-Circles-and-spheres where
 nontrivial-inhabitant : (x : 𝕊¹) → x ≡ x
 nontrivial-inhabitant = 𝕊¹-ind _ loop₁ (transport-loop loop₁ loop₁ ∙ ((linv _ ∙ᵣ loop₁) ∙ lu _ ⁻¹))
 
-nontrivial-inhabitant-is-nontrivial : ⦃ univ : Univalence ⦄ → ¬ (nontrivial-inhabitant ≡ hrefl _)
+nontrivial-inhabitant-is-nontrivial : ¬ (nontrivial-inhabitant ≡ hrefl _)
 nontrivial-inhabitant-is-nontrivial p = 𝕊¹-is-nontrivial (happly p base₁)
 
 
 -- Lemma 6.4.3 (A universe with circle is not a 1-type).
 
-𝓤₀-is-not-⟨1⟩-type : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → ¬ (is-⟨1⟩-type (𝓤₀ ̇))
+𝓤₀-is-not-⟨1⟩-type : ¬ (is-⟨1⟩-type (𝓤₀ ̇))
 𝓤₀-is-not-⟨1⟩-type i = nontrivial-inhabitant-is-nontrivial (k _ _) where
   aux-equiv : (≃-refl 𝕊¹ ≡ ≃-refl 𝕊¹) ≃ (𝑖𝑑 𝕊¹ ∼ 𝑖𝑑 𝕊¹)
   aux-equiv =

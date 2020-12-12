@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
@@ -27,7 +27,7 @@ Semigroup 𝓤 = Σ A ꞉ 𝓤 ̇ , SemigroupStr A
 
 -- Subsection 2.14.1: Lifting equivalences.
 
-module Lifting-equivalences ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ (A B : 𝓤 ̇) (e : A ≃ B) (m : A → A → A) (a : Assoc (A , m)) where
+module Lifting-equivalences ⦃ fe : FunExt ⦄ (A B : 𝓤 ̇) (e : A ≃ B) (m : A → A → A) (a : Assoc (A , m)) where
 
   -- Naming equivalence data
   

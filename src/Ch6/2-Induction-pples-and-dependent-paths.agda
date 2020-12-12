@@ -3,6 +3,7 @@
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
 open import Rewrite
 
 module Ch6.2-Induction-pples-and-dependent-paths where
@@ -73,7 +74,7 @@ module _ {A : 𝓤 ̇} (a : A) (p : a ≡ a) where
 
 -- Lemma 6.2.9 (UMP of 𝕊¹).
 
-UMP-𝕊¹ : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) → (𝕊¹ → A) ≃ (Σ x ꞉ A , x ≡ x)
+UMP-𝕊¹ : (A : 𝓤 ̇) → (𝕊¹ → A) ≃ (Σ x ꞉ A , x ≡ x)
 UMP-𝕊¹ A =
   (λ f → (f base₁ , ap f loop₁)) ,
   (qinv-to-isequiv (

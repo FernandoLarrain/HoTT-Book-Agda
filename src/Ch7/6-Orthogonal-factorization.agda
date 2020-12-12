@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -17,7 +17,7 @@ module Ch7.6-Orthogonal-factorization ⦃ tc : Truncations ⦄ where
 trunc : Tlevel → {A : 𝓤 ̇} {B : 𝓥 ̇} → (A → B) → 𝓤 ⊔ 𝓥 ̇
 trunc n {A} {B} f = (b : B) → is n type (fib f b)
 
-trunc-is-Prop : ⦃ fe : FunExt ⦄ (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (trunc n f )
+trunc-is-Prop : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (trunc n f )
 trunc-is-Prop n f = Π-preserves-Props _ (λ b → Tlevel-is-predicate _ _)
 
 

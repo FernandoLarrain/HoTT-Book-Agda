@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --rewriting #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -68,7 +68,7 @@ isind-to-ishinit A A-ind B with A-ind (prod A B) p₁
   contraction g with A-ind (eq f g) (m f g)
   ... | (m⁻¹ , q') = run _ ⁻¹ ∙ ap (f ·_) (q' ⁻¹) ∙ assoc _ _ _ ∙ ap (_· m⁻¹) (meq f g) ∙ assoc _ _ _ ⁻¹ ∙ (ap (g ·_) q' ∙ run _)
 
-ishinit-is-Prop : ⦃ fe : FunExt ⦄ (A : Obj) → isProp (ishinit A)
+ishinit-is-Prop : (A : Obj) → isProp (ishinit A)
 ishinit-is-Prop A = Π-preserves-Props _ (λ A → isContr-is-Prop _)
 
 uniqueness-pple : (A : Obj) → isind A → (B : Obj) (f : Hom B A) → isProp (Σ g ꞉ Hom A B , f · g ≡ ide A)
@@ -76,11 +76,11 @@ uniqueness-pple A A-ind B f (g , p) (h , q) =
   let A-hinit = isind-to-ishinit A A-ind
   in dpair-≡ (isContr-to-isProp (A-hinit B) _ _ , isContr-to-isProp (pr₁ Prop-iff-Contr-≡ (isContr-to-isProp (A-hinit A)) (f · h) (ide A)) _ _)
 
-isind-is-Prop : ⦃ fe : FunExt ⦄ (A : Obj) → isProp (isind A)
+isind-is-Prop : (A : Obj) → isProp (isind A)
 isind-is-Prop A A-ind = aux _
   where
   aux : isProp (isind A)
   aux = Π-preserves-Props _ (λ B → Π-preserves-Props _ (λ f → uniqueness-pple A A-ind B f))
 
-thm : ⦃ fe : FunExt ⦄ (A : Obj) → ishinit A ≃ isind A
+thm : (A : Obj) → ishinit A ≃ isind A
 thm A = ⇔-to-≃ (ishinit-is-Prop A) (isind-is-Prop A) ((ishinit-to-isind A) , (isind-to-ishinit A))

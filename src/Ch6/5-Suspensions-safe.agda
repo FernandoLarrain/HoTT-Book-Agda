@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -16,7 +16,7 @@ A ₊ = ((A + 𝟙) , inr ⋆)
 
 -- Lemma 6.5.3.
 
-module based-maps-≃-unbased-maps ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
+module based-maps-≃-unbased-maps (A : 𝓤 ̇) (B' : 𝓥 ⊙) where
 
   B = pr₁ B'
   b₀ = pr₂ B'
@@ -54,5 +54,5 @@ module based-maps-≃-unbased-maps ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B' : 𝓥 
 
 -- Points of a type
 
-points-of-a-type : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) → (𝟙 → A) ≃ A
+points-of-a-type : (A : 𝓤 ̇) → (𝟙 → A) ≃ A
 points-of-a-type A = (λ f → f ⋆) , qinv-to-isequiv ((λ a u → a) , (refl , λ f → funext (𝟙-induction _ (refl (f ⋆))))) 

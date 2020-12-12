@@ -7,7 +7,7 @@ open import Ch4.Equivalences
 open import Ch5.8-Id-types-and-id-systems
 open import Rewrite
 
-module int-as-HIT.thesis2 ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
+module int-as-HIT.thesis2 where
 
 
 -- ?. The Category of ℤ-Algebras

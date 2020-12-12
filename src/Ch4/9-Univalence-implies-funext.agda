@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -6,7 +6,6 @@ open import Ch3.Sets-and-logic
 open import Ch4.2-Half-adjoint-equivalences
 open import Ch4.4-Contractible-fibers
 open import Ch4.7-Closure-properties-of-equivalences
-
 module Ch4.9-Univalence-implies-funext where
 
 
@@ -81,9 +80,7 @@ weak-funext-to-funext 𝓤 𝓥 wfe {A} {P} {f} {g} = fourth g where
 
 -- Global univalence implies golbal function extensionality
 
-module _ ⦃ univ : Univalence ⦄ where
-
-  -- We could declare global-funext as an instance of FunExt.
-  
-  global-funext : FunExt
-  FunExt.happly-is-equiv global-funext {𝓤} {𝓥} = weak-funext-to-funext 𝓤 𝓥 (univalence-to-weak-funext 𝓤 𝓥 (idtoeqv-is-equiv ⦃ univ ⦄ {𝓤 ⊔ 𝓥}))
+abstract
+  instance
+    fe : FunExt
+    fe {𝓤} {𝓥} = weak-funext-to-funext 𝓤 𝓥 (univalence-to-weak-funext 𝓤 𝓥 (idtoeqv-is-equiv {𝓤 ⊔ 𝓥}))

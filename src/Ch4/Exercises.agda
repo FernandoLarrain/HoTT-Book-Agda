@@ -1,10 +1,11 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.2-Half-adjoint-equivalences
 open import Ch4.5-On-the-definition-of-equivalences
+open import Ch4.9-Univalence-implies-funext
 
 module Ch4.Exercises where
 
@@ -17,13 +18,13 @@ module Ch4.Exercises where
 𝟚-is-Set ₁ .₁ p (refl .₁) with isequiv-to-qinv (pr₂ (path-space-inr 𝟙 𝟙 ⋆ ₁ ● 𝟙-≡-≃-𝟙 ⋆ ⋆))
 ... | (g , α , β) = β p ⁻¹ ∙ β (refl ₁)
 
-𝟚-η : ⦃ fe : FunExt ⦄ {B : 𝟚 → 𝓤 ̇} (f : Π B) → (f ≡ 𝟚-induction B (f ₀) (f ₁))
+𝟚-η : {B : 𝟚 → 𝓤 ̇} (f : Π B) → (f ≡ 𝟚-induction B (f ₀) (f ₁))
 𝟚-η f = funext (𝟚-induction _ (refl _) (refl _))
 
 𝟚-uniqueness-pple : ⦃ fe : FunExt ⦄ {B : 𝟚 → 𝓤 ̇} (f g : Π B) → f ₀ ≡ g ₀ → f ₁ ≡ g ₁ → f ≡ g
 𝟚-uniqueness-pple {𝓤} {B} f g p₀ p₁ = 𝟚-η f ∙ ap (λ - → 𝟚-induction (λ  - → B -) (f ₀) -) p₁ ∙ ap (λ - → 𝟚-induction (λ  - → B -) - (g ₁)) p₀ ∙ 𝟚-η g ⁻¹
 
-module autoequivs-of-𝟚 ⦃ fe : FunExt ⦄ where
+module autoequivs-of-𝟚 where
 
   -- Autoequivalences of 𝟚:
 

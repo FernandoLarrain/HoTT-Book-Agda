@@ -10,7 +10,7 @@ open import Ch6.5-Suspensions
 open import Ch7.1-Definition-of-n-types
 open import Ch7.2-UIP-and-Hedberg's-theorem
 
-module Ch7.3-Truncations ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ where
+module Ch7.3-Truncations where
 
 -- Definition of n-truncation of a type. 
 
@@ -224,8 +224,6 @@ private
 
 
 -- TO DO: 7.3.12-14.
-
--- TO DO: constrain funext and univalence assumptions.
 
 
 -- -- Theorem 7.3.12 (Path spaces of truncations).

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
@@ -227,33 +227,31 @@ module _ ⦃ fe : FunExt ⦄ where
 
   private {- A more general version of the next result can be found in Ch4.2 -}
 
-    module _ ⦃ univ : Univalence ⦄ where
+    -- Π preserves equivalences of base types
 
-      -- Π preserves equivalences of base types
+    Π-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Π P
+    Π-preserves-base-≡ P (refl A) = refl _ 
 
-      Π-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Π P
-      Π-preserves-base-≡ P (refl A) = refl _ 
+    Π-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
+    Π-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
+      Π (P ∘ pr₁ e)
+        ≡⟨ ap Π (funext (transport-fun-ua-is-pre-∘ e P) ⁻¹) ⟩
+      Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
+        ≡⟨ Π-preserves-base-≡ P p ⟩
+      Π P ∎
+      )
 
-      Π-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) → (e : A ≃ B) → Π (P ∘ (pr₁ e)) ≃ Π P
-      Π-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
-        Π (P ∘ pr₁ e)
-          ≡⟨ ap Π (funext (transport-fun-ua-is-pre-∘ e P) ⁻¹) ⟩
-        Π (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) 
-          ≡⟨ Π-preserves-base-≡ P p ⟩
-        Π P ∎
-        )
+    Π-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Π P ≡ Π (transport (λ - → - → 𝓥 ̇) p P)
+    Π-preserves-base-≡' P (refl A) = refl _ 
 
-      Π-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Π P ≡ Π (transport (λ - → - → 𝓥 ̇) p P)
-      Π-preserves-base-≡' P (refl A) = refl _ 
-
-      Π-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) → (e : A ≃ B) → Π P ≃ Π (P ∘ (inv e))
-      Π-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
-        Π P
-          ≡⟨ Π-preserves-base-≡' P p ⟩
-        Π (transport (λ - → - → 𝓥 ̇) p P) 
-          ≡⟨ ap Π (funext (transport-fun-ua-is-pre-∘' e P)) ⟩
-        Π (P ∘ (inv e))  ∎
-        )
+    Π-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) → (e : A ≃ B) → Π P ≃ Π (P ∘ (inv e))
+    Π-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv (
+      Π P
+        ≡⟨ Π-preserves-base-≡' P p ⟩
+      Π (transport (λ - → - → 𝓥 ̇) p P) 
+        ≡⟨ ap Π (funext (transport-fun-ua-is-pre-∘' e P)) ⟩
+      Π (P ∘ (inv e))  ∎
+      )
 
   -- Π preserves fiberwise equivalences
 
@@ -277,33 +275,31 @@ module _ ⦃ fe : FunExt ⦄ where
 
   private {- A more general version of the next result can be found in Ch4.2 -}
 
-    module _ ⦃ univ : Univalence ⦄ where
+    -- Σ preserves equivalences of base types
 
-      -- Σ preserves equivalences of base types
+    Σ-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Σ P
+    Σ-preserves-base-≡ P (refl A) = refl _
 
-      Σ-preserves-base-≡ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (p : A ≡ B) → Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P) ≡ Σ P
-      Σ-preserves-base-≡ P (refl A) = refl _
+    Σ-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
+    Σ-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
+      (Σ (P ∘ pr₁ e)
+        ≡⟨ ap Σ (funext (transport-fun-ua-is-pre-∘ e P) ⁻¹) ⟩
+      Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
+        ≡⟨ Σ-preserves-base-≡ P p ⟩
+      Σ P ∎
+      )
 
-      Σ-preserves-base-≃ : {A B : 𝓤 ̇} (P : B → 𝓥 ̇) (e : A ≃ B) → Σ (P ∘ (pr₁ e)) ≃ Σ P
-      Σ-preserves-base-≃ {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
-        (Σ (P ∘ pr₁ e)
-          ≡⟨ ap Σ (funext (transport-fun-ua-is-pre-∘ e P) ⁻¹) ⟩
-        Σ (transport (λ - → - → 𝓥 ̇) (p ⁻¹) P)
-          ≡⟨ Σ-preserves-base-≡ P p ⟩
-        Σ P ∎
-        )
+    Σ-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Σ P ≡ Σ (transport (λ - → - → 𝓥 ̇) p P)
+    Σ-preserves-base-≡' P (refl A) = refl _
 
-      Σ-preserves-base-≡' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (p : A ≡ B) → Σ P ≡ Σ (transport (λ - → - → 𝓥 ̇) p P)
-      Σ-preserves-base-≡' P (refl A) = refl _
-
-      Σ-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (e : A ≃ B) → Σ P ≃ Σ (P ∘ inv e)
-      Σ-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
-        (Σ P
-          ≡⟨ Σ-preserves-base-≡' P p ⟩
-        Σ (transport (λ - → - → 𝓥 ̇) p P)
-          ≡⟨ ap Σ (funext (transport-fun-ua-is-pre-∘' e P)) ⟩
-        Σ (P ∘ inv e) ∎
-        )
+    Σ-preserves-base-≃' : {A B : 𝓤 ̇} (P : A → 𝓥 ̇) (e : A ≃ B) → Σ P ≃ Σ (P ∘ inv e)
+    Σ-preserves-base-≃' {𝓤} {𝓥} {A} {B} P e = let p = ua e in idtoeqv
+      (Σ P
+        ≡⟨ Σ-preserves-base-≡' P p ⟩
+      Σ (transport (λ - → - → 𝓥 ̇) p P)
+        ≡⟨ ap Σ (funext (transport-fun-ua-is-pre-∘' e P)) ⟩
+      Σ (P ∘ inv e) ∎
+      )
 
 -- Σ preserves fiberwise equivalences
 

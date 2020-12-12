@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
+{-# OPTIONS --without-K --exact-split #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -45,7 +45,7 @@ module _ ⦃ st : SetTrunc ⦄ where
 
   -- Lemma 6.9.2 (UMP of set truncation).
 
-  module ∥∥₀-UMP ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) {B : 𝓥 ̇} (i : isSet B) where
+  module ∥∥₀-UMP (A : 𝓤 ̇) {B : 𝓥 ̇} (i : isSet B) where
 
     ϕ : (∥ A ∥₀ → B) → A → B
     ϕ = _∘ ∣_∣₀

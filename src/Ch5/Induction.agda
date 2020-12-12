@@ -1,9 +1,4 @@
-{-# OPTIONS --without-K --exact-split --safe #-}
-
-open import Ch1.Type-theory
-open import Ch2.Homotopy-type-theory
-open import Ch3.Sets-and-logic
-open import Ch4.Equivalences
+{-# OPTIONS --without-K --exact-split #-}
 
 module Ch5.Induction where
 
