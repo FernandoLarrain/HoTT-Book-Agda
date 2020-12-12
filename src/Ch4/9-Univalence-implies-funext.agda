@@ -6,7 +6,6 @@ open import Ch3.Sets-and-logic
 open import Ch4.2-Half-adjoint-equivalences
 open import Ch4.4-Contractible-fibers
 open import Ch4.7-Closure-properties-of-equivalences
-
 module Ch4.9-Univalence-implies-funext where
 
 
