@@ -143,6 +143,8 @@ postulate
 
   {-# REWRITE succ-β #-}
 
+ℤₕ-rec : (A : Alg 𝓤) → ℤₕ → pr₁ A
+ℤₕ-rec (A , a₀ , s , i) = ℤₕ-ind ((λ - → A) , a₀ , (λ - → s) , λ - → i)
 
 ℤₕ-is-ind : (𝓤 : Universe) → isind 𝓤 ℤₕ-alg
 ℤₕ-is-ind 𝓤 (E , e₀ , s' , j) = let f = ℤₕ-ind (E , e₀ , s' , j) in
@@ -153,17 +155,3 @@ postulate
 
 ℤₕ-is-ℤω : ℤₕ-alg ≡ ℤω-alg
 ℤₕ-is-ℤω = ap pr₁ (InitAlg-is-Prop 𝓤₀ (ℤₕ-alg , ℤₕ-is-init) (ℤω-alg , ℤω-is-init 𝓤₀))
-
-
--- -- IV. Properties of the integers
-
--- ℤω-is-Set : isSet ℤω
--- ℤω-is-Set = {!!}
-
--- add : ℕ → ℕ → ℕ
--- add m zero = m
--- add m (succ n) = succ (add m n)
-
--- prod : ℕ → ℕ → ℕ
--- prod m zero = zero
--- prod m (succ n) = add (prod m n) n
