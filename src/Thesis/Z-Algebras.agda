@@ -530,3 +530,80 @@ hae-pres-≃-fun-pres A₁ A₂ e B₁ B₂ e' f₁ f₂ = Σ-of-Contr-family-is
 
 fun-pres-to-hae-pres : {A₁ A₂ : 𝓤 ̇} (e : A₁ ≃ A₂) {B₁ B₂ : 𝓥 ̇} (e' : B₁ ≃ B₂) (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) → (f₂ ∘ pr₁ e ∼ pr₁ e' ∘ f₁) → hae-pres A₁ A₂ e B₁ B₂ e' f₁ f₂
 fun-pres-to-hae-pres {𝓤} {𝓥} {A₁} {A₂} e {B₁} {B₂} e' f₁ f₂ = inv (hae-pres-≃-fun-pres A₁ A₂ e B₁ B₂ e' f₁ f₂)
+
+
+-- XI. Slice over a ℤ-Algebra
+
+lemma-id : {A : 𝓤 ̇} (P Q : A → 𝓥 ̇) (F G : (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁)) → (H : pr₁ F ∼ pr₁ G) → pr₂ F ∼ (λ w → ap pr₁ (H w) ∙ pr₂ G w) → F ≡ G
+lemma-id P Q (f , α) (g , β) H = 𝕁-∼ (λ f g H → (α : pr₁ ∘ f ∼ pr₁) (β : pr₁ ∘ g ∼ pr₁) → α ∼ (λ w → ap pr₁ (H w) ∙ β w) → (f , α) ≡ (g , β)) (λ f α β 𝓗 → dpair-≡ ((refl f) , (funext λ w → 𝓗 w ∙ lu _ ⁻¹))) f g H α β
+
+lemma : {A : 𝓤 ̇} (P Q : A → 𝓥 ̇) → (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁) ≃ Π (λ a → P a → Q a)
+lemma P Q = ϕ , qinv-to-isequiv (ψ , ϕ∘ψ , ψ∘ϕ)
+  where
+  ϕ :  (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁) → Π (λ a → P a → Q a)
+  ϕ (f , α) a u = transport Q (α (a , u)) (pr₂ (f (a , u)))
+  ψ : Π (λ a → P a → Q a) → (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁)
+  ψ g = (total g) , (hrefl _)
+  ϕ∘ψ : ϕ ∘ ψ ∼ id
+  ϕ∘ψ g = refl _
+  ψ∘ϕ : ψ ∘ ϕ ∼ id
+  ψ∘ϕ (f , α) = lemma-id P Q _ _ aux1 aux2
+    where
+    aux1 : pr₁ (ψ (ϕ (f , α))) ∼ f
+    aux1 w = dpair-≡ ((α w ⁻¹) , (transport-∙ Q (α w) (α w ⁻¹) _ ∙ ap (λ - → transport Q - (pr₂ (f w))) (rinv (α w))))
+    aux2 : hrefl pr₁ ∼ (λ w → ap pr₁ (aux1 w) ∙ α w)
+    aux2 (a , u) = linv _ ⁻¹ ∙ ((dpr₁-≡-β _ _) ⁻¹ ∙ᵣ _) 
+
+Slice : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ (𝓥 ⁺) ̇
+Slice {𝓤} 𝓥 A = Σ B ꞉ Alg 𝓥 , Hom B A
+
+Slice-is-FibAlg : (A : Alg 𝓤) → Slice 𝓤 A ≃ FibAlg 𝓤 A
+Slice-is-FibAlg {𝓤} (A , a₀ , s , i) =
+  Slice 𝓤 A'
+    ≃⟨ lemma1 ⟩
+  S
+    ≃⟨ Σ-preserves-≃' _ _ (thm-4-8-3.χ _ , thm-4-8-3.χ-is-equiv _) (λ E → ×-preserves-≃ (fibs-of-pr₁-are-values a₀) (lemma4 E))  ⟩
+  FibAlg 𝓤 A' ■ 
+  where
+  
+  A' = (A , a₀ , s , i)
+  
+  S = (Σ w ꞉ (Σ λ B → B → A) , fib (pr₂ w) a₀ × (Σ s' ꞉ pr₁ w ≃ pr₁ w , pr₂ w ∘ pr₁ s' ∼ s ∘ pr₂ w))
+  
+  lemma1 : Slice 𝓤 A' ≃ S
+  lemma1 = ϕ , qinv-to-isequiv (ψ , ϕ∘ψ , ψ∘ϕ) 
+    where
+    ϕ : Slice 𝓤 A' → S
+    ϕ ((B , b₀ , s') , (f , f₀ , f-s)) = ((B , f) , ((b₀ , f₀) , (s' , f-s)))
+    ψ : S → Slice 𝓤 A'
+    ψ ((B , f) , ((b₀ , f₀) , (s' , f-s))) = ((B , b₀ , s') , (f , f₀ , f-s))
+    ϕ∘ψ : ϕ ∘ ψ ∼ id
+    ϕ∘ψ ((B , f) , ((b₀ , f₀) , (s' , f-s))) = refl _
+    ψ∘ϕ : ψ ∘ ϕ ∼ id
+    ψ∘ϕ ((B , b₀ , s') , (f , f₀ , f-s)) = refl _
+
+  lemma2 : (A : 𝓤 ̇) (E₁ E₂ : A → 𝓤 ̇) → (Σ s' ꞉ (Σ E₁ ≃ Σ E₂) , pr₁ ∘ pr₁ s' ∼ pr₁) ≃ (Σ t ꞉ ((a : A) → E₁ a → E₂ a) , ((a : A) → isequiv (t a)))
+  lemma2 A E₁ E₂ = {!!}
+
+  lemma3 : {A₁ A₂ : 𝓤 ̇} (s : A₁ ≃ A₂) (E₁ : A₁ → 𝓤 ̇) (E₂ : A₂ → 𝓤 ̇) → (Σ s' ꞉ (Σ E₁ ≃ Σ E₂) , pr₁ ∘ pr₁ s' ∼ pr₁ s ∘ pr₁) ≃ (Σ t ꞉ ((a : A₁) → E₁ a → E₂ ((pr₁ s) a)) , ((a : A₁) → isequiv (t a)))
+  lemma3 = 𝕁-≃
+             (λ A₁ A₂ s₁ →
+                (E₁ : A₁ → 𝓤 ̇) (E₂ : A₂ → 𝓤 ̇) →
+                (-Σ (Σ E₁ ≃ Σ E₂) (λ s'' → pr₁ ∘ pr₁ s'' ∼ pr₁ s₁ ∘ pr₁)) ≃
+                (-Σ ((a : A₁) → E₁ a → E₂ (pr₁ s₁ a))
+                 (λ t → (a : A₁) → isequiv (t a))))
+             lemma2 _ _
+
+  lemma4 : (E : A → 𝓤 ̇) → (Σ s' ꞉ (Σ E ≃ Σ E) , pr₁ ∘ pr₁ s' ∼ s ∘ pr₁) ≃ (Σ t ꞉ ((a : A) → E a → E (s a)) , ((a : A) → isequiv (t a)))
+  lemma4 E = lemma3 (s , i) E E 
+
+
+
+
+
+
+
+
+
+
+
