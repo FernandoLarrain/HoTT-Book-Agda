@@ -463,31 +463,33 @@ open equivalence-induction using (𝕁-≃ ; 𝕁-≃-β ; ℍ-≃ ; ℍ-≃-β)
 
 module homotopy-induction where
 
-  happly' : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → f ≡ g → f ∼ g
-  happly' {𝓤} {𝓥} {A} {B} {f} {g} p = transport (λ - → f ∼ -) p (hrefl f) 
+  abstract
 
-  happly-agreement : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → happly {𝓤} {𝓥} {A} {B} {f} {g} ∼ happly'
-  happly-agreement (refl _) = refl _
+    happly' : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → f ≡ g → f ∼ g
+    happly' {𝓤} {𝓥} {A} {B} {f} {g} p = transport (λ - → f ∼ -) p (hrefl f) 
 
-  happly'-is-equiv : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → isequiv (happly' {𝓤} {𝓥} {A} {B} {f} {g})
-  happly'-is-equiv {𝓤} = transport isequiv (funext happly-agreement) (happly-is-equiv {𝓤})
+    happly-agreement : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → happly {𝓤} {𝓥} {A} {B} {f} {g} ∼ happly'
+    happly-agreement (refl _) = refl _
 
-  ∼-is-id-system : {A : 𝓤 ̇} {B : A → 𝓥 ̇} → is-id-system {_} {_} {𝓦} {Π B} ((_∼_) , hrefl) 
-  ∼-is-id-system {𝓤} {𝓥} {𝓦} {A} {B} = thm-5-8-4.iv-to-i (Π B) (_∼_ , hrefl) (λ f g → happly'-is-equiv)
+    happly'-is-equiv : {A : 𝓤 ̇} {B : A → 𝓥 ̇} {f g : Π B} → isequiv (happly' {𝓤} {𝓥} {A} {B} {f} {g})
+    happly'-is-equiv {𝓤} = transport isequiv (funext happly-agreement) (happly-is-equiv {𝓤})
 
-  𝕁-∼ : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (D : (f g : Π B) → f ∼ g → 𝓦 ̇) → ((f : Π B) → D f f (hrefl f)) → (f g : Π B) (H : f ∼ g) → D f g H
-  𝕁-∼ D d = pr₁ (∼-is-id-system D d)
+    ∼-is-id-system : {A : 𝓤 ̇} {B : A → 𝓥 ̇} → is-id-system {_} {_} {𝓦} {Π B} ((_∼_) , hrefl) 
+    ∼-is-id-system {𝓤} {𝓥} {𝓦} {A} {B} = thm-5-8-4.iv-to-i (Π B) (_∼_ , hrefl) (λ f g → happly'-is-equiv)
 
-  𝕁-∼-β : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (D : (f g : Π B) → f ∼ g → 𝓦 ̇) (d : (f : Π B) → D f f (hrefl f)) (f : Π B) → 𝕁-∼ D d f f (hrefl f) ≡ d f
-  𝕁-∼-β D d = pr₂ (∼-is-id-system D d)
+    𝕁-∼ : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (D : (f g : Π B) → f ∼ g → 𝓦 ̇) → ((f : Π B) → D f f (hrefl f)) → (f g : Π B) (H : f ∼ g) → D f g H
+    𝕁-∼ D d = pr₁ (∼-is-id-system D d)
 
-  ∼-is-based-id-system : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) → is-based-id-system {_} {_} {𝓦} ((f ∼_) , hrefl f)
-  ∼-is-based-id-system {𝓤} {𝓥} {𝓦} {A} {B} f = thm-5-8-2.iii-to-i (Π B , f) ((f ∼_) , hrefl f) (λ g → happly'-is-equiv)
+    𝕁-∼-β : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (D : (f g : Π B) → f ∼ g → 𝓦 ̇) (d : (f : Π B) → D f f (hrefl f)) (f : Π B) → 𝕁-∼ D d f f (hrefl f) ≡ d f
+    𝕁-∼-β D d = pr₂ (∼-is-id-system D d)
 
-  ℍ-∼ : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) (D : (g : Π B) → f ∼ g → 𝓦 ̇) → D f (hrefl f) → (g : Π B) (H : f ∼ g) → D g H
-  ℍ-∼ f D d = pr₁ (∼-is-based-id-system f D d)
+    ∼-is-based-id-system : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) → is-based-id-system {_} {_} {𝓦} ((f ∼_) , hrefl f)
+    ∼-is-based-id-system {𝓤} {𝓥} {𝓦} {A} {B} f = thm-5-8-2.iii-to-i (Π B , f) ((f ∼_) , hrefl f) (λ g → happly'-is-equiv)
 
-  ℍ-∼-β : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) (D : (g : Π B) → f ∼ g → 𝓦 ̇) (d : D f (hrefl f)) → ℍ-∼ f D d f (hrefl f) ≡ d
-  ℍ-∼-β f D d = pr₂ (∼-is-based-id-system f D d)
+    ℍ-∼ : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) (D : (g : Π B) → f ∼ g → 𝓦 ̇) → D f (hrefl f) → (g : Π B) (H : f ∼ g) → D g H
+    ℍ-∼ f D d = pr₁ (∼-is-based-id-system f D d)
+
+    ℍ-∼-β : {A : 𝓤 ̇} {B : A → 𝓥 ̇} (f : Π B) (D : (g : Π B) → f ∼ g → 𝓦 ̇) (d : D f (hrefl f)) → ℍ-∼ f D d f (hrefl f) ≡ d
+    ℍ-∼-β f D d = pr₂ (∼-is-based-id-system f D d)
 
 open homotopy-induction using (𝕁-∼ ; 𝕁-∼-β ; ℍ-∼ ; ℍ-∼-β) public
