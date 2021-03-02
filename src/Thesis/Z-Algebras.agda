@@ -657,15 +657,20 @@ theorem' A E = refl _
 
 AlgSec-is-Sec : (A : Alg 𝓤) (E : FibAlg 𝓤 A) → AlgSec A E ≃ (Σ f ꞉ (Hom A (TotAlg A E)) , comp A (TotAlg A E) A (π₁ A E) f ≡ algid A)
 AlgSec-is-Sec {𝓤} (A , a₀ , s , i) (E , e₀ , s' , j) = {!!}
+
   where
+  
   A' : Alg 𝓤
   A' = (A , a₀ , s , i)
+  
   E' : FibAlg 𝓤 A'
   E' = (E , e₀ , s' , j)
+  
   ϕ : AlgSec A' E' → (Σ f ꞉ (Hom A' (TotAlg A' E')) , comp A' (TotAlg A' E') A' (π₁ A' E') f ≡ algid A')
   ϕ (f , f₀ , f-s) = ((λ a → (a , f a)) , ((dpair-≡ (refl _ , f₀)) , λ a → dpair-≡ (refl _ , f-s a))) , dpair-≡ ((refl _) , (pair-≡ ((((dpr₁-≡-β _ _) ∙ᵣ refl _)) , funext (λ a → (dpr₁-≡-β _ _) ∙ᵣ refl _))))
+  
   ψ : (Σ f ꞉ (Hom A' (TotAlg A' E')) , comp A' (TotAlg A' E') A' (π₁ A' E') f ≡ algid A') →  AlgSec A' E'
-  ψ = {!!} -- should be a similar construction to the one used in the proof of equivalence between isind and ishinit. How will we prove that they are inverses? The identity type of Sec will be quite complicated...
+  ψ = {!!} -- This should be a similar construction to the one used in the proof of equivalence between isind and ishinit. How will we prove that they are inverses? The identity type of Sec will be quite complicated... also: we should think whether it is better to use TotAlg and π₁ or the Slice-is-FibAlg equivalence.
 
 
 
