@@ -723,3 +723,16 @@ AlgSec-is-Sec {𝓤} (A , a₀ , s , i) (E , e₀ , s' , j) = ≃-sym (
     _ ■
 
 
+-- XII. Finite Limits
+
+_⨂_ : Alg 𝓤 → Alg 𝓤 → Alg 𝓤
+(A , a₀ , (s , p , σ , ρ , τ)) ⨂ (B , b₀ , (s' , p' , σ' , ρ' , τ')) = (A × B) , (a₀ , b₀) , ((Σ-induction (λ a b → s a , s' b)) , qinv-to-isequiv ((Σ-induction (λ a b → p a , p' b)) , (Σ-induction λ a b → pair-≡ (ρ a , ρ' b)) , (Σ-induction λ a b → pair-≡ (σ a , σ' b))))
+
+proj₁ : (A B : Alg 𝓤) → Hom (A ⨂ B) A
+proj₁ A B = pr₁ , ((refl _) , (hrefl _))
+
+proj₂ : (A B : Alg 𝓤) → Hom (A ⨂ B) B
+proj₂ A B = pr₂ , ((refl _) , (hrefl _))
+
+-- Eqz : (A B : Alg 𝓤) → Hom A B → Hom A B → Alg 𝓤
+-- Eqz (A , a₀ , (s , p , σ , ρ , τ)) (B , b₀ , (s' , p' , σ' , ρ' , τ')) (f , f₀ , f-s) (g , g₀ , g-s) = (Σ a ꞉ A , f a ≡ g a) , ((a₀ , (f₀ ∙ g₀ ⁻¹)) , (Σ-induction (λ a q → (s a) , (f-s a ∙ ap s' q ∙ g-s a ⁻¹))) , qinv-to-isequiv ((Σ-induction (λ a q → (p a) , {!!})) , {!!}))
