@@ -5,6 +5,7 @@ open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 open import Ch5.8-Id-types-and-id-systems
+open import Ch5.Exercises
 
 module Thesis.Z-Algebras where
 
@@ -532,32 +533,34 @@ fun-pres-to-hae-pres : {A₁ A₂ : 𝓤 ̇} (e : A₁ ≃ A₂) {B₁ B₂ : �
 fun-pres-to-hae-pres {𝓤} {𝓥} {A₁} {A₂} e {B₁} {B₂} e' f₁ f₂ = inv (hae-pres-≃-fun-pres A₁ A₂ e B₁ B₂ e' f₁ f₂)
 
 
--- XI. Slice over a ℤ-Algebra
+-- XI. Slice over a ℤ-Algebra.
 
--- module families-of-funs {A : 𝓤 ̇} (P Q : A → 𝓥 ̇) where
+module families-of-funs {A : 𝓤 ̇} (P Q : A → 𝓥 ̇) where
 
---   tot-id : (F G : (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁)) → (H : pr₁ F ∼ pr₁ G) → pr₂ F ∼ (λ w → ap pr₁ (H w) ∙ pr₂ G w) → F ≡ G
---   tot-id (f , α) (g , β) H = 𝕁-∼ (λ f g H → (α : pr₁ ∘ f ∼ pr₁) (β : pr₁ ∘ g ∼ pr₁) → α ∼ (λ w → ap pr₁ (H w) ∙ β w) → (f , α) ≡ (g , β)) (λ f α β 𝓗 → dpair-≡ ((refl f) , (funext λ w → 𝓗 w ∙ lu _ ⁻¹))) f g H α β
+{- Not used: next module is more general. -}
 
---   ϕ :  (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁) → Π (λ a → P a → Q a)
---   ϕ (f , α) a u = transport Q (α (a , u)) (pr₂ (f (a , u)))
+  tot-id : (F G : (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁)) → (H : pr₁ F ∼ pr₁ G) → pr₂ F ∼ (λ w → ap pr₁ (H w) ∙ pr₂ G w) → F ≡ G
+  tot-id (f , α) (g , β) H = 𝕁-∼ (λ f g H → (α : pr₁ ∘ f ∼ pr₁) (β : pr₁ ∘ g ∼ pr₁) → α ∼ (λ w → ap pr₁ (H w) ∙ β w) → (f , α) ≡ (g , β)) (λ f α β 𝓗 → dpair-≡ ((refl f) , (funext λ w → 𝓗 w ∙ lu _ ⁻¹))) f g H α β
+
+  ϕ :  (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁) → Π (λ a → P a → Q a)
+  ϕ (f , α) a u = transport Q (α (a , u)) (pr₂ (f (a , u)))
   
---   ψ : Π (λ a → P a → Q a) → (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁)
---   ψ g = (total g) , (hrefl _)
+  ψ : Π (λ a → P a → Q a) → (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁)
+  ψ g = (total g) , (hrefl _)
   
---   ϕ∘ψ : ϕ ∘ ψ ∼ id
---   ϕ∘ψ g = refl _
+  ϕ∘ψ : ϕ ∘ ψ ∼ id
+  ϕ∘ψ g = refl _
 
---   ψ∘ϕ : ψ ∘ ϕ ∼ id
---   ψ∘ϕ (f , α) = tot-id _ _ aux1 aux2
---     where
---     aux1 : pr₁ (ψ (ϕ (f , α))) ∼ f
---     aux1 w = dpair-≡ ((α w ⁻¹) , (transport-∙ Q (α w) (α w ⁻¹) _ ∙ ap (λ - → transport Q - (pr₂ (f w))) (rinv (α w))))
---     aux2 : hrefl pr₁ ∼ (λ w → ap pr₁ (aux1 w) ∙ α w)
---     aux2 w = linv _ ⁻¹ ∙ ((dpr₁-≡-β _ _) ⁻¹ ∙ᵣ _) 
+  ψ∘ϕ : ψ ∘ ϕ ∼ id
+  ψ∘ϕ (f , α) = tot-id _ _ aux1 aux2
+    where
+    aux1 : pr₁ (ψ (ϕ (f , α))) ∼ f
+    aux1 w = dpair-≡ ((α w ⁻¹) , (transport-∙ Q (α w) (α w ⁻¹) _ ∙ ap (λ - → transport Q - (pr₂ (f w))) (rinv (α w))))
+    aux2 : hrefl pr₁ ∼ (λ w → ap pr₁ (aux1 w) ∙ α w)
+    aux2 w = linv _ ⁻¹ ∙ ((dpr₁-≡-β _ _) ⁻¹ ∙ᵣ _) 
 
---   equiv : (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁) ≃ Π (λ a → P a → Q a)
---   equiv = ϕ , qinv-to-isequiv (ψ , ϕ∘ψ , ψ∘ϕ)
+  equiv : (Σ f ꞉ (Σ P → Σ Q) , pr₁ ∘ f ∼ pr₁) ≃ Π (λ a → P a → Q a)
+  equiv = ϕ , qinv-to-isequiv (ψ , ϕ∘ψ , ψ∘ϕ)
 
 module families-of-funs↓ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) where
 
@@ -605,6 +608,9 @@ module families-of-funs↓ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (P : A → 
     aux2 : total↓ Q f g ≡ f' ∘ total g
     aux2 = refl _
 
+
+-- Fibered Algebras are just Slice.
+
 Slice : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ (𝓥 ⁺) ̇
 Slice {𝓤} 𝓥 A = Σ B ꞉ Alg 𝓥 , Hom B A
 
@@ -612,51 +618,50 @@ Slice-is-FibAlg : (A : Alg 𝓤) → Slice 𝓤 A ≃ FibAlg 𝓤 A
 Slice-is-FibAlg {𝓤} (A , a₀ , s , i) =
   Slice 𝓤 A'
     ≃⟨ lemma1 ⟩
-  S
-    ≃⟨ Σ-preserves-≃' _ _ (thm-4-8-3.χ _ , thm-4-8-3.χ-is-equiv _) (λ E → ×-preserves-≃ (fibs-of-pr₁-are-values a₀) (lemma4 (s , i) E E))  ⟩
-  FibAlg 𝓤 A' ■ 
+  Slice'
+    ≃⟨ Σ-preserves-≃' _ _ (thm-4-8-3.χ _ , thm-4-8-3.χ-is-equiv _) (λ E → ×-preserves-≃ (fibs-of-pr₁-are-values a₀) (lemma2 (s , i) E E))  ⟩
+  FibAlg 𝓤 A' ■
+  
   where
   
   A' = (A , a₀ , s , i)
   
-  S = (Σ w ꞉ (Σ λ B → B → A) , fib (pr₂ w) a₀ × (Σ s' ꞉ pr₁ w ≃ pr₁ w , pr₂ w ∘ pr₁ s' ∼ s ∘ pr₂ w))
+  Slice' = (Σ w ꞉ (Σ λ B → B → A) , fib (pr₂ w) a₀ × (Σ s' ꞉ pr₁ w ≃ pr₁ w , pr₂ w ∘ pr₁ s' ∼ s ∘ pr₂ w))
   
-  lemma1 : Slice 𝓤 A' ≃ S
-  lemma1 = ϕ , qinv-to-isequiv (ψ , ϕ∘ψ , ψ∘ϕ) 
+  lemma1 : Slice 𝓤 A' ≃ Slice'
+  lemma1 = ϕ , qinv-to-isequiv (ψ , hrefl _ , hrefl _) 
     where
-    ϕ : Slice 𝓤 A' → S
+    ϕ : Slice 𝓤 A' → Slice'
     ϕ ((B , b₀ , s') , (f , f₀ , f-s)) = ((B , f) , ((b₀ , f₀) , (s' , f-s)))
-    ψ : S → Slice 𝓤 A'
+    ψ : Slice' → Slice 𝓤 A'
     ψ ((B , f) , ((b₀ , f₀) , (s' , f-s))) = ((B , b₀ , s') , (f , f₀ , f-s))
-    ϕ∘ψ : ϕ ∘ ψ ∼ id
-    ϕ∘ψ ((B , f) , ((b₀ , f₀) , (s' , f-s))) = refl _
-    ψ∘ϕ : ψ ∘ ϕ ∼ id
-    ψ∘ϕ ((B , b₀ , s') , (f , f₀ , f-s)) = refl _
 
---   lemma2 : (A : 𝓤 ̇) (E₁ E₂ : A → 𝓤 ̇) → (Σ s' ꞉ (Σ E₁ ≃ Σ E₂) , pr₁ ∘ pr₁ s' ∼ pr₁) ≃ (Σ t ꞉ ((a : A) → E₁ a → E₂ a) , ((a : A) → isequiv (t a)))
---   lemma2 A E₁ E₂ = ≃-sym (Σ-assoc _ _ _) ● ((Σ-preserves-family-≃ (λ s' → ×-swap _ _)) ● (Σ-assoc _ _ _ ● (Σ-preserves-≃' _ _ (families-of-funs.equiv E₁ E₂) λ g → ≃-sym (⇔-to-≃ (Π-preserves-Props _ λ a → ishae-is-Prop _) (ishae-is-Prop _) (fiberwise-≃-iff-total-≃.Hae g)))))
+  lemma2 : {A₁ A₂ : 𝓤 ̇} (s : A₁ ≃ A₂) (E₁ : A₁ → 𝓤 ̇) (E₂ : A₂ → 𝓤 ̇) → (Σ s' ꞉ (Σ E₁ ≃ Σ E₂) , pr₁ ∘ pr₁ s' ∼ pr₁ s ∘ pr₁) ≃ (Σ t ꞉ ((a : A₁) → E₁ a → E₂ ((pr₁ s) a)) , ((a : A₁) → isequiv (t a)))
+  lemma2 s E₁ E₂ = ≃-sym (Σ-assoc _ _ _) ● (Σ-preserves-family-≃ (λ s' → ×-swap _ _) ● (Σ-assoc _ _ _ ● Σ-preserves-≃' _ _ (families-of-funs↓.equiv (pr₁ s) E₁ E₂) (λ g → ≃-sym (⇔-to-≃ (Π-preserves-Props _ λ a → ishae-is-Prop _) (ishae-is-Prop _) (families-of-funs↓.fiberwise-≃-iff-total↓-≃ (pr₁ s) E₁ E₂ (pr₂ s) g)))))
 
---   lemma3 : {A₁ A₂ : 𝓤 ̇} (s : A₁ ≃ A₂) (E₁ : A₁ → 𝓤 ̇) (E₂ : A₂ → 𝓤 ̇) → (Σ s' ꞉ (Σ E₁ ≃ Σ E₂) , pr₁ ∘ pr₁ s' ∼ pr₁ s ∘ pr₁) ≃ (Σ t ꞉ ((a : A₁) → E₁ a → E₂ ((pr₁ s) a)) , ((a : A₁) → isequiv (t a)))
---   lemma3 = 𝕁-≃
---              (λ A₁ A₂ s₁ →
---                 (E₁ : A₁ → 𝓤 ̇) (E₂ : A₂ → 𝓤 ̇) →
---                 (-Σ (Σ E₁ ≃ Σ E₂) (λ s'' → pr₁ ∘ pr₁ s'' ∼ pr₁ s₁ ∘ pr₁)) ≃
---                 (-Σ ((a : A₁) → E₁ a → E₂ (pr₁ s₁ a))
---                  (λ t → (a : A₁) → isequiv (t a))))
---              lemma2 _ _
 
-  lemma4 : {A₁ A₂ : 𝓤 ̇} (s : A₁ ≃ A₂) (E₁ : A₁ → 𝓤 ̇) (E₂ : A₂ → 𝓤 ̇) → (Σ s' ꞉ (Σ E₁ ≃ Σ E₂) , pr₁ ∘ pr₁ s' ∼ pr₁ s ∘ pr₁) ≃ (Σ t ꞉ ((a : A₁) → E₁ a → E₂ ((pr₁ s) a)) , ((a : A₁) → isequiv (t a)))
-  lemma4 s E₁ E₂ = ≃-sym (Σ-assoc _ _ _) ● (Σ-preserves-family-≃ (λ s' → ×-swap _ _) ● (Σ-assoc _ _ _ ● Σ-preserves-≃' _ _ (families-of-funs↓.equiv (pr₁ s) E₁ E₂) (λ g → ≃-sym (⇔-to-≃ (Π-preserves-Props _ λ a → ishae-is-Prop _) (ishae-is-Prop _) (families-of-funs↓.fiberwise-≃-iff-total↓-≃ (pr₁ s) E₁ E₂ (pr₂ s) g)))))
-  
+-- Equivalence gives total space and projection.
 
-theorem : (A : Alg 𝓤) → pr₁ ∘ (inv (Slice-is-FibAlg A)) ∼ TotAlg A
-theorem A E = dpair-≡ (refl _ , pair-≡ (refl _ , dpair-≡ (refl _ , ishae-is-Prop _ _ _))) 
+equiv-gives-TotAlg : (A : Alg 𝓤) → pr₁ ∘ (inv (Slice-is-FibAlg A)) ∼ TotAlg A
+equiv-gives-TotAlg A E = dpair-≡ (refl _ , pair-≡ (refl _ , dpair-≡ (refl _ , ishae-is-Prop _ _ _))) 
 
-theorem' : (A : Alg 𝓤) → pr₂ ∘ (inv (Slice-is-FibAlg A)) ∼ π₁ A
-theorem' A E = refl _
+equiv-gives-π₁ : (A : Alg 𝓤) → pr₂ ∘ (inv (Slice-is-FibAlg A)) ∼ π₁ A
+equiv-gives-π₁ A E = refl _
+
+
+-- Algebra Sections are just sections.
 
 AlgSec-is-Sec : (A : Alg 𝓤) (E : FibAlg 𝓤 A) → AlgSec A E ≃ (Σ f ꞉ (Hom A (TotAlg A E)) , comp A (TotAlg A E) A (π₁ A E) f ≡ algid A)
-AlgSec-is-Sec {𝓤} (A , a₀ , s , i) (E , e₀ , s' , j) = {!!}
+AlgSec-is-Sec {𝓤} (A , a₀ , s , i) (E , e₀ , s' , j) = ≃-sym (
+  _
+    ≃⟨ lemma1 ⟩
+  _
+    ≃⟨ lemma2 ⟩
+  _
+    ≃⟨ lemma3 ⟩
+  Sec
+    ≃⟨ ≃-sym (Σ-preserves-≃ _ _ (dfuns-are-sections.equiv E) (λ f → ×-preserves-≃ (lemma4 f) (lemma5 f))) ⟩
+  _ ■)
 
   where
   
@@ -665,13 +670,56 @@ AlgSec-is-Sec {𝓤} (A , a₀ , s , i) (E , e₀ , s' , j) = {!!}
   
   E' : FibAlg 𝓤 A'
   E' = (E , e₀ , s' , j)
-  
-  ϕ : AlgSec A' E' → (Σ f ꞉ (Hom A' (TotAlg A' E')) , comp A' (TotAlg A' E') A' (π₁ A' E') f ≡ algid A')
-  ϕ (f , f₀ , f-s) = ((λ a → (a , f a)) , ((dpair-≡ (refl _ , f₀)) , λ a → dpair-≡ (refl _ , f-s a))) , dpair-≡ ((refl _) , (pair-≡ ((((dpr₁-≡-β _ _) ∙ᵣ refl _)) , funext (λ a → (dpr₁-≡-β _ _) ∙ᵣ refl _))))
-  
-  ψ : (Σ f ꞉ (Hom A' (TotAlg A' E')) , comp A' (TotAlg A' E') A' (π₁ A' E') f ≡ algid A') →  AlgSec A' E'
-  ψ = {!!} -- This should be a similar construction to the one used in the proof of equivalence between isind and ishinit. How will we prove that they are inverses? The identity type of Sec will be quite complicated... also: we should think whether it is better to use TotAlg and π₁ or the Slice-is-FibAlg equivalence.
 
+  Sec : 𝓤 ̇
+  Sec = (Σ w ꞉ (Σ f ꞉ (A → Σ E), pr₁ ∘ f ∼ id) , (Σ f₀ ꞉ (pr₁ w) a₀ ≡ (a₀ , e₀) , pr₂ w a₀ ≡ ap pr₁ f₀) × (Σ f-s ꞉ ((a : A) → pr₁ w (s a) ≡ (s (pr₁ (pr₁ w a)) , s' (pr₁ (pr₁ w a)) (pr₂ (pr₁ w a)))) , ((a : A) → pr₂ w (s a) ≡ ap pr₁ (f-s a) ∙ ap s (pr₂ w a))))
 
+  lemma1 : (Σ f ꞉ (Hom A' (TotAlg A' E')) , comp A' (TotAlg A' E') A' (π₁ A' E') f ≡ algid A') ≃ (Σ f ꞉ (Hom A' (TotAlg A' E')) , HomId A' A' (comp A' (TotAlg A' E') A' (π₁ A' E') f) (algid A'))
+  lemma1 = Σ-preserves-family-≃ (λ f → IdHom-≃-HomId A' A' _ _)
+
+  lemma2 : (Σ f ꞉ (Hom A' (TotAlg A' E')) , HomId A' A' (comp A' (TotAlg A' E') A' (π₁ A' E') f) (algid A')) ≃ (Σ w ꞉ (Σ f ꞉ (A → Σ E), pr₁ ∘ f ∼ id) , (Σ f₀ ꞉ (pr₁ w) a₀ ≡ (a₀ , e₀) , pr₂ w a₀ ≡ ap pr₁ f₀ ∙ refl a₀ ∙ refl a₀) × (Σ f-s ꞉ ((a : A) → pr₁ w (s a) ≡ (s (pr₁ (pr₁ w a)) , s' (pr₁ (pr₁ w a)) (pr₂ (pr₁ w a)))) , ((a : A) → pr₂ w (s a) ≡ ap pr₁ (f-s a) ∙ refl (s (pr₁ ((pr₁ w) a))) ∙ ap s (pr₂ w a) ∙ refl (s a))))
+  lemma2 = ϕ , qinv-to-isequiv (ψ , hrefl _ , hrefl _)
+    where
+    ϕ : (Σ f ꞉ (Hom A' (TotAlg A' E')) , HomId A' A' (comp A' (TotAlg A' E') A' (π₁ A' E') f) (algid A')) → (Σ w ꞉ (Σ f ꞉ (A → Σ E), pr₁ ∘ f ∼ id) , (Σ f₀ ꞉ (pr₁ w) a₀ ≡ (a₀ , e₀) , pr₂ w a₀ ≡ ap pr₁ f₀ ∙ refl a₀ ∙ refl a₀) × (Σ f-s ꞉ ((a : A) → pr₁ w (s a) ≡ (s (pr₁ (pr₁ w a)) , s' (pr₁ (pr₁ w a)) (pr₂ (pr₁ w a)))) , ((a : A) → pr₂ w (s a) ≡ ap pr₁ (f-s a) ∙ refl (s (pr₁ ((pr₁ w) a))) ∙ ap s (pr₂ w a) ∙ refl (s a))))
+    ϕ ((f , f₀ , f-s) , (p , p₀ , p-s)) = (f , p) , (f₀ , p₀) , (f-s , p-s)
+    ψ : (Σ w ꞉ (Σ f ꞉ (A → Σ E), pr₁ ∘ f ∼ id) , (Σ f₀ ꞉ (pr₁ w) a₀ ≡ (a₀ , e₀) , pr₂ w a₀ ≡ ap pr₁ f₀ ∙ refl a₀ ∙ refl a₀) × (Σ f-s ꞉ ((a : A) → pr₁ w (s a) ≡ (s (pr₁ (pr₁ w a)) , s' (pr₁ (pr₁ w a)) (pr₂ (pr₁ w a)))) , ((a : A) → pr₂ w (s a) ≡ ap pr₁ (f-s a) ∙ refl (s (pr₁ ((pr₁ w) a))) ∙ ap s (pr₂ w a) ∙ refl (s a)))) → (Σ f ꞉ (Hom A' (TotAlg A' E')) , HomId A' A' (comp A' (TotAlg A' E') A' (π₁ A' E') f) (algid A'))
+    ψ ((f , p) , (f₀ , p₀) , (f-s , p-s)) = (f , f₀ , f-s) , (p , p₀ , p-s)
+
+  lemma3 : (Σ w ꞉ (Σ f ꞉ (A → Σ E), pr₁ ∘ f ∼ id) , (Σ f₀ ꞉ (pr₁ w) a₀ ≡ (a₀ , e₀) , pr₂ w a₀ ≡ ap pr₁ f₀ ∙ refl a₀ ∙ refl a₀) × (Σ f-s ꞉ ((a : A) → pr₁ w (s a) ≡ (s (pr₁ (pr₁ w a)) , s' (pr₁ (pr₁ w a)) (pr₂ (pr₁ w a)))) , ((a : A) → pr₂ w (s a) ≡ ap pr₁ (f-s a) ∙ refl (s (pr₁ ((pr₁ w) a))) ∙ ap s (pr₂ w a) ∙ refl (s a)))) ≃ Sec
+  lemma3 = Σ-preserves-family-≃ (λ w → ×-preserves-≃ (Σ-preserves-family-≃ (λ w₀ → post-∙-≃ _ ((ru _ ∙ ru _) ⁻¹))) (Σ-preserves-family-≃ (λ w-s → Π-preserves-family-≃ (λ a → post-∙-≃ _ (((ru _ ∙ᵣ ap s (pr₂ w a)) ∙ ru _) ⁻¹))))) 
+
+  lemma4 : (f : Π E) → (f a₀ ≡ e₀) ≃ (Σ f₀ ꞉ Id (Σ E) (a₀ , f a₀) (a₀ , e₀) , refl a₀ ≡ ap pr₁ f₀)
+  lemma4 f =
+    _
+      ≃⟨ ≃-sym (Σ-over-Contr-base-is-fib _ _ (free-right-endpt-is-Contr _ _)) ⟩
+    _
+     ≃⟨ ≃-sym (Σ-assoc _ _ _) ⟩
+    _
+     ≃⟨ Σ-preserves-family-≃ (λ p → ×-swap _ _) ⟩
+    _
+     ≃⟨ Σ-assoc _ _ _ ⟩
+    (Σ f₀ ꞉ (Σ p ꞉ a₀ ≡ a₀ , transport E p (f a₀) ≡ e₀) , refl a₀ ≡ pr₁ f₀)
+     ≃⟨ Σ-preserves-≃ _ _ (≃-sym Σ-≡-≃) (Σ-induction (λ p q → post-∙-≃ _ ((dpr₁-≡-β _ q) ⁻¹))) ⟩
+    _ ■
+
+  lemma5 : (f : Π E) → ((a : A) → f (s a) ≡ s' a (f a)) ≃ (Σ f-s ꞉ ((a : A) → (s a , f (s a)) ≡ (s a , s' a (f a))) , ((a : A) → refl (s a) ≡ ap pr₁ (f-s a) ∙ refl (s a)))
+  lemma5 f =
+    _
+      ≃⟨ Π-preserves-family-≃ (λ a →
+      _
+        ≃⟨ ≃-sym (Σ-over-Contr-base-is-fib _ _ (free-right-endpt-is-Contr _ _)) ⟩
+      _
+        ≃⟨ ≃-sym (Σ-assoc _ _ _) ⟩
+      _
+        ≃⟨ Σ-preserves-family-≃ (λ p → ×-swap _ _) ⟩
+      _
+        ≃⟨ Σ-assoc _ _ _ ⟩
+     (Σ f-sa ꞉ (Σ p ꞉ s a ≡ s a , transport E p (f (s a)) ≡ s' a (f a)) , refl (s a) ≡ pr₁ f-sa)
+        ≃⟨ Σ-preserves-≃ _ _ (≃-sym Σ-≡-≃) (Σ-induction (λ p q → post-∙-≃ _ (dpr₁-≡-β _ q ⁻¹ ∙ ru _))) ⟩
+      _ ■
+      ) ⟩
+    ((a : A) → Σ f-sa ꞉ (s a , f (s a)) ≡ (s a , s' a (f a)) , refl (s a) ≡ ap pr₁ f-sa ∙ refl (s a))
+      ≃⟨ _ , (dep-Σ-UMP _ _ _) ⟩
+    _ ■
 
 

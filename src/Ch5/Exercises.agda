@@ -17,7 +17,7 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) {g h : sec f} where
     transport-lemma : {p : pr₁ g ≡ pr₁ h} {y : B} →  transport (λ s → f ∘ s ∼ id) p (pr₂ g) y ≡ ap f (happly p y) ⁻¹ ∙ pr₂ g y
     transport-lemma {refl .(fst g)} = lu _
 
-module _ (A : 𝓤 ̇) (B : A → 𝓥 ̇) where
+module dfuns-are-sections {A : 𝓤 ̇} (B : A → 𝓥 ̇) where
 
   ϕ : Π B → sec {_} {_} {Σ B} pr₁
   ϕ f = (λ a → a , (f a)) , (hrefl _)
@@ -31,5 +31,5 @@ module _ (A : 𝓤 ̇) (B : A → 𝓥 ̇) where
   β : ψ ∘ ϕ ∼ id
   β f = refl _
 
-  dfuns-are-sections-of-pr₁ : Π B ≃ sec {_} {_} {Σ B} pr₁ 
-  dfuns-are-sections-of-pr₁ = ϕ , (qinv-to-isequiv (ψ , (α , β)))
+  equiv : Π B ≃ sec {_} {_} {Σ B} pr₁ 
+  equiv = ϕ , (qinv-to-isequiv (ψ , (α , β)))
