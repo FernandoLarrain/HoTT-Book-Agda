@@ -519,7 +519,7 @@ abstract
         (split , (dep-Σ-UMP A (λ a → refl (f a) ≡ refl _ ∙ refl _ ∙ refl _) λ a f-ρa → refl _ ∙ (refl _ ∙ f-ρa ∙ refl _ ∙ refl _ ∙ refl _ ∙ refl _ ∙ refl _) ≡ refl (refl (f a))))
         (Π-preserves-Contr _ (λ a → ≃-preserves-Contr (Σ-preserves-family-≃ (λ f-ρa → pre-∙-≃ (refl (refl (f a))) (lu _ ⁻¹ ∙ ru _ ⁻¹ ∙ ru _ ⁻¹ ∙ ru _ ⁻¹ ∙ ru _ ⁻¹ ∙ ru _ ⁻¹ ∙ lu f-ρa ⁻¹))) (free-left-endpt-is-Contr _ _)))
 
-  open Preservation-of-Equivalences
+  open Preservation-of-Equivalences using (ishae-pres ; hae-pres)
 
   ishae-pres-is-Contr : (A₁ A₂ : 𝓤 ̇) (e : A₁ ≃ A₂) (B₁ B₂ : 𝓥 ̇) (e' : B₁ ≃ B₂) (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) (f-s : f₂ ∘ pr₁ e ∼ pr₁ e' ∘ f₁) → isContr (ishae-pres A₁  A₂ e B₁ B₂ e' f₁ f₂ f-s)
   ishae-pres-is-Contr {𝓤} {𝓥} = 𝕁-≃ (λ A₁ A₂ e → (B₁ B₂ : 𝓥 ̇) (e' : B₁ ≃ B₂) (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) (f-s : f₂ ∘ pr₁ e ∼ pr₁ e' ∘ f₁) → isContr (ishae-pres A₁ A₂ e B₁ B₂ e' f₁ f₂ f-s)) λ A →
@@ -734,5 +734,55 @@ proj₁ A B = pr₁ , ((refl _) , (hrefl _))
 proj₂ : (A B : Alg 𝓤) → Hom (A ⨂ B) B
 proj₂ A B = pr₂ , ((refl _) , (hrefl _))
 
--- Eqz : (A B : Alg 𝓤) → Hom A B → Hom A B → Alg 𝓤
--- Eqz (A , a₀ , (s , p , σ , ρ , τ)) (B , b₀ , (s' , p' , σ' , ρ' , τ')) (f , f₀ , f-s) (g , g₀ , g-s) = (Σ a ꞉ A , f a ≡ g a) , ((a₀ , (f₀ ∙ g₀ ⁻¹)) , (Σ-induction (λ a q → (s a) , (f-s a ∙ ap s' q ∙ g-s a ⁻¹))) , qinv-to-isequiv ((Σ-induction (λ a q → (p a) , {!!})) , {!!}))
+
+Hom-to-AlgSec : (A B : Alg 𝓤) → Hom A B → AlgSec A (ConstFibAlg A B)
+Hom-to-AlgSec A B f = f
+
+Eqz : (A B : Alg 𝓤) → Hom A B → Hom A B → Alg 𝓤
+Eqz {𝓤} (A , a₀ , s , p , σ , ρ , τ) B (f , f₀ , f-s) (g , g₀ , g-s) = TotAlg A' Q' 
+  where
+  i = (p , σ , ρ , τ)
+  A' = (A , a₀ , s , i)
+  E' = ConstFibAlg A' B
+  E = pr₁ E'
+  e₀ = pr₁ (pr₂ E')
+  s' = pr₁ (pr₂ (pr₂ E'))
+  j = pr₂ (pr₂ (pr₂ E'))  
+  p' : ((a : A) → E (s a) → E a)
+  p' a = ishae₁ (j a)
+  σ' : ((a : A) → (p' a) ∘ (s' a) ∼ id)
+  σ' a = ishae₂ (j a)
+  ρ' : ((a : A) → (s' a) ∘ (p' a) ∼ id)
+  ρ' a = ishae₃ (j a)
+  τ' : (a : A) (u : E a) → ap (s' a) (σ' a u) ≡ (ρ' a) (s' a u)
+  τ' a = ishae₄ (j a)
+  f' : AlgSec A' E'
+  f' = (f , f₀ , f-s)
+  g' : AlgSec A' E'
+  g' = (g , g₀ , g-s)
+  Q : A → 𝓤 ̇
+  Q a = f a ≡ g a
+  q₀ : Q a₀
+  q₀ = f₀ ∙ g₀ ⁻¹  
+  t : (a : A) → Q a → Q (s a)
+  t a q = f-s a ∙ ap (s' a) q ∙ g-s a ⁻¹
+  tinv : (a : A) → Q (s a) → Q a
+  tinv a q = σ' a (f a) ⁻¹ ∙ ap (p' a) (f-s a ⁻¹ ∙ q ∙ g-s a) ∙ σ' a (g a)
+  α : (a : A) → t a ∘ tinv a ∼ id
+  α a q = ap (λ - → f-s a ∙ - ∙ g-s a ⁻¹) (ap-∙ (s' a) _ _ ∙ ((ap-∙ (s' a) _ _ ∙ ((ap-⁻¹ (s' a) _ ∙ ap _⁻¹ (τ' a (f a))) ∙ᵣ ap (s' a) _)) ✦ τ' a (g a))) ∙ aux (s' a) (p' a) (ρ' a) (f-s a) (g-s a) q where
+    aux : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (g : B → A) (H : f ∘ g ∼ id) {b₁ b₁' b₂ b₂' : B} (p₁ : b₁ ≡ b₁') (p₂ : b₂ ≡ b₂') (q : b₁ ≡ b₂) → p₁ ∙ (H _ ⁻¹ ∙ ap f (ap g (p₁ ⁻¹ ∙ q ∙ p₂)) ∙ H _) ∙ p₂ ⁻¹ ≡ q
+    aux f g H (refl _) (refl _) (refl _) = ru _ ⁻¹ ∙ lu _ ⁻¹ ∙ ((ru _ ⁻¹ ∙ᵣ H _) ∙ linv _)
+  β : (a : A) → tinv a ∘ t a ∼ id
+  β a q = aux (s' a) (p' a) (σ' a) (f-s a) (g-s a) q where
+    aux : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (g : B → A) (H : g ∘ f ∼ id) {x y : A} {b₁ b₂ : B} (p₁ : b₁ ≡ _) (p₂ : b₂ ≡ _) (q : x ≡ y) → H x ⁻¹ ∙ ap g (p₁ ⁻¹ ∙ (p₁ ∙ ap f q ∙ p₂ ⁻¹) ∙ p₂) ∙ H y ≡ q
+    aux f g H (refl .(f _)) (refl .(f _)) (refl _) = (ru _ ⁻¹ ∙ᵣ H _) ∙ linv _
+  k : (a : A) → ishae (t a)
+  k a = qinv-to-isequiv (tinv a , α a , β a)
+  Q' : FibAlg 𝓤 A'
+  Q' = Q , q₀ , t , k 
+
+Eqz-map : (A B : Alg 𝓤) (f g : Hom A B) → Hom (Eqz A B f g) A
+Eqz-map A B f g = pr₁ , refl _ , hrefl _
+
+Eqz-equalizes : (A B : Alg 𝓤) (f g : Hom A B) → comp (Eqz A B f g) A B f (Eqz-map A B f g) ≡ comp (Eqz A B f g) A B g (Eqz-map A B f g)
+Eqz-equalizes (A , a₀ , s , i) (B , b₀ , s' , j) (f , f₀ , f-s) (g , g₀ , g-s) = Hom-≡-intro (Eqz (A , a₀ , s , i) (B , b₀ , s' , j) (f , f₀ , f-s) (g , g₀ , g-s)) (B , b₀ , s' , j) _ _ ((Σ-induction λ a q → q) , (((lu _ ∙ᵣ (g₀ ⁻¹)) ∙ ((refl _ ∙ f₀) ∙ₗ (ap _⁻¹ (lu _)))) , Σ-induction λ a q → ap (λ - → - ∙ ap s' q ∙ g-s a ⁻¹) (lu _) ∙ ((refl _ ∙ f-s a ∙ ap s' q) ∙ₗ ap _⁻¹ (lu _))))
