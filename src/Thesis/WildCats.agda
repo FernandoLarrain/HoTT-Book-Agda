@@ -7,14 +7,14 @@ open import Ch4.Equivalences
 
 module Thesis.WildCats
 
- -- Fix a universe
+ -- Fix universes
   
- (𝓤 : Universe)
+ (𝓤 𝓥 : Universe)
 
  -- Fix a wild cat
 
  (Obj : 𝓤 ̇)
- (Hom : Obj → Obj → 𝓤 ̇)
+ (Hom : Obj → Obj → 𝓥 ̇)
  (_·_ : {A B C : Obj} → Hom B C → Hom A B → Hom A C) 
  (ide : (A : Obj) → Hom A A)
  (assoc : {A B C D : Obj} (h : Hom C D) (g : Hom B C) (f : Hom A B) → h · (g · f) ≡ (h · g) · f)
@@ -35,7 +35,7 @@ module Thesis.WildCats
  (meq : {A B : Obj} (f g : Hom A B) → f · m f g  ≡ g · m f g)
 -- (eq-UMP : (A B X : Obj) (f g : Hom A B) → isequiv {_} {_} {Hom X (eq f g)} {Σ h ꞉ Hom X A , f · h ≡ g · h} λ u → (m f g · u) , (assoc _ _ _ ∙ ap (_· u) (meq f g) ∙ assoc _ _ _ ⁻¹))
 
--- Don't even need UMP's!
+-- Don't need UMP's
 
  where
 
@@ -51,10 +51,10 @@ module Thesis.WildCats
 
 -- the theorem
 
-ishinit : Obj → 𝓤 ̇
+ishinit : Obj → 𝓤 ⊔ 𝓥 ̇
 ishinit A = (B : Obj) → isContr (Hom A B)
 
-isind : Obj → 𝓤 ̇
+isind : Obj → 𝓤 ⊔ 𝓥 ̇
 isind A = (B : Obj) (f : Hom B A) → Σ g ꞉ Hom A B , f · g ≡ ide A
 
 ishinit-to-isind : (A : Obj) → ishinit A → isind A

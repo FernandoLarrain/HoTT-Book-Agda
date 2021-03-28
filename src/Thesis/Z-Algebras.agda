@@ -786,3 +786,18 @@ Eqz-map A B f g = pr₁ , refl _ , hrefl _
 
 Eqz-equalizes : (A B : Alg 𝓤) (f g : Hom A B) → comp (Eqz A B f g) A B f (Eqz-map A B f g) ≡ comp (Eqz A B f g) A B g (Eqz-map A B f g)
 Eqz-equalizes (A , a₀ , s , i) (B , b₀ , s' , j) (f , f₀ , f-s) (g , g₀ , g-s) = Hom-≡-intro (Eqz (A , a₀ , s , i) (B , b₀ , s' , j) (f , f₀ , f-s) (g , g₀ , g-s)) (B , b₀ , s' , j) _ _ ((Σ-induction λ a q → q) , (((lu _ ∙ᵣ (g₀ ⁻¹)) ∙ ((refl _ ∙ f₀) ∙ₗ (ap _⁻¹ (lu _)))) , Σ-induction λ a q → ap (λ - → - ∙ ap s' q ∙ g-s a ⁻¹) (lu _) ∙ ((refl _ ∙ f-s a ∙ ap s' q) ∙ₗ ap _⁻¹ (lu _))))
+
+module _ (𝓤 : Universe) where
+
+  open import Thesis.WildCats (𝓤 ⁺) 𝓤 (Alg 𝓤) Hom (λ {A} {B} {C} → comp A B C) algid (λ {A} {B} {C} {D} h g f → associator A B C D f g h) (λ {A} {B} → right-unitor A B) (λ {A} {B} → left-unitor A B) _⨂_ (λ {A} {B} → proj₁ A B) (λ {A} {B} → proj₂ A B) (λ {A} {B} → Eqz A B) (λ {A} {B} → Eqz-map A B) (λ {A} {B} → Eqz-equalizes A B) using (thm)
+
+  isind-≃-ishinit' : (A : Alg 𝓤) → isind 𝓤 A ≃ ishinit 𝓤 A
+  isind-≃-ishinit' A =
+    _
+      ≃⟨ Π-preserves-≃ _ _ (≃-sym (Slice-is-FibAlg A)) (λ E → AlgSec-is-Sec A E) ⟩
+    _
+      ≃⟨ GCCAdj _ _ _ ⟩
+    _
+      ≃⟨ ≃-sym (thm A) ⟩
+    _ ■
+
