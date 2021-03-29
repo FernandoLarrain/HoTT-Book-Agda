@@ -643,7 +643,7 @@ AlgSec-is-Sec {𝓤} (A , a₀ , s , i) (E , e₀ , s' , j) = ≃-sym (
     _ ■
 
 
--- XII. Finite Limits
+-- XIII. Finite Limits
 
 _⨂_ : Alg 𝓤 → Alg 𝓤 → Alg 𝓤
 (A , a₀ , (s , p , σ , ρ , τ)) ⨂ (B , b₀ , (s' , p' , σ' , ρ' , τ')) = (A × B) , (a₀ , b₀) , ((Σ-induction (λ a b → s a , s' b)) , qinv-to-isequiv ((Σ-induction (λ a b → p a , p' b)) , (Σ-induction λ a b → pair-≡ (ρ a , ρ' b)) , (Σ-induction λ a b → pair-≡ (σ a , σ' b))))
