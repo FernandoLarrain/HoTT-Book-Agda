@@ -5,6 +5,7 @@ open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.2-Half-adjoint-equivalences
 open import Ch4.5-On-the-definition-of-equivalences
+open import Ch4.7-Closure-properties-of-equivalences
 open import Ch4.9-Univalence-implies-funext
 
 module Ch4.Exercises where
@@ -133,3 +134,55 @@ module _ {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} (f : A → B) (g : B → C) w
     (Σ w ꞉ fib g c , fib f (pr₁ w)) ■
 
 open fib-∘ public 
+
+
+-- Generalization of Theorem 4.7.7 (taken from Rijke's intro to HoTT). 
+
+total↓ : {A : 𝓤 ̇} {B : 𝓥 ̇} {P : A → 𝓦 ̇} (Q : B → 𝓣 ̇) (f : A → B) → ((a : A) → P a → Q (f a)) → Σ P → Σ Q
+total↓ Q f g (a , u) = f a , g a u
+
+module families-of-funs↓ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) where
+
+  tot-id : (F G : (Σ t ꞉ (Σ P → Σ Q) , pr₁ ∘ t ∼ f ∘ pr₁)) (H : pr₁ F ∼ pr₁ G) → pr₂ F ∼ (λ w → ap pr₁ (H w) ∙ pr₂ G w) → F ≡ G
+  tot-id (t₁ , α) (t₂ , β) H 𝓗 = dpair-≡ (funext H , transport-lemma (funext H) (transport (λ - → α ∼ (λ w → ap pr₁ (- w) ∙ β w)) (funext (happly-β H) ⁻¹) 𝓗))
+    where
+    transport-lemma : (p : t₁ ≡ t₂) → α ∼ (λ w → ap pr₁ (happly p w) ∙ β w) → transport (λ t → pr₁ ∘ t ∼ f ∘ pr₁) p α ≡ β
+    transport-lemma (refl t) 𝓗 = funext (λ w → 𝓗 w ∙ lu _ ⁻¹)
+
+  ϕ :  (Σ t ꞉ (Σ P → Σ Q) , pr₁ ∘ t ∼ f ∘ pr₁) → Π (λ a → P a → Q (f a))
+  ϕ (t , α) a u = transport Q (α (a , u)) (pr₂ (t (a , u)))
+  
+  ψ : Π (λ a → P a → Q (f a)) → (Σ t ꞉ (Σ P → Σ Q) , pr₁ ∘ t ∼ f ∘ pr₁)
+  ψ g = total↓ Q f g , (hrefl _)
+  
+  ϕ∘ψ : ϕ ∘ ψ ∼ id
+  ϕ∘ψ g = refl _
+
+  ψ∘ϕ : ψ ∘ ϕ ∼ id
+  ψ∘ϕ (f , α) = tot-id _ _ aux1 aux2
+    where
+    aux1 : pr₁ (ψ (ϕ (f , α))) ∼ f
+    aux1 w = dpair-≡ ((α w ⁻¹) , (transport-∙ Q (α w) (α w ⁻¹) _ ∙ ap (λ - → transport Q - (pr₂ (f w))) (rinv (α w))))
+    aux2 : hrefl _ ∼ (λ w → ap pr₁ (aux1 w) ∙ α w)
+    aux2 w = linv _ ⁻¹ ∙ ((dpr₁-≡-β _ _) ⁻¹ ∙ᵣ _)
+
+  equiv : (Σ t ꞉ (Σ P → Σ Q) , pr₁ ∘ t ∼ f ∘ pr₁) ≃ Π (λ a → P a → Q (f a))
+  equiv = ϕ , qinv-to-isequiv (ψ , ϕ∘ψ , ψ∘ϕ)
+
+  fiberwise-≃-iff-total↓-≃ : isequiv f → (g : (a : A) → P a → Q (f a)) → ((a : A) → isequiv (g a)) ⇔ isequiv (total↓ Q f g)
+  fiberwise-≃-iff-total↓-≃ (finv , η , ε , τ) g = (λ h → 2-out-of-3.-∘ (total g) f' (pr₁ (fiberwise-≃-iff-total-≃.Hae g) h) aux1) , λ h → pr₂ (fiberwise-≃-iff-total-≃.Hae g) (2-out-of-3.first _ _ aux1 h) 
+    where
+    aux0 : {b₁ b₂ : B} {p q : b₁ ≡ b₂} → p ≡ q → q ⁻¹ ∙ p ≡ refl _  
+    aux0 {b₁} {.b₁} {.(refl b₁)} {.(refl b₁)} (refl (refl .b₁)) = refl _
+    f' : Σ (Q ∘ f) → Σ Q
+    f' (a , u) = (f a) , u
+    f'inv : Σ Q → Σ (Q ∘ f)
+    f'inv (b , u) = (finv b) , (transport Q (ε b ⁻¹) u)
+    α : f' ∘ f'inv ∼ id
+    α (a , u) = dpair-≡ ((ε a) , ((transport-∙ Q (ε a ⁻¹) (ε a) u) ∙ ap (λ - → transport Q - u) (linv (ε a) ⁻¹) ⁻¹))
+    β : f'inv ∘ f' ∼ id
+    β (b , u) = dpair-≡ ((η b) , (transport-∘ Q f (η b) _ ∙ (transport-∙ Q (ε (f b) ⁻¹) (ap f (η b)) u ∙ ap (λ - → transport Q - u) (aux0 (τ b)))))
+    aux1 : isequiv f'
+    aux1 = qinv-to-isequiv (f'inv , α , β)
+    aux2 : total↓ Q f g ≡ f' ∘ total g
+    aux2 = refl _
