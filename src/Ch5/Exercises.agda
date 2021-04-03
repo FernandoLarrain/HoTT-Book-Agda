@@ -33,3 +33,34 @@ module dfuns-are-sections {A : 𝓤 ̇} (B : A → 𝓥 ̇) where
 
   equiv : Π B ≃ sec {_} {_} {Σ B} pr₁ 
   equiv = ϕ , (qinv-to-isequiv (ψ , (α , β)))
+
+-- Exercise: characterization of families of functions over a function.
+
+module families-of-funs↓ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) (P : A → 𝓦 ̇) (Q : B → 𝓣 ̇) where
+
+  tot-≡ : (F G : (Σ t ꞉ (Σ P → Σ Q) , pr₁ ∘ t ∼ f ∘ pr₁)) (H : pr₁ F ∼ pr₁ G) → pr₂ F ∼ (λ w → ap pr₁ (H w) ∙ pr₂ G w) → F ≡ G
+  tot-≡ (t₁ , α) (t₂ , β) H 𝓗 = dpair-≡ (funext H , transport-lemma (funext H) (transport (λ - → α ∼ (λ w → ap pr₁ (- w) ∙ β w)) (funext (happly-β H) ⁻¹) 𝓗))
+    where
+    transport-lemma : (p : t₁ ≡ t₂) → α ∼ (λ w → ap pr₁ (happly p w) ∙ β w) → transport (λ t → pr₁ ∘ t ∼ f ∘ pr₁) p α ≡ β
+    transport-lemma (refl t) 𝓗 = funext (λ w → 𝓗 w ∙ lu _ ⁻¹)
+
+  ϕ :  (Σ t ꞉ (Σ P → Σ Q) , pr₁ ∘ t ∼ f ∘ pr₁) → Π (λ a → P a → Q (f a))
+  ϕ (t , α) a u = transport Q (α (a , u)) (pr₂ (t (a , u)))
+  
+  ψ : Π (λ a → P a → Q (f a)) → (Σ t ꞉ (Σ P → Σ Q) , pr₁ ∘ t ∼ f ∘ pr₁)
+  ψ g = total↓ Q f g , (hrefl _)
+  
+  ϕ∘ψ : ϕ ∘ ψ ∼ id
+  ϕ∘ψ g = refl _
+
+  ψ∘ϕ : ψ ∘ ϕ ∼ id
+  ψ∘ϕ (f , α) = tot-≡ _ _ aux1 aux2
+    where
+    aux1 : pr₁ (ψ (ϕ (f , α))) ∼ f
+    aux1 w = dpair-≡ ((α w ⁻¹) , (transport-∙ Q (α w) (α w ⁻¹) _ ∙ ap (λ - → transport Q - (pr₂ (f w))) (rinv (α w))))
+    aux2 : hrefl _ ∼ (λ w → ap pr₁ (aux1 w) ∙ α w)
+    aux2 w = linv _ ⁻¹ ∙ ((dpr₁-≡-β _ _) ⁻¹ ∙ᵣ _)
+
+  equiv : (Σ t ꞉ (Σ P → Σ Q) , pr₁ ∘ t ∼ f ∘ pr₁) ≃ Π (λ a → P a → Q (f a))
+  equiv = ϕ , qinv-to-isequiv (ψ , ϕ∘ψ , ψ∘ϕ)
+
