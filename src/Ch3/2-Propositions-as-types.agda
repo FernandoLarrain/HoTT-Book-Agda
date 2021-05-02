@@ -1,9 +1,11 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 
-module Ch3.2-Propositions-as-types where
+module Ch3.2-Propositions-as-types (univ : Univalence) where
+
+open Basic-Univalence univ
 
 
 -- Theorem 3.2.2 (DNE is incompatible with univalence).
@@ -65,8 +67,7 @@ module not-DNE∞ ⦃ fe : FunExt ⦄ where
   -- (iii) The theorem:
   
   not-DNE∞ : ¬ (DNE∞ 𝓤₀)
-  not-DNE∞ dne with DNE∞-gives-fixed-pt dne
-  ... | (x , x-is-fixed-pt) = twist-has-no-fixed-pt x x-is-fixed-pt
+  not-DNE∞ dne = twist-has-no-fixed-pt (pr₁ (DNE∞-gives-fixed-pt dne)) (pr₂ (DNE∞-gives-fixed-pt dne))
 
 open not-DNE∞ using (not-DNE∞)
 

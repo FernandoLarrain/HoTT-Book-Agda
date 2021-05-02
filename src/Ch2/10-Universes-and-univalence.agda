@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.1-Types-are-higher-groupoids
@@ -44,49 +44,48 @@ module is-univalent (isuniv : is-univalent 𝓤) {A B : 𝓤 ̇} where
 Univalence : 𝓤ω
 Univalence = {𝓤 : Universe} → is-univalent 𝓤
 
-postulate
-  univ : Univalence
+module Basic-Univalence (univ : Univalence) where
 
-idtoeqv-is-equiv : {𝓤 : Universe} {A B : 𝓤 ̇} → isequiv (idtoeqv {𝓤} {A} {B})
-idtoeqv-is-equiv = univ
+  idtoeqv-is-equiv : {𝓤 : Universe} {A B : 𝓤 ̇} → isequiv (idtoeqv {𝓤} {A} {B})
+  idtoeqv-is-equiv = univ
 
--- Quasi-inverse of idtoeqv
+  -- Quasi-inverse of idtoeqv
 
-ua : {𝓤 : Universe} {A B : 𝓤 ̇} → A ≃ B → A ≡ B
-ua = qinv₁ (isequiv-to-qinv idtoeqv-is-equiv)
+  ua : {𝓤 : Universe} {A B : 𝓤 ̇} → A ≃ B → A ≡ B
+  ua = qinv₁ (isequiv-to-qinv idtoeqv-is-equiv)
 
--- Computation rule
+  -- Computation rule
 
-idtoeqv-β' : {𝓤 : Universe} {A B : 𝓤 ̇} → idtoeqv ∘ ua ∼ 𝑖𝑑 (A ≃ B)
-idtoeqv-β' = qinv₂ (isequiv-to-qinv idtoeqv-is-equiv)
+  idtoeqv-β' : {𝓤 : Universe} {A B : 𝓤 ̇} → idtoeqv ∘ ua ∼ 𝑖𝑑 (A ≃ B)
+  idtoeqv-β' = qinv₂ (isequiv-to-qinv idtoeqv-is-equiv)
 
--- Uniqueness principle
+  -- Uniqueness principle
 
-idtoeqv-η : {𝓤 : Universe} {A B : 𝓤 ̇} → ua ∘ idtoeqv ∼ 𝑖𝑑 (A ≡ B)
-idtoeqv-η = qinv₃ (isequiv-to-qinv idtoeqv-is-equiv)
+  idtoeqv-η : {𝓤 : Universe} {A B : 𝓤 ̇} → ua ∘ idtoeqv ∼ 𝑖𝑑 (A ≡ B)
+  idtoeqv-η = qinv₃ (isequiv-to-qinv idtoeqv-is-equiv)
 
--- Computation rule (underlying function)
+  -- Computation rule (underlying function)
 
-idtoeqv-β : {A B : 𝓤 ̇} → (f : A ≃ B) → coe (ua f) ∼ pr₁ f
-idtoeqv-β f = happly (pr₁ (dpr-≡ (idtoeqv-β' f)))
+  idtoeqv-β : {A B : 𝓤 ̇} → (f : A ≃ B) → coe (ua f) ∼ pr₁ f
+  idtoeqv-β f = happly (pr₁ (dpr-≡ (idtoeqv-β' f)))
 
 
--- Functoriality of ua  
+  -- Functoriality of ua  
 
-type-refl : (A : 𝓤 ̇) → refl A ≡ ua (≃-refl A)
-type-refl A = idtoeqv-η (refl A) ⁻¹ ∙ ap ua (refl _)
+  type-refl : (A : 𝓤 ̇) → refl A ≡ ua (≃-refl A)
+  type-refl A = idtoeqv-η (refl A) ⁻¹ ∙ ap ua (refl _)
 
-type-sym : {A B : 𝓤 ̇} (f : A ≃ B) → ua f ⁻¹ ≡ ua (≃-sym f)
-type-sym {𝓤} {A} {B} f = lemma (ua f) ∙ ap (ua ∘ ≃-sym) (idtoeqv-β' f)
-  where
-  lemma : {A B : 𝓤 ̇} (p : A ≡ B) → p ⁻¹ ≡ ua (≃-sym (idtoeqv p))
-  lemma (refl _) = type-refl _
+  type-sym : {A B : 𝓤 ̇} (f : A ≃ B) → ua f ⁻¹ ≡ ua (≃-sym f)
+  type-sym {𝓤} {A} {B} f = lemma (ua f) ∙ ap (ua ∘ ≃-sym) (idtoeqv-β' f)
+    where
+    lemma : {A B : 𝓤 ̇} (p : A ≡ B) → p ⁻¹ ≡ ua (≃-sym (idtoeqv p))
+    lemma (refl _) = type-refl _
 
-type-trans : {A B C : 𝓤 ̇} (e : A ≃ B) (f : B ≃ C) → ua e ∙ ua f ≡ ua (e ● f)
-type-trans {𝓤} {A} {B} {C} e f = lemma (ua e) (ua f) ∙ (ap (λ - →  ua (- ● idtoeqv (ua f))) (idtoeqv-β' e) ∙ ap (λ - → ua (e ● -)) (idtoeqv-β' f))
-  where
-  lemma : {A B C : 𝓤 ̇} (p : A ≡ B) (q : B ≡ C) → p ∙ q ≡ ua (idtoeqv p ● idtoeqv q)
-  lemma (refl _) (refl _) = type-refl _
+  type-trans : {A B C : 𝓤 ̇} (e : A ≃ B) (f : B ≃ C) → ua e ∙ ua f ≡ ua (e ● f)
+  type-trans {𝓤} {A} {B} {C} e f = lemma (ua e) (ua f) ∙ (ap (λ - →  ua (- ● idtoeqv (ua f))) (idtoeqv-β' e) ∙ ap (λ - → ua (e ● -)) (idtoeqv-β' f))
+    where
+    lemma : {A B C : 𝓤 ̇} (p : A ≡ B) (q : B ≡ C) → p ∙ q ≡ ua (idtoeqv p ● idtoeqv q)
+    lemma (refl _) (refl _) = type-refl _
 
 
 -- Lemma 2.10.5 (transport in a type family is coercion along the action on paths of the type family).
@@ -97,18 +96,22 @@ transport-is-coe-of-ap (refl x) u = refl _
 
 -- Transport of functions along ua
 
-transport-fun-ua-is-pre-∘ : {A B : 𝓤 ̇} {C : 𝓥 ̇} (e : A ≃ B) (f : B → C) → transport (λ - → - → C) (ua e ⁻¹) f ∼ f ∘ pr₁ e
-transport-fun-ua-is-pre-∘ {𝓤} {𝓥} {A} {B} {C} e f = let p = ua e in
-  λ x → transport-fun (p ⁻¹) f x ∙ transportconst C (p ⁻¹) _ ∙ ap f (ap (λ - → coe - x) (⁻¹-invol p) ∙ idtoeqv-β e x)
+module Transport-Univalence (univ : Univalence) where
 
-transport-fun-ua-is-pre-∘' : {A B : 𝓤 ̇} {C : 𝓥 ̇} (e : A ≃ B) (f : A → C) → transport (λ - → - → C) (ua e) f ∼ f ∘ inv e
-transport-fun-ua-is-pre-∘' {𝓤} {𝓥} {A} {B} {C} e f = let p = ua e in
-  λ x → transport-fun p f x ∙ transportconst C p _ ∙ ap f (ap (λ - → coe - x) (type-sym e) ∙ idtoeqv-β (≃-sym e) x)
+  open Basic-Univalence univ
 
-transport-fun-ua-is-post-∘ : {A : 𝓤 ̇} {B C : 𝓥 ̇} (e : B ≃ C) (f : A → B) → transport (λ - → A → -) (ua e) f ∼ pr₁ e ∘ f
-transport-fun-ua-is-post-∘ {𝓤} {𝓥} {A} {B} {C} e f = let p = ua e in
-  λ x → transport-fun p f x ∙ idtoeqv-β e _ ∙ ap (pr₁ e ∘ f) (transportconst A (p ⁻¹) x)
+  transport-fun-ua-is-pre-∘ : {A B : 𝓤 ̇} {C : 𝓥 ̇} (e : A ≃ B) (f : B → C) → transport (λ - → - → C) (ua e ⁻¹) f ∼ f ∘ pr₁ e
+  transport-fun-ua-is-pre-∘ {𝓤} {𝓥} {A} {B} {C} e f = let p = ua e in
+    λ x → transport-fun (p ⁻¹) f x ∙ transportconst C (p ⁻¹) _ ∙ ap f (ap (λ - → coe - x) (⁻¹-invol p) ∙ idtoeqv-β e x)
 
-transport-fun-ua-is-post-∘' : {A : 𝓤 ̇} {B C : 𝓥 ̇} (e : B ≃ C) (f : A → C) → transport (λ - → A → -) (ua e ⁻¹) f ∼ inv e ∘ f
-transport-fun-ua-is-post-∘' {𝓤} {𝓥} {A} {B} {C} e f = let p = ua e in
-  λ x → transport-fun (p ⁻¹) f x ∙ (ap (λ - → coe - (f (transport (λ x → A) ((p ⁻¹) ⁻¹) x))) (type-sym e) ∙ idtoeqv-β (≃-sym e) _ ∙ ap (inv e ∘ f) (transportconst A ((p ⁻¹) ⁻¹) x))
+  transport-fun-ua-is-pre-∘' : {A B : 𝓤 ̇} {C : 𝓥 ̇} (e : A ≃ B) (f : A → C) → transport (λ - → - → C) (ua e) f ∼ f ∘ inv e
+  transport-fun-ua-is-pre-∘' {𝓤} {𝓥} {A} {B} {C} e f = let p = ua e in
+    λ x → transport-fun p f x ∙ transportconst C p _ ∙ ap f (ap (λ - → coe - x) (type-sym e) ∙ idtoeqv-β (≃-sym e) x)
+
+  transport-fun-ua-is-post-∘ : {A : 𝓤 ̇} {B C : 𝓥 ̇} (e : B ≃ C) (f : A → B) → transport (λ - → A → -) (ua e) f ∼ pr₁ e ∘ f
+  transport-fun-ua-is-post-∘ {𝓤} {𝓥} {A} {B} {C} e f = let p = ua e in
+    λ x → transport-fun p f x ∙ idtoeqv-β e _ ∙ ap (pr₁ e ∘ f) (transportconst A (p ⁻¹) x)
+
+  transport-fun-ua-is-post-∘' : {A : 𝓤 ̇} {B C : 𝓥 ̇} (e : B ≃ C) (f : A → C) → transport (λ - → A → -) (ua e ⁻¹) f ∼ inv e ∘ f
+  transport-fun-ua-is-post-∘' {𝓤} {𝓥} {A} {B} {C} e f = let p = ua e in
+    λ x → transport-fun (p ⁻¹) f x ∙ (ap (λ - → coe - (f (transport (λ x → A) ((p ⁻¹) ⁻¹) x))) (type-sym e) ∙ idtoeqv-β (≃-sym e) _ ∙ ap (inv e ∘ f) (transportconst A ((p ⁻¹) ⁻¹) x))

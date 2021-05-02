@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -6,7 +6,9 @@ open import Ch3.Sets-and-logic
 open import Ch4.9-Univalence-implies-funext
 open import Ch4.Exercises
 
-module Ch4.1-Quasi-inverses ⦃ pt : PropTrunc ⦄ where
+module Ch4.1-Quasi-inverses ⦃ pt : PropTrunc ⦄ (univ : Univalence) where
+
+open Full-Univalence univ
 
 
 -- Lemma 4.1.1 (If f is quasi-invertible, then qinv f ≃ (id ∼ id)
@@ -58,8 +60,9 @@ module nontrivial-inhabitant-criterion (A : 𝓤 ̇) (a : A) (q : a ≡ a) (i : 
   third : Π B
   third x = ∥∥₋₁-recursion (second x) (λ p → (p ⁻¹ ∙ (q ∙ p)) , λ s → ((ap (λ - → (p ⁻¹) ∙ -) (ru _ ∙ (ap (λ - → (q ∙ p) ∙ - ) (linv s ⁻¹) ∙ (∙-assoc _ _ _ ∙ ((ap (λ - → - ∙ s) ((∙-assoc _ _ _ ⁻¹) ∙ (comm (p ∙ (s ⁻¹)) ⁻¹)) ∙ (∙-assoc _ _ _ ⁻¹)) ∙ (∙-assoc _ _ _ ⁻¹))))) ∙ (∙-assoc _ _ _)) ∙ ap (λ - → - ∙ ((s ⁻¹) ∙ (q ∙ s))) (linv p)) ∙ (lu _ ⁻¹)) (g x)
 
-  nontrivial-inhabitant-criterion : Σ f ꞉ (𝑖𝑑 A ∼ 𝑖𝑑 A) , f a ≡ q
-  nontrivial-inhabitant-criterion = (λ x → pr₁ (third x)) , (pr₂ (third a) (refl a) ∙ lu _ ⁻¹ ∙ ru _ ⁻¹)
+  abstract
+    nontrivial-inhabitant-criterion : Σ f ꞉ (𝑖𝑑 A ∼ 𝑖𝑑 A) , f a ≡ q
+    nontrivial-inhabitant-criterion = (λ x → pr₁ (third x)) , (pr₂ (third a) (refl a) ∙ lu _ ⁻¹ ∙ ru _ ⁻¹)
 
 
 -- Theorem 4.1.3

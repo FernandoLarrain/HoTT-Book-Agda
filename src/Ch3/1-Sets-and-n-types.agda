@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -76,7 +76,9 @@ Lift-equiv 𝓥 e = Lift-≃ ● e ● ≃-Lift
 
 -- Example 3.1.9 (Not all types are sets).
 
-module 𝓤-is-not-Set (𝓤 : Universe) where
+module 𝓤-is-not-Set (univ : Univalence) (𝓤 : Universe) where
+
+  open Basic-Univalence univ
 
   ≃-refl-𝟚' : Lift 𝓤 𝟚 ≃ Lift 𝓤 𝟚
   ≃-refl-𝟚' = Lift-equiv 𝓤 (≃-refl 𝟚)

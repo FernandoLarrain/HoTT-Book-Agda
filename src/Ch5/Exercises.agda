@@ -1,11 +1,11 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 
-module Ch5.Exercises where
+module Ch5.Exercises ⦃ fe : FunExt ⦄ where
 
 
 -- Exercise: characterization of Π-types (a dependent function is a section of the projection of total space).

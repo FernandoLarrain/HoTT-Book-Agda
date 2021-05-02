@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -80,7 +80,11 @@ weak-funext-to-funext 𝓤 𝓥 wfe {A} {P} {f} {g} = fourth g where
 
 -- Global univalence implies golbal function extensionality
 
-abstract
-  instance
-    fe : FunExt
-    fe {𝓤} {𝓥} = weak-funext-to-funext 𝓤 𝓥 (univalence-to-weak-funext 𝓤 𝓥 (idtoeqv-is-equiv {𝓤 ⊔ 𝓥}))
+module Full-Univalence (univ : Univalence) where
+
+  open Basic-Univalence univ public
+
+  abstract
+    instance
+      fe : FunExt
+      fe {𝓤} {𝓥} = weak-funext-to-funext 𝓤 𝓥 (univalence-to-weak-funext 𝓤 𝓥 (idtoeqv-is-equiv {𝓤 ⊔ 𝓥}))

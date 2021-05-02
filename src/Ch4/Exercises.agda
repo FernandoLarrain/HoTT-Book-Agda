@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -8,7 +8,7 @@ open import Ch4.5-On-the-definition-of-equivalences
 open import Ch4.7-Closure-properties-of-equivalences
 open import Ch4.9-Univalence-implies-funext
 
-module Ch4.Exercises where
+module Ch4.Exercises ⦃ fe : FunExt ⦄ where
 
 
 -- Exercise 2.13 (The type of autoequivalences of 𝟚 is 𝟚).

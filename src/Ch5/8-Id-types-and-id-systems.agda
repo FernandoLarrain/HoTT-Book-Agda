@@ -1,11 +1,11 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 
-module Ch5.8-Id-types-and-id-systems where
+module Ch5.8-Id-types-and-id-systems ⦃ fe : FunExt ⦄ where
 
 
 -- Definition 5.8.1 (Pointed predicate, pointed family of maps (pointed-predicate map) and based identity system).
@@ -426,7 +426,9 @@ module thm-5-8-4 (A : 𝓤 ̇) (R' : refl-rel A 𝓥) where
 
 -- Corollary 5.8.5 (Equivalence induction)
 
-module equivalence-induction where
+module equivalence-induction (univ : Univalence) where
+
+  open Basic-Univalence univ
 
   abstract 
 

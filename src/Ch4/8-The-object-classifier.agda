@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -35,7 +35,10 @@ fib-of-!𝟙 {𝓤} {A} = ≃-sym (Σ-over-𝟙 (λ u → fib (!𝟙 A) u)) ● 
 
 -- Theorem 4.8.3
 
-module thm-4-8-3 ⦃ fe : FunExt ⦄ (B : 𝓤 ̇) where
+module thm-4-8-3 ⦃ fe : FunExt ⦄ (univ : Univalence) (B : 𝓤 ̇) where
+
+  open Basic-Univalence univ
+  open Transport-Univalence univ
 
   χ : (Σ A ꞉ 𝓤 ̇ , (A → B)) → B → 𝓤 ̇
   χ (A , f) = fib f
@@ -58,9 +61,9 @@ module thm-4-8-3 ⦃ fe : FunExt ⦄ (B : 𝓤 ̇) where
 
 -- Theorem 4.8.4 (Object classifier).
 
-module object-classifier ⦃ fe : FunExt ⦄ {A B : 𝓤 ̇} (f : A → B) where
+module object-classifier ⦃ fe : FunExt ⦄ (univ : Univalence) {A B : 𝓤 ̇} (f : A → B) where
 
-  open thm-4-8-3 B using (χ)
+  open thm-4-8-3 univ B using (χ)
 
   ϑ : A → 𝓤 ⊙
   ϑ a = (fib f (f a)) , (a , (refl (f a)))

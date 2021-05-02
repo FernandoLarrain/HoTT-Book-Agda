@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -7,7 +7,7 @@ open import Ch4.Equivalences
 open import Ch5.1-Introduction-to-inductive-types
 open import Ch5.3-W-types
 
-module Ch5.4-Inductive-types-are-initial-algebras where
+module Ch5.4-Inductive-types-are-initial-algebras ⦃ fe : FunExt ⦄ where
 
 
 -- Definition 5.4.1 (ℕ-algebra).
@@ -54,8 +54,9 @@ C ℕAlg-≅ D = Σ f ꞉ ℕHom C D , Σ g ꞉ ℕHom D C , (ℕHom-comp D C D 
 ℕAlg-≅-to-≃ ((f , f-is-hom) , (g , g-is-hom) , p , q) with dpr-≡ p | dpr-≡ q
 ... | (p' , p-etc) | (q' , q-etc) = f , qinv-to-isequiv (g , (happly p' , happly q'))
 
-ℕAlg-≅-to-≡ : {C D : ℕAlg 𝓤} → C ℕAlg-≅ D → C ≡ D
-ℕAlg-≅-to-≡ {𝓤} {C , c₀ , cs} {D , d₀ , ds} ((f , p , α) , (g , q , β) , p' , q') = dpair-≡ (carrier-≡ , (transport-pair id (λ X → X → X) carrier-≡ (c₀ , cs) ∙ pair-≡ (zero-≡ , succ-≡))) where
+ℕAlg-≅-to-≡ : (univ : Univalence) → {C D : ℕAlg 𝓤} → C ℕAlg-≅ D → C ≡ D
+ℕAlg-≅-to-≡ {𝓤} univ {C , c₀ , cs} {D , d₀ , ds} ((f , p , α) , (g , q , β) , p' , q') = dpair-≡ (carrier-≡ , (transport-pair id (λ X → X → X) carrier-≡ (c₀ , cs) ∙ pair-≡ (zero-≡ , succ-≡))) where
+  open Basic-Univalence univ
   carrier-≃ : C ≃ D
   carrier-≃ = ℕAlg-≅-to-≃ ((f , p , α) , (g , q , β) , p' , q')
   carrier-≡ : C ≡ D
@@ -84,11 +85,11 @@ module single-universe where
 
   -- Theorem 5.4.4 (h-inital ℕ-algebras are equal).
 
-  Hinit-ℕAlg-is-Prop : isProp (Hinit-ℕAlg 𝓤 𝓤)
-  Hinit-ℕAlg-is-Prop {𝓤} ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
+  Hinit-ℕAlg-is-Prop : (univ : Univalence) →  isProp (Hinit-ℕAlg 𝓤 𝓤)
+  Hinit-ℕAlg-is-Prop {𝓤} univ ((UI , i₀ , is) , i) ((UJ , j₀ , js) , j) =
     let I = (UI , i₀ , is)
         J = (UJ , j₀ , js)
-    in Σ-over-predicate isHinit-ℕ-is-Prop (ℕAlg-≅-to-≡ (
+    in Σ-over-predicate isHinit-ℕ-is-Prop (ℕAlg-≅-to-≡ univ (
     pr₁ (i J) ,
     pr₁ (j I) ,
     isContr-to-isProp (j J) _ _ ,

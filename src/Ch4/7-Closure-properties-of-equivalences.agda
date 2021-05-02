@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -199,5 +199,5 @@ embedding-criterion {𝓤} {𝓥} {A} {B} f e x = pr₂ (fiberwise-≃-iff-total
 
 -- Example: Lift is an embedding of one universe into another.
 
-Lift-is-embedding : ⦃ fe : FunExt ⦄ ⦃ univ : Univalence ⦄ → isEmbedding (Lift {𝓤} 𝓥)
-Lift-is-embedding {𝓤} {𝓥} = embedding-criterion (Lift 𝓥) (λ A B → (idtoeqv , idtoeqv-is-equiv) ● (≃-preserves-left-≃ (Lift 𝓥 B) Lift-≃ ● ≃-preserves-right-≃ A Lift-≃) ●  ≃-sym (idtoeqv , idtoeqv-is-equiv))
+Lift-is-embedding : ⦃ fe : FunExt ⦄ (univ : Univalence) → isEmbedding (Lift {𝓤} 𝓥)
+Lift-is-embedding {𝓤} {𝓥} univ = embedding-criterion (Lift 𝓥) (λ A B → (idtoeqv , idtoeqv-is-equiv) ● (≃-preserves-left-≃ (Lift 𝓥 B) Lift-≃ ● ≃-preserves-right-≃ A Lift-≃) ●  ≃-sym (idtoeqv , idtoeqv-is-equiv)) where open Basic-Univalence univ
