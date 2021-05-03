@@ -9,7 +9,7 @@ open import Ch5.8-Id-types-and-id-systems
 module Thesis.Equivalence-preservation where 
 
 
--- X. Preservation of Equivalences
+-- I. Preservation of Equivalences
 
 module Preservation-of-Equivalences (A₁ A₂ : 𝓤 ̇) (e : A₁ ≃ A₂) (B₁ B₂ : 𝓥 ̇) (e' : B₁ ≃ B₂) (f₁ : A₁ → B₁) (f₂ : A₂ → B₂) where
 
@@ -68,7 +68,7 @@ module Preservation-of-Equivalences (A₁ A₂ : 𝓤 ̇) (e : A₁ ≃ A₂) (B
   hae-pres = Σ f-s ꞉ s-pres , ishae-pres f-s
 
 
--- XI. Equivalence Preservation is Function Preservation
+-- II. Equivalence Preservation is Function Preservation
 
 module _ (univ : Univalence) where
 

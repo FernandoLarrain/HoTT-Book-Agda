@@ -10,7 +10,7 @@ open import Thesis.Identity-types
 module Thesis.Inductive-Z-Algebras where
 
 
--- VII. Inductive Algebras
+-- I. Inductive Algebras
 
 isind : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
 isind 𝓥 A = (E : FibAlg 𝓥 A) → AlgSec A E

@@ -9,7 +9,7 @@ open import Thesis.Z-Algebras
 module Thesis.Identity-types where
 
 
--- III. Identity Type of Sections and Morphisms
+-- I. Identity Type of Sections and Morphisms
 
 SecId : (A : Alg 𝓤) (E : FibAlg 𝓥 A) → AlgSec A E → AlgSec A E → 𝓤 ⊔ 𝓥 ̇
 SecId (A , a₀ , s , i) (E , e₀ , s' , j) (f , f₀ , f-s) (g , g₀ , g-s) = Σ H ꞉ (f ∼ g) , (H a₀ ≡ f₀ ∙ g₀ ⁻¹) × ((a : A) → H (s a) ≡ f-s a ∙ ap (s' a) (H a) ∙ g-s a ⁻¹)
@@ -81,7 +81,7 @@ module _ ⦃ fe : FunExt ⦄ where
     )
 
 
--- IV. Associativity and Unit Laws for Morphism Composition
+-- II. Associativity and Unit Laws for Morphism Composition
 
 associator : ⦃ fe : FunExt ⦄ (A : Alg 𝓤) (B : Alg 𝓥) (C : Alg 𝓦) (D : Alg 𝓣) (f : Hom A B) (g : Hom B C) (h : Hom C D) → comp A C D h (comp A B C g f) ≡ comp A B D (comp B C D h g) f -- h (g f) ≡ (h g) f
 associator (A , a₀ , sA , iA) (B , b₀ , sB , iB) (C , c₀ , sC , iC)  (D , d₀ , sD , iD) (f , f₀ , f-s) (g , g₀ , g-s) (h , h₀ , h-s) = Hom-≡-intro A' D' (comp A'  C' D' h' (comp A' B' C' g' f')) (comp A' B' D' (comp B' C' D' h' g') f') (hrefl _ , H₀ f₀ g₀ h₀ , H-s)

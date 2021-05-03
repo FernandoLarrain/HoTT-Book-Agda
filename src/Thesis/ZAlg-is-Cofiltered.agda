@@ -11,7 +11,7 @@ open import Thesis.Inductive-Z-Algebras
 module Thesis.ZAlg-is-Cofiltered where
 
 
--- XIII. Cones
+-- I. Cones
 
 -- Over pairs of objects.
 

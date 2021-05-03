@@ -10,7 +10,7 @@ open import Thesis.Identity-types
 module Thesis.Hinitial-Z-Algebras where
 
 
--- V. Identity Type of Algebras
+-- I. Identity Type of Algebras
 
 isiso : (A : Alg 𝓤) (B : Alg 𝓥) → Hom A B → 𝓤 ⊔ 𝓥 ̇
 isiso A B f = Σ g ꞉ Hom B A , (comp B A B f g ≡ algid B) × (comp A B A g f ≡ algid A)
@@ -42,7 +42,7 @@ module _ (univ : Univalence) where
   ≡-to-≅ A .A (refl .A) = (id , refl _ , hrefl _) , ((id , refl _ , hrefl _) , ((refl _) , (refl _)))
 
 
--- VI. Initial Algebras
+-- II. Initial Algebras
 
 ishinit : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ 𝓥 ⁺ ̇
 ishinit 𝓥 A = (B : Alg 𝓥) → isContr (Hom A B)

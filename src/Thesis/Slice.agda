@@ -11,7 +11,7 @@ open import Thesis.Identity-types
 module Thesis.Slice where
 
 
--- XI. Slice over an algebra.
+-- I. Slice over an algebra.
 
 Slice : (𝓥 : Universe) → Alg 𝓤 → 𝓤 ⊔ (𝓥 ⁺) ̇
 Slice {𝓤} 𝓥 A = Σ B ꞉ Alg 𝓥 , Hom B A
@@ -61,7 +61,7 @@ module Slice-is-FibAlg (univ : Univalence) where
   equiv-gives-π₁ A E = refl _
 
 
--- XII. Algebra Sections are Sections.
+-- II. Algebra Sections are Sections.
 
 AlgSec-is-Sec : ⦃ fe : FunExt ⦄ (A : Alg 𝓤) (E : FibAlg 𝓤 A) → AlgSec A E ≃ (Σ f ꞉ (Hom A (TotAlg A E)) , comp A (TotAlg A E) A (π₁ A E) f ≡ algid A)
 AlgSec-is-Sec {𝓤} (A , a₀ , s , i) (E , e₀ , s' , j) = ≃-sym (
@@ -142,7 +142,7 @@ AlgSec-is-Sec {𝓤} (A , a₀ , s , i) (E , e₀ , s' , j) = ≃-sym (
     _ ■
 
 
--- XIV. Alternative proof of isind-≃-ishinit.
+-- III. Alternative proof of isind-≃-ishinit.
 
 module _ (univ : Univalence) (𝓤 : Universe) where
 
@@ -165,14 +165,14 @@ module _ (univ : Univalence) (𝓤 : Universe) where
     (λ {A} {B} → proj₂ A B)
     (λ {A} {B} → Eqz A B)
     (λ {A} {B} → Eqz-map A B)
-    (λ {A} {B} → Eqz-equalizes A B) using (ishinit-≃-isind)
+    (λ {A} {B} → Eqz-equalizes A B) using (ishinit-≃-isind) renaming (isind to isind')
 
   isind-≃-ishinit' : (A : Alg 𝓤) → isind 𝓤 A ≃ ishinit 𝓤 A
   isind-≃-ishinit' A =
-    _
-      ≃⟨ Π-preserves-≃ _ _ (≃-sym (Slice-is-FibAlg A)) (λ E → AlgSec-is-Sec A E) ⟩
-    _
+    isind 𝓤 A
+      ≃⟨ Π-preserves-≃ {_} {_} {_} {_} {FibAlg 𝓤 A} {Σ B ꞉ Alg 𝓤 , Hom B A} (AlgSec A) (Σ-induction λ B f → -Σ (Hom A B) (λ g → Id (Hom A A) (comp A B A f g) (algid A))) (≃-sym (Slice-is-FibAlg A)) (λ E → AlgSec-is-Sec A E) ⟩
+    -Π (Slice 𝓤 A) (Σ-induction λ B f → -Σ (Hom A B) (λ g → Id (Hom A A) (comp A B A f g) (algid A)))
       ≃⟨ GCCAdj _ _ _ ⟩
-    _
+    isind' A
       ≃⟨ ≃-sym (ishinit-≃-isind A) ⟩
-    _ ■
+    ishinit 𝓤 A ■
