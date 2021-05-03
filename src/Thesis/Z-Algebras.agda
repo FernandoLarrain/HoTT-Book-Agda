@@ -5,7 +5,7 @@ open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 
-module Thesis.Z-algebras where
+module Thesis.Z-Algebras where
 
 
 -- I. The Category of ℤ-Algebras
