@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -10,8 +10,9 @@ module Ch6.Exercises where
 
 -- Exercise 2.4 continued.
 
-module exercise-2-4-continued where
+module exercise-2-4-continued (univ : Univalence) where
 
+  open Basic-Univalence univ
 
   -- PathOver
 

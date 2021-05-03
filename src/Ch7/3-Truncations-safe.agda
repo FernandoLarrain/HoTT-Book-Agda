@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -41,7 +41,7 @@ module _ ⦃ tc : Truncations ⦄ where
 
   -- UMP of n-truncations
 
-  module ∥∥-UMP (n : Tlevel) (A : 𝓤 ̇) {B : 𝓥 ̇} (i : is n type B) where
+  module ∥∥-UMP ⦃ fe : FunExt ⦄ (n : Tlevel) (A : 𝓤 ̇) {B : 𝓥 ̇} (i : is n type B) where
 
     ϕ : (∥ A ∥ n → B) → (A → B)
     ϕ f = f ∘ ∣_∣
@@ -61,14 +61,14 @@ module _ ⦃ tc : Truncations ⦄ where
   -- Relation to old definitions
 
   instance
-    pt : PropTrunc
+    pt : ⦃ fe : FunExt ⦄ → PropTrunc
     PropTrunc.∥ pt ∥₋₁ = Truncation ⟨-1⟩
     PropTrunc.∣ pt ∣₋₁ = ∣_∣
     PropTrunc.∥∥₋₁-is-Prop pt = pr₂ Prop-iff-Contr-≡ ∥∥-Tlevel
     PropTrunc.∥∥₋₁-recursion pt = ∥∥-recursion ∘ pr₁ Prop-iff-Contr-≡
 
   instance
-    st : SetTrunc
+    st : ⦃ fe : FunExt ⦄ → SetTrunc
     SetTrunc.∥ st ∥₀ = Truncation ⟨0⟩
     SetTrunc.∣ st ∣₀ = ∣_∣
     SetTrunc.∥∥₀-is-Set st = pr₂ isSet-iff-is-⟨0⟩-type ∥∥-Tlevel
@@ -126,7 +126,7 @@ module _ ⦃ tc : Truncations ⦄ where
 
   -- Corollary 7.3.7 (A is n-type iff ∣_∣ : A → ∥ A ∥ n is an equivalence).
 
-  has-Tlevel-≃-∣∣-is-equiv : (n : Tlevel) (A : 𝓤 ̇) → is n type A ≃ isequiv (∣_∣ {𝓤} {n} {A})
+  has-Tlevel-≃-∣∣-is-equiv : ⦃ fe : FunExt ⦄ (n : Tlevel) (A : 𝓤 ̇) → is n type A ≃ isequiv (∣_∣ {𝓤} {n} {A})
   has-Tlevel-≃-∣∣-is-equiv {𝓤} n A = ⇔-to-≃ (Tlevel-is-predicate _ _) (ishae-is-Prop _) (
     (λ i → qinv-to-isequiv (∥∥-recursion i id , ∥∥-uniqueness-pple ∥∥-Tlevel (λ x → ap ∣_∣ (∣∣-prop-β' i id x)) , ∣∣-prop-β' _ _)) ,
     (λ i → ≃-preserves-Tlevel n _ _ (≃-sym (∣_∣ , i)) ∥∥-Tlevel)
@@ -135,7 +135,7 @@ module _ ⦃ tc : Truncations ⦄ where
 
   -- Theorem 7.3.8 (Truncation preserves finite products).
 
-  module ∥∥-preserves-× {n : Tlevel} {A : 𝓤 ̇} {B : 𝓥 ̇} where
+  module ∥∥-preserves-× ⦃ fe : FunExt ⦄ {n : Tlevel} {A : 𝓤 ̇} {B : 𝓥 ̇} where
 
     -- (i) UMP of product of truncations
 
@@ -219,7 +219,7 @@ module _ ⦃ tc : Truncations ⦄ where
 
   -- Corollary 7.3.10 (Sum of truncated family over n-type is n-truncation of sum).
 
-  ∥∥-preserves-Σ : {n : Tlevel} {A : 𝓤 ̇} {P : A → 𝓥 ̇} → is n type A → (Σ x ꞉ A , ∥ P x ∥ n) ≃ (∥ Σ P ∥ n)
+  ∥∥-preserves-Σ : ⦃ fe : FunExt ⦄ {n : Tlevel} {A : 𝓤 ̇} {P : A → 𝓥 ̇} → is n type A → (Σ x ꞉ A , ∥ P x ∥ n) ≃ (∥ Σ P ∥ n)
   ∥∥-preserves-Σ {𝓤} {𝓥} {n} {A} {P} i = ∣_∣ , (pr₁ (has-Tlevel-≃-∣∣-is-equiv n (Σ x ꞉ A , ∥ P x ∥ n)) (Σ-preserves-Tlevel n _ (λ a → ∥ P a ∥ n) i (λ - → ∥∥-Tlevel))) ● ∥∥-preserves-Σ.equiv
   
   

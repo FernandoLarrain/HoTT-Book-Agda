@@ -98,7 +98,7 @@ open import Ch6.5-Suspensions-safe public
 
 -- Exercise 6.11 (UMP of Susp).
 
-module Susp-UMP (A : 𝓤 ̇) (B : 𝓥 ̇) where 
+module Susp-UMP ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) (B : 𝓥 ̇) where 
 
   ϕ : (Susp A → B) → (Σ bₙ ꞉ B , Σ bₛ ꞉ B , (A → bₙ ≡ bₛ)) 
   ϕ f = f north , f south , ap f ∘ merid 
@@ -132,7 +132,7 @@ module Susp-UMP (A : 𝓤 ̇) (B : 𝓥 ̇) where
 
 -- Lemma 6.5.4 (Susp ⊣ Ω)
 
-module Susp⊣Ω (A' : 𝓤 ⊙) (B' : 𝓥 ⊙) where
+module Susp⊣Ω ⦃ fe : FunExt ⦄ (A' : 𝓤 ⊙) (B' : 𝓥 ⊙) where
 
   A = pr₁ A'
   a₀ = pr₂ A'
@@ -176,7 +176,7 @@ module Susp⊣Ω (A' : 𝓤 ⊙) (B' : 𝓥 ⊙) where
 
 -- Corollary (UMP of n-sphere).
 
-Sphere-UMP : (n : ℕ) (B : 𝓤 ⊙) → Map⊙ (Sphere⊙ n) B ≃ pr₁ (Ω^ n B)
+Sphere-UMP : ⦃ fe : FunExt ⦄ (n : ℕ) (B : 𝓤 ⊙) → Map⊙ (Sphere⊙ n) B ≃ pr₁ (Ω^ n B)
 Sphere-UMP zero B = based-maps-≃-unbased-maps.equivalence 𝟙 B ● points-of-a-type (pr₁ B)
 Sphere-UMP (succ n) B = (Susp⊣Ω.equiv (Sphere⊙ n) B) ● Sphere-UMP n (Ω B)
 

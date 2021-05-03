@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -25,22 +25,24 @@ conn n {A} {B} f = (b : B) → is n connected (fib f b)
 is-conn-⇔-conn-!𝟙 : (n : Tlevel) (A : 𝓤 ̇) → is n connected A ⇔ conn n (!𝟙 A)
 is-conn-⇔-conn-!𝟙 n A = (λ A-is-conn → 𝟙-induction _ (≃-preserves-is-conn n (≃-sym fib-of-!𝟙) A-is-conn)) , (λ !𝟙-is-conn → ≃-preserves-is-conn n fib-of-!𝟙 (!𝟙-is-conn ⋆))
 
-is-conn-is-Prop : (n : Tlevel) (A : 𝓤 ̇) → isProp (is n connected A)
-is-conn-is-Prop n A = isContr-is-Prop _
+module _ ⦃ fe : FunExt ⦄ where
 
-conn-is-Prop : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (conn n f)
-conn-is-Prop n f = Π-preserves-Props _ λ b → isContr-is-Prop _
+  is-conn-is-Prop : (n : Tlevel) (A : 𝓤 ̇) → isProp (is n connected A)
+  is-conn-is-Prop n A = isContr-is-Prop _
 
-is-conn-≃-conn-!𝟙 : (n : Tlevel) (A : 𝓤 ̇) → is n connected A ≃ conn n (!𝟙 A)
-is-conn-≃-conn-!𝟙 n A = ⇔-to-≃ (is-conn-is-Prop n A) (conn-is-Prop n (!𝟙 A)) (is-conn-⇔-conn-!𝟙 n A) 
+  conn-is-Prop : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → isProp (conn n f)
+  conn-is-Prop n f = Π-preserves-Props _ λ b → isContr-is-Prop _
 
-is-conn-preserves-≃ : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → is n connected A ≃ is n connected B
-is-conn-preserves-≃ n {A} {B} e = ⇔-to-≃ (is-conn-is-Prop n A) (is-conn-is-Prop n B) (≃-preserves-is-conn n e , ≃-preserves-is-conn n (≃-sym e))
+  is-conn-≃-conn-!𝟙 : (n : Tlevel) (A : 𝓤 ̇) → is n connected A ≃ conn n (!𝟙 A)
+  is-conn-≃-conn-!𝟙 n A = ⇔-to-≃ (is-conn-is-Prop n A) (conn-is-Prop n (!𝟙 A)) (is-conn-⇔-conn-!𝟙 n A) 
+
+  is-conn-preserves-≃ : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → is n connected A ≃ is n connected B
+  is-conn-preserves-≃ n {A} {B} e = ⇔-to-≃ (is-conn-is-Prop n A) (is-conn-is-Prop n B) (≃-preserves-is-conn n e , ≃-preserves-is-conn n (≃-sym e))
 
 
 -- Lemma 7.5.2. (f is -1-connected iff it is surjective).
 
-conn-⟨-1⟩-≃-isSurjective : {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → conn ⟨-1⟩ f ≃ isSurjective f
+conn-⟨-1⟩-≃-isSurjective : ⦃ fe : FunExt ⦄ {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) → conn ⟨-1⟩ f ≃ isSurjective f
 conn-⟨-1⟩-≃-isSurjective f = Π-preserves-family-≃ (λ b → ⇔-to-≃ (isContr-is-Prop _) ∃-is-Prop (isProp-to-isContr-iff-is-inhabited ∃-is-Prop))
 
 
@@ -67,7 +69,7 @@ retractions-of-maps-preserve-conn n ρ i b = retract-of-Contr-is-Contr (∥∥-p
 
 -- Lemma 7.5.6.
 
-conn-∘ : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} {f : A → B} (g : B → C) → conn n f → conn n g ⇔ conn n (g ∘ f)
+conn-∘ : ⦃ fe : FunExt ⦄ (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} {f : A → B} (g : B → C) → conn n f → conn n g ⇔ conn n (g ∘ f)
 conn-∘ n {A} {B} {C} {f} g f-is-conn = (λ f-is-conn c → ≃-preserves-Contr (≃-sym (aux-≃ c)) (f-is-conn c)) , λ ∘-is-conn c → ≃-preserves-Contr (aux-≃ c) (∘-is-conn c) where
   aux-≃ : (c : C) → (∥ fib (g ∘ f) c ∥ n) ≃ (∥ fib g c ∥ n)
   aux-≃ c =
@@ -82,7 +84,7 @@ conn-∘ n {A} {B} {C} {f} g f-is-conn = (λ f-is-conn c → ≃-preserves-Contr
 
 -- Lemma 7.5.7 (Induction principle of n-connected maps).
 
-module conn-induction (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) where
+module conn-induction ⦃ fe : FunExt ⦄ (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} (f : A → B) where
 
   pre-∘ : (P : B → n Type 𝓦) → Π (pr₁ ∘ P) → Π (pr₁ ∘ P ∘ f)
   pre-∘ P = _∘ f
@@ -188,7 +190,7 @@ open conn-induction using (conn-induction ; conn-criterion) renaming (i-≃-ii t
 
 -- Corollary 7.5.8 (∣_∣ is n-connected).
 
-conn-∣∣ : {n : Tlevel} {A : 𝓤 ̇} → conn n {A} {∥ A ∥ n} ∣_∣
+conn-∣∣ : ⦃ fe : FunExt ⦄ {n : Tlevel} {A : 𝓤 ̇} → conn n {A} {∥ A ∥ n} ∣_∣
 conn-∣∣ {𝓤} {n} {A} = conn-criterion n ∣_∣ λ i → ∥∥-induction i , λ s' → funext (∣∣-prop-β i s')
 
 

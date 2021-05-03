@@ -6,9 +6,15 @@ open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 open import Ch5.8-Id-types-and-id-systems
 open import Thesis.Z-Algebras
+open import Thesis.Identity-types
+open import Thesis.Equivalence-preservation
+open import Thesis.Hinitial-Z-Algebras
+open import Thesis.Inductive-Z-Algebras
+open import Thesis.Ind-iff-hinit
 open import Rewrite
 
-module Thesis.Z-as-HIT where
+module Thesis.Z-as-HIT ⦃ fe : FunExt ⦄ where
+
 
 -- I. The Integers as Signed Natural Numbers
 
@@ -72,10 +78,21 @@ cohω (neg (succ n)) = refl _
   f-s (neg zero) = ρ a₀ ⁻¹
   f-s (neg (succ n)) = ρ (f (neg n)) ⁻¹ 
 
-ℤω-has-rec-unique : hasrecunique 𝓤 ℤω-alg
-ℤω-has-rec-unique {𝓤} (A , a₀ , s , p , σ , ρ , τ) (f , f₀ , f-s) (g , g₀ , g-s) with pr₂ (fun-pres-to-hae-pres ℤω-≃ (s , p , σ , ρ , τ) f f f-s) | pr₂ (fun-pres-to-hae-pres ℤω-≃ (s , p , σ , ρ , τ) g g g-s)
-... | (f-p , f-σ , f-ρ , f-τ) | (g-p , g-σ , g-ρ , g-τ) = Hom-≡-intro ℤω-alg (A , a₀ , s , p , σ , ρ , τ) _ _ (H , H₀ , H-s)
+ℤω-has-rec-unique : (univ : Univalence) → hasrecunique 𝓤 ℤω-alg
+ℤω-has-rec-unique {𝓤} univ (A , a₀ , s , p , σ , ρ , τ) (f , f₀ , f-s) (g , g₀ , g-s) = Hom-≡-intro ℤω-alg (A , a₀ , s , p , σ , ρ , τ) _ _ (H , H₀ , H-s)
+
   where
+
+  f-i = pr₂ (fun-pres-to-hae-pres univ ℤω-≃ (s , p , σ , ρ , τ) f f f-s)
+  f-p = pr₁ f-i
+  f-σ = pr₁ (pr₂ f-i)
+  f-ρ = pr₁ (pr₂ (pr₂ f-i))
+  f-τ = pr₂ (pr₂ (pr₂ f-i))
+  g-i = pr₂ (fun-pres-to-hae-pres univ ℤω-≃ (s , p , σ , ρ , τ) g g g-s)
+  g-p = pr₁ g-i
+  g-σ = pr₁ (pr₂ g-i)
+  g-ρ = pr₁ (pr₂ (pr₂ g-i))
+  g-τ = pr₂ (pr₂ (pr₂ g-i))
   H : f ∼ g
   H 0ω = f₀ ∙ g₀ ⁻¹
   H (pos zero) = f-s 0ω ∙ ap s (H 0ω) ∙ g-s 0ω ⁻¹
@@ -100,8 +117,8 @@ cohω (neg (succ n)) = refl _
     aux3 : ρ (g (neg n)) ≡ (g-s (neg (succ n)) ∙ ap s (g-p (neg n))) ⁻¹
     aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ (neg n) ∙ᵣ ρ (g (neg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
 
-ℤω-is-init : (𝓤 : Universe) → ishinit 𝓤 ℤω-alg
-ℤω-is-init 𝓤 A = pr₂ isContr-iff-is-inhabited-Prop ((ℤω-has-rec A) , (ℤω-has-rec-unique A))
+ℤω-is-init : (univ : Univalence) (𝓤 : Universe) → ishinit 𝓤 ℤω-alg
+ℤω-is-init univ 𝓤 A = pr₂ isContr-iff-is-inhabited-Prop ((ℤω-has-rec A) , (ℤω-has-rec-unique univ A))
 
 
 -- III. The Integers as HIT
@@ -153,5 +170,5 @@ postulate
 ℤₕ-is-init : ishinit 𝓤₀ ℤₕ-alg
 ℤₕ-is-init = isind-to-ishinit ℤₕ-alg (ℤₕ-is-ind 𝓤₀)
 
-ℤₕ-is-ℤω : ℤₕ-alg ≡ ℤω-alg
-ℤₕ-is-ℤω = ap pr₁ (InitAlg-is-Prop 𝓤₀ (ℤₕ-alg , ℤₕ-is-init) (ℤω-alg , ℤω-is-init 𝓤₀))
+ℤₕ-is-ℤω : (univ : Univalence) → ℤₕ-alg ≡ ℤω-alg
+ℤₕ-is-ℤω univ = ap pr₁ (InitAlg-is-Prop univ 𝓤₀ (ℤₕ-alg , ℤₕ-is-init) (ℤω-alg , ℤω-is-init univ 𝓤₀))

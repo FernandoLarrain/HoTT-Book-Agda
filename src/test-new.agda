@@ -64,6 +64,7 @@ open import Ch2.14-Equality-of-structures public
 open import Ch2.15-Universal-properties public
 open import Ch2.Exercises public
 
+
 -- Chapter 3
 
 open import Ch3.1-Sets-and-n-types public
@@ -80,6 +81,7 @@ open import Ch3.9-The-pple-of-unique-choice public
 open import Ch3.11-Contractibility public
 open import Ch3.Exercises public
 
+
 -- Chapter 4
 
 open import Ch4.2-Half-adjoint-equivalences public
@@ -93,6 +95,7 @@ open import Ch4.9-Univalence-implies-funext public
 open import Ch4.Exercises public
 open import Ch4.1-Quasi-inverses public
 
+
 -- Chapter 5
 
 open import Ch5.1-Introduction-to-inductive-types public
@@ -101,29 +104,45 @@ open import Ch5.4-Inductive-types-are-initial-algebras public
 open import Ch5.8-Id-types-and-id-systems public
 open import Ch5.Exercises public
 
--- -- Chapter 6
+import Thesis.WildCats
+open import Thesis.Z-Algebras public
+open import Thesis.Identity-types public
+open import Thesis.Hinitial-Z-Algebras public
+open import Thesis.Inductive-Z-Algebras public
+open import Thesis.Equivalence-preservation public
+open import Thesis.ZAlg-is-Cofiltered public
+open import Thesis.Ind-iff-hinit public
+open import Thesis.Slice public
 
--- open import Rewrite public
 
--- open import Ch6.2-Induction-pples-and-dependent-paths public
--- open import Ch6.3-The-interval public
--- open import Ch6.4-Circles-and-spheres-safe public
--- open import Ch6.4-Circles-and-spheres public
--- open import Ch6.5-Suspensions-safe public
--- open import Ch6.5-Suspensions public
--- open import Ch6.9-Truncations public
--- open import Ch6.8-Pushouts public
--- open import Ch6.10-Quotients public
--- open import Ch6.11-Algebra public
--- -- infixr 30 _++_
--- open import Ch6.Exercises public
+-- Chapter 6: Safe
 
--- -- Chapter 7
+open import Ch6.4-Circles-and-spheres-safe public
+open import Ch6.5-Suspensions-safe public
+open import Ch6.9-Truncations public
+open import Ch6.11-Algebra public
+-- infixr 30 _++_
+open import Ch6.Exercises public
 
--- open import Ch7.1-Definition-of-n-types public
--- open import Ch7.2-UIP-and-Hedberg's-theorem-safe public
--- open import Ch7.2-UIP-and-Hedberg's-theorem public
--- open import Ch7.3-Truncations-safe public
--- open import Ch7.3-Truncations public
--- open import Ch7.5-Connectedness public
--- open import Ch7.6-Orthogonal-factorization public
+open import Rewrite public
+
+open import Ch6.2-Induction-pples-and-dependent-paths public
+open import Ch6.3-The-interval public
+open import Ch6.4-Circles-and-spheres public
+open import Ch6.5-Suspensions public
+open import Ch6.8-Pushouts public
+open import Ch6.10-Quotients public
+
+open import Thesis.Z-as-HIT public
+
+
+-- Chapter 7: Safe
+
+open import Ch7.1-Definition-of-n-types public
+open import Ch7.2-UIP-and-Hedberg's-theorem-safe public
+open import Ch7.3-Truncations-safe public
+open import Ch7.5-Connectedness public
+open import Ch7.6-Orthogonal-factorization public
+
+open import Ch7.2-UIP-and-Hedberg's-theorem public
+open import Ch7.3-Truncations public

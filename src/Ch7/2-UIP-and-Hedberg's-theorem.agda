@@ -7,7 +7,9 @@ open import Ch4.Equivalences
 open import Ch6.5-Suspensions
 open import Ch7.1-Definition-of-n-types
 
-module Ch7.2-UIP-and-Hedberg's-theorem where
+module Ch7.2-UIP-and-Hedberg's-theorem (univ : Univalence) where
+
+open Full-Univalence univ
 
 -- Theorems 7.2.1-9:
 
@@ -16,7 +18,7 @@ open import Ch7.2-UIP-and-Hedberg's-theorem-safe public
 -- Corollary of Theorem 7.2.9.
 
 Tlevel-in-terms-of-Map⊙ : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A ≃ ((a : A) → isContr (Map⊙ (Sphere⊙ (to-ℕ n)) (A , a)))
-Tlevel-in-terms-of-Map⊙ n A = generalized-Axiom-K n A ● Π-preserves-family-≃ (λ a → isContr-preserves-≃ (≃-sym (Sphere-UMP (to-ℕ n) _)))
+Tlevel-in-terms-of-Map⊙ n A = generalized-Axiom-K univ n A ● Π-preserves-family-≃ (λ a → isContr-preserves-≃ (≃-sym (Sphere-UMP (to-ℕ n) _)))
 
 hub-and-spokes : (n : Tlevel) (A : 𝓤 ̇) → is (S n) type A → (l : Sphere (to-ℕ n) → A) → Σ h ꞉ A , l ∼ (λ x → h)
 hub-and-spokes n A i l = h , s where

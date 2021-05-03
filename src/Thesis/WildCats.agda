@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -6,6 +6,8 @@ open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
 
 module Thesis.WildCats
+
+ ⦃ fe : FunExt ⦄
 
  -- Fix universes
   
@@ -35,7 +37,7 @@ module Thesis.WildCats
  (meq : {A B : Obj} (f g : Hom A B) → f · m f g  ≡ g · m f g)
 -- (eq-UMP : (A B X : Obj) (f g : Hom A B) → isequiv {_} {_} {Hom X (eq f g)} {Σ h ꞉ Hom X A , f · h ≡ g · h} λ u → (m f g · u) , (assoc _ _ _ ∙ ap (_· u) (meq f g) ∙ assoc _ _ _ ⁻¹))
 
--- Don't need UMP's
+-- In fact, we just need the wild cat to be cofiltered.
 
  where
 
@@ -84,5 +86,5 @@ isind-is-Prop A A-ind = aux _
   aux : isProp (isind A)
   aux = Π-preserves-Props _ (λ B → Π-preserves-Props _ (λ f → uniqueness-pple A A-ind B f))
 
-thm : (A : Obj) → ishinit A ≃ isind A
-thm A = ⇔-to-≃ (ishinit-is-Prop A) (isind-is-Prop A) ((ishinit-to-isind A) , (isind-to-ishinit A))
+ishinit-≃-isind : (A : Obj) → ishinit A ≃ isind A
+ishinit-≃-isind A = ⇔-to-≃ (ishinit-is-Prop A) (isind-is-Prop A) ((ishinit-to-isind A) , (isind-to-ishinit A))

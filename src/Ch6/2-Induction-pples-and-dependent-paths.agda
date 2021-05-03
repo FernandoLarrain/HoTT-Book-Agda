@@ -74,7 +74,7 @@ module _ {A : 𝓤 ̇} (a : A) (p : a ≡ a) where
 
 -- Lemma 6.2.9 (UMP of 𝕊¹).
 
-UMP-𝕊¹ : (A : 𝓤 ̇) → (𝕊¹ → A) ≃ (Σ x ꞉ A , x ≡ x)
+UMP-𝕊¹ : ⦃ fe : FunExt ⦄ (A : 𝓤 ̇) → (𝕊¹ → A) ≃ (Σ x ꞉ A , x ≡ x)
 UMP-𝕊¹ A =
   (λ f → (f base₁ , ap f loop₁)) ,
   (qinv-to-isequiv (

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --exact-split #-}
+{-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
@@ -129,17 +129,17 @@ pb-preserves-Tlevel n A B C f g A-is-n-type B-is-n-type C-is-n-type = Σ-preserv
   
 -- Theorem 7.1.9 (Π preserves truncation level).
 
-Π-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : A → 𝓥 ̇) → ((a : A) → is n type (B a)) → is n type (Π B)
+Π-preserves-Tlevel : ⦃ fe : FunExt ⦄ (n : Tlevel) (A : 𝓤 ̇) (B : A → 𝓥 ̇) → ((a : A) → is n type (B a)) → is n type (Π B)
 Π-preserves-Tlevel ⟨-2⟩ A = Π-preserves-Contr
 Π-preserves-Tlevel (S n) A B B-is-Sn-family f g = ≃-preserves-Tlevel n (f ∼ g) _ (≃-sym (happly , happly-is-equiv)) (Π-preserves-Tlevel n _ _ λ a → B-is-Sn-family _ _ _)
 
-→-preserves-Tlevel : (n : Tlevel) (A : 𝓤 ̇) (B : 𝓥 ̇) → is n type B → is n type (A → B)
+→-preserves-Tlevel : ⦃ fe : FunExt ⦄ (n : Tlevel) (A : 𝓤 ̇) (B : 𝓥 ̇) → is n type B → is n type (A → B)
 →-preserves-Tlevel n A B B-is-n-type = Π-preserves-Tlevel n A (λ a → B) (λ a → B-is-n-type) 
 
 
 -- Theorem 7.1.10 (Truncation level is a predicate).
 
-Tlevel-is-predicate : (n : Tlevel) (X : 𝓤 ̇) → isProp (is n type X)
+Tlevel-is-predicate : ⦃ fe : FunExt ⦄ (n : Tlevel) (X : 𝓤 ̇) → isProp (is n type X)
 Tlevel-is-predicate ⟨-2⟩ = isContr-is-Prop
 Tlevel-is-predicate (S n) X = Π-preserves-Props _ λ x →
   Π-preserves-Props _ λ x' →
@@ -154,74 +154,80 @@ n Type 𝓤 = Σ X ꞉ (𝓤 ̇) , is n type X
 
 -- Theorem 7.1.11 (n-Type is an (n + 1)-type).
 
-Tlevel-Type-is-of-next-Tlevel : (n : Tlevel) → is S n type (n Type 𝓤)
+module Tlevel-Univalence (univ : Univalence) where
 
--- (i) Irrelevance of Tlevel data.
+  open Full-Univalence univ
 
-irrelevance-of-Tdata : (n : Tlevel) (Y Y' : n Type 𝓤) → (Y ≡ Y') ≃ (pr₁ Y ≃ pr₁ Y')
-irrelevance-of-Tdata n (X , p) (X' , p') = Σ-over-predicate' (Tlevel-is-predicate n) _ _ ● (idtoeqv , idtoeqv-is-equiv) 
+  Tlevel-Type-is-of-next-Tlevel : (n : Tlevel) → is S n type (n Type 𝓤)
 
--- (ii) pr₁ is an embedding.
+  -- (i) Irrelevance of Tlevel data.
 
-pr₁-is-embedding : (X X' : 𝓤 ̇) → (X ≃ X') ↪ (X → X')
-pr₁-is-embedding X X' = pr₁ , λ e e' → pr₂ (Σ-over-predicate' ishae-is-Prop e e')
+  irrelevance-of-Tdata : (n : Tlevel) (Y Y' : n Type 𝓤) → (Y ≡ Y') ≃ (pr₁ Y ≃ pr₁ Y')
+  irrelevance-of-Tdata n (X , p) (X' , p') = Σ-over-predicate' (Tlevel-is-predicate n) _ _ ● (idtoeqv , idtoeqv-is-equiv) 
 
--- (iii) The theorem.
+  -- (ii) pr₁ is an embedding.
 
-Tlevel-Type-is-of-next-Tlevel ⟨-2⟩ (X , p) (X' , p') = ≃-preserves-Tlevel ⟨-2⟩ (X ≃ X') _ (≃-sym (irrelevance-of-Tdata ⟨-2⟩ _ _)) (inhabited-Prop-to-isContr is-inhabited is-Prop)
-  where
-  is-inhabited : X ≃ X'
-  is-inhabited = pr₁ isContr-iff-is-𝟙 p ● ≃-sym (pr₁ isContr-iff-is-𝟙 p')
-  is-Prop : isProp (X ≃ X')
-  is-Prop = (pr₂ Prop-iff-Contr-≡ (embedding-pulls-back-Tlevel ⟨-2⟩ (X ≃ X') (X → X') (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (Tlevel-is-cumulative p'))))
+  pr₁-is-embedding : (X X' : 𝓤 ̇) → (X ≃ X') ↪ (X → X')
+  pr₁-is-embedding X X' = pr₁ , λ e e' → pr₂ (Σ-over-predicate' ishae-is-Prop e e')
 
-Tlevel-Type-is-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S n) (X ≃ X') _ (≃-sym (irrelevance-of-Tdata (S n) _ _)) (embedding-pulls-back-Tlevel n (X ≃ X') (X → X') (pr₁-is-embedding X X') (→-preserves-Tlevel (S n) X X' p'))
+  -- (iii) The theorem.
 
+  Tlevel-Type-is-of-next-Tlevel ⟨-2⟩ (X , p) (X' , p') = ≃-preserves-Tlevel ⟨-2⟩ (X ≃ X') _ (≃-sym (irrelevance-of-Tdata ⟨-2⟩ _ _)) (inhabited-Prop-to-isContr is-inhabited is-Prop)
+    where
+    is-inhabited : X ≃ X'
+    is-inhabited = pr₁ isContr-iff-is-𝟙 p ● ≃-sym (pr₁ isContr-iff-is-𝟙 p')
+    is-Prop : isProp (X ≃ X')
+    is-Prop = (pr₂ Prop-iff-Contr-≡ (embedding-pulls-back-Tlevel ⟨-2⟩ (X ≃ X') (X → X') (pr₁-is-embedding X X') (→-preserves-Tlevel (S ⟨-2⟩) X X' (Tlevel-is-cumulative p'))))
 
--- Translation to old terminology (isContr, isProp, isSet)
-
-isContr-≃-is-⟨-2⟩-type : (A : 𝓤 ̇) → isContr A ≃ is ⟨-2⟩ type A
-isContr-≃-is-⟨-2⟩-type A = idtoeqv (refl _)
-
-isSet-iff-is-⟨0⟩-type : {A : 𝓤 ̇} → isSet A ⇔ is ⟨0⟩ type A
-isSet-iff-is-⟨0⟩-type = (λ i x y → pr₁ Prop-iff-Contr-≡ (i x y)) , λ i x y → pr₂ Prop-iff-Contr-≡ (i x y)
-
-is-⟨1⟩-type-iff-is-⟨1⟩-type : {A : 𝓤 ̇} → is-⟨1⟩-type A ⇔ is ⟨1⟩ type A
-is-⟨1⟩-type-iff-is-⟨1⟩-type = (λ i x y → pr₁ isSet-iff-is-⟨0⟩-type (i x y)) , (λ i x y → pr₂ isSet-iff-is-⟨0⟩-type (i x y))
-
-isProp-≃-is-⟨-1⟩-type : (A : 𝓤 ̇) → isProp A ≃ is ⟨-1⟩ type A
-isProp-≃-is-⟨-1⟩-type A = ⇔-to-≃ (isProp-is-Prop _) (Tlevel-is-predicate ⟨-1⟩ A ) Prop-iff-Contr-≡
-
-isSet-≃-is-⟨0⟩-type : (A : 𝓤 ̇) → isSet A ≃ is ⟨0⟩ type A
-isSet-≃-is-⟨0⟩-type A = ⇔-to-≃ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) isSet-iff-is-⟨0⟩-type
-
-is-⟨1⟩-type-is-Prop : {A : 𝓤 ̇} → isProp (is-⟨1⟩-type A)
-is-⟨1⟩-type-is-Prop = Π-preserves-Props _ (λ x → Π-preserves-Props _ λ y → isSet-is-Prop _) 
-
-isSet-≃-is-⟨1⟩-type : (A : 𝓤 ̇) → is-⟨1⟩-type A ≃ is ⟨1⟩ type A
-isSet-≃-is-⟨1⟩-type A = ⇔-to-≃ is-⟨1⟩-type-is-Prop (Tlevel-is-predicate ⟨1⟩ _) is-⟨1⟩-type-iff-is-⟨1⟩-type
-
--- Retractions preserve propositions
-
-retractions-preserve-Props : (A : 𝓤 ̇) (B : 𝓥 ̇) → B ◁ A → isProp A → isProp B
-retractions-preserve-Props A B ρ = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type B)) ∘ retractions-preserve-Tlevel ⟨-1⟩ B A ρ ∘ pr₁ (isProp-≃-is-⟨-1⟩-type A)
-
--- Corollary : retraction of proposition gives equivalence
-
-retraction-of-Prop-to-≃ : {X : 𝓤 ̇} {Y : 𝓥 ̇} → isProp X → Y ◁ X → X ≃ Y
-retraction-of-Prop-to-≃ {𝓤} {𝓥} {X} {Y} X-is-Prop (r , s , α) = ⇔-to-≃ X-is-Prop (retractions-preserve-Props X Y (r , s , α) X-is-Prop) (r , s)
+  Tlevel-Type-is-of-next-Tlevel (S n) (X , p) (X' , p') = ≃-preserves-Tlevel (S n) (X ≃ X') _ (≃-sym (irrelevance-of-Tdata (S n) _ _)) (embedding-pulls-back-Tlevel n (X ≃ X') (X → X') (pr₁-is-embedding X X') (→-preserves-Tlevel (S n) X X' p'))
 
 
--- is n type preserves ≃
+module _ ⦃ fe : FunExt ⦄ where
 
-Tlevel-preserves-≃ : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → is n type A ≃ is n type B
-Tlevel-preserves-≃ n e = ⇔-to-≃ (Tlevel-is-predicate _ _) (Tlevel-is-predicate _ _) (≃-preserves-Tlevel _ _ _ e , ≃-preserves-Tlevel _ _ _ (≃-sym e))
+  -- Translation to old terminology (isContr, isProp, isSet)
 
-isContr-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → isContr A ≃ isContr B
-isContr-preserves-≃ e = Tlevel-preserves-≃ ⟨-2⟩ e
+  isContr-≃-is-⟨-2⟩-type : (A : 𝓤 ̇) → isContr A ≃ is ⟨-2⟩ type A
+  isContr-≃-is-⟨-2⟩-type A = idtoeqv (refl _)
 
-isProp-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → isProp A ≃ isProp B
-isProp-preserves-≃ {𝓤} {𝓥} {A} {B} e = isProp-≃-is-⟨-1⟩-type A ● Tlevel-preserves-≃ ⟨-1⟩ e ● (≃-sym (isProp-≃-is-⟨-1⟩-type B))
+  isSet-iff-is-⟨0⟩-type : {A : 𝓤 ̇} → isSet A ⇔ is ⟨0⟩ type A
+  isSet-iff-is-⟨0⟩-type = (λ i x y → pr₁ Prop-iff-Contr-≡ (i x y)) , λ i x y → pr₂ Prop-iff-Contr-≡ (i x y)
 
-isSet-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → isSet A ≃ isSet B
-isSet-preserves-≃ {𝓤} {𝓥} {A} {B} e = isSet-≃-is-⟨0⟩-type A ● Tlevel-preserves-≃ ⟨0⟩ e ● (≃-sym (isSet-≃-is-⟨0⟩-type B))
+  is-⟨1⟩-type-iff-is-⟨1⟩-type : {A : 𝓤 ̇} → is-⟨1⟩-type A ⇔ is ⟨1⟩ type A
+  is-⟨1⟩-type-iff-is-⟨1⟩-type = (λ i x y → pr₁ isSet-iff-is-⟨0⟩-type (i x y)) , (λ i x y → pr₂ isSet-iff-is-⟨0⟩-type (i x y))
+
+  isProp-≃-is-⟨-1⟩-type : (A : 𝓤 ̇) → isProp A ≃ is ⟨-1⟩ type A
+  isProp-≃-is-⟨-1⟩-type A = ⇔-to-≃ (isProp-is-Prop _) (Tlevel-is-predicate ⟨-1⟩ A ) Prop-iff-Contr-≡
+
+  isSet-≃-is-⟨0⟩-type : (A : 𝓤 ̇) → isSet A ≃ is ⟨0⟩ type A
+  isSet-≃-is-⟨0⟩-type A = ⇔-to-≃ (isSet-is-Prop _) (Tlevel-is-predicate ⟨0⟩ _) isSet-iff-is-⟨0⟩-type
+
+  is-⟨1⟩-type-is-Prop : {A : 𝓤 ̇} → isProp (is-⟨1⟩-type A)
+  is-⟨1⟩-type-is-Prop = Π-preserves-Props _ (λ x → Π-preserves-Props _ λ y → isSet-is-Prop _) 
+
+  isSet-≃-is-⟨1⟩-type : (A : 𝓤 ̇) → is-⟨1⟩-type A ≃ is ⟨1⟩ type A
+  isSet-≃-is-⟨1⟩-type A = ⇔-to-≃ is-⟨1⟩-type-is-Prop (Tlevel-is-predicate ⟨1⟩ _) is-⟨1⟩-type-iff-is-⟨1⟩-type
+
+  -- Retractions preserve propositions
+
+  retractions-preserve-Props : (A : 𝓤 ̇) (B : 𝓥 ̇) → B ◁ A → isProp A → isProp B
+  retractions-preserve-Props A B ρ = pr₁ (≃-sym (isProp-≃-is-⟨-1⟩-type B)) ∘ retractions-preserve-Tlevel ⟨-1⟩ B A ρ ∘ pr₁ (isProp-≃-is-⟨-1⟩-type A)
+
+  -- Corollary : retraction of proposition gives equivalence
+
+  retraction-of-Prop-to-≃ : {X : 𝓤 ̇} {Y : 𝓥 ̇} → isProp X → Y ◁ X → X ≃ Y
+  retraction-of-Prop-to-≃ {𝓤} {𝓥} {X} {Y} X-is-Prop (r , s , α) = ⇔-to-≃ X-is-Prop (retractions-preserve-Props X Y (r , s , α) X-is-Prop) (r , s)
+
+
+  -- is n type preserves ≃
+
+  Tlevel-preserves-≃ : (n : Tlevel) {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → is n type A ≃ is n type B
+  Tlevel-preserves-≃ n e = ⇔-to-≃ (Tlevel-is-predicate _ _) (Tlevel-is-predicate _ _) (≃-preserves-Tlevel _ _ _ e , ≃-preserves-Tlevel _ _ _ (≃-sym e))
+
+  isContr-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → isContr A ≃ isContr B
+  isContr-preserves-≃ e = Tlevel-preserves-≃ ⟨-2⟩ e
+
+  isProp-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → isProp A ≃ isProp B
+  isProp-preserves-≃ {𝓤} {𝓥} {A} {B} e = isProp-≃-is-⟨-1⟩-type A ● Tlevel-preserves-≃ ⟨-1⟩ e ● (≃-sym (isProp-≃-is-⟨-1⟩-type B))
+
+  isSet-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} → A ≃ B → isSet A ≃ isSet B
+  isSet-preserves-≃ {𝓤} {𝓥} {A} {B} e = isSet-≃-is-⟨0⟩-type A ● Tlevel-preserves-≃ ⟨0⟩ e ● (≃-sym (isSet-≃-is-⟨0⟩-type B))
