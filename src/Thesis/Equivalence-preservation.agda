@@ -34,6 +34,12 @@ module Preservation-of-Equivalences (A₁ A₂ : 𝓤 ̇) (e : A₁ ≃ A₂) (B
   p-pres = f₁ ∘ p ∼ p' ∘ f₂
 
   module _ (f-s : s-pres) (f-p : p-pres) where
+  
+    f-p' : p-pres
+    f-p' a₂ = ap f₁ (ap p (ρ a₂ ⁻¹)) ∙ aux _ ∙ ap p' (ap f₂ (ρ a₂))
+      where
+      aux : f₁ ∘ p ∘ s ∼ p' ∘ f₂ ∘ s
+      aux a₁ = ap f₁ (σ a₁) ∙ σ' (f₁ a₁) ⁻¹ ∙ ap p' (f-s a₁ ⁻¹)
 
     f-σ-top : f₁ ∘ p ∘ s ∼ p' ∘ s' ∘ f₁
     f-σ-top a₁ = f-p (s a₁) ∙ ap p' (f-s a₁)

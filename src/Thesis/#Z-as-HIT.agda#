@@ -72,6 +72,17 @@ module Thesis.Z-as-HIT ⦃ fe : FunExt ⦄ where
     aux3 : ρ (g (neg n)) ≡ (g-s (neg (succ n)) ∙ ap s (g-p (neg n))) ⁻¹
     aux3 = ⁻¹-invol _ ⁻¹ ∙ ap _⁻¹ (lu _ ∙ (g-ρ (neg n) ∙ᵣ ρ (g (neg n)) ⁻¹) ∙ ∙-assoc _ _ _ ⁻¹ ∙ (_ ∙ₗ rinv _) ∙ ru _ ⁻¹)
 
+ℤω-has-rec-unique' : hasrecunique 𝓤 ℤω-alg
+ℤω-has-rec-unique' {𝓤} (A , a₀ , s , p , σ , ρ , τ) (f , f₀ , f-s) (g , g₀ , g-s) = Hom-≡-intro ℤω-alg (A , a₀ , s , p , σ , ρ , τ) _ _ {!!}
+
+  where
+
+  f-p : f ∘ predω ∼ p ∘ f
+  f-p 0ω = {!!}
+  f-p (pos x) = {!!}
+  f-p (neg x) = {!!}
+
+
 ℤω-is-init : (univ : Univalence) (𝓤 : Universe) → ishinit 𝓤 ℤω-alg
 ℤω-is-init univ 𝓤 A = pr₂ isContr-iff-is-inhabited-Prop ((ℤω-has-rec A) , (ℤω-has-rec-unique univ A))
 
