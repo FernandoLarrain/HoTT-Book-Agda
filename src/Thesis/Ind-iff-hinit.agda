@@ -138,8 +138,8 @@ isind-≃-ishinit {𝓤} A = ⇔-to-≃ (isind-is-Prop A) (ishinit-is-Prop 𝓤 
 
 module _  ⦃ fe : FunExt ⦄ (𝓤 : Universe) where
 
-  open import Thesis.ZAlg-is-Cofiltered
-  open import Thesis.WildCats
+  open import Thesis.Cofiltered
+  open import Thesis.Naive-cats
     (𝓤 ⁺)
     𝓤
     (Alg 𝓤)

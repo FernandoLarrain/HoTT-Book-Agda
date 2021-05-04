@@ -8,7 +8,7 @@ open import Thesis.Z-Algebras
 open import Thesis.Identity-types
 open import Thesis.Inductive-Z-Algebras
 
-module Thesis.ZAlg-is-Cofiltered where
+module Thesis.Cofiltered where
 
 
 -- I. Cones

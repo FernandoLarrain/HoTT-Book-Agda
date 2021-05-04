@@ -104,13 +104,13 @@ open import Ch5.4-Inductive-types-are-initial-algebras public
 open import Ch5.8-Id-types-and-id-systems public
 open import Ch5.Exercises public
 
-import Thesis.WildCats
+import Thesis.Naive-cats
 open import Thesis.Z-Algebras public
 open import Thesis.Identity-types public
 open import Thesis.Hinitial-Z-Algebras public
 open import Thesis.Inductive-Z-Algebras public
 open import Thesis.Equivalence-preservation public
-open import Thesis.ZAlg-is-Cofiltered public
+open import Thesis.Cofiltered public
 open import Thesis.Ind-iff-hinit public
 open import Thesis.Slice public
 

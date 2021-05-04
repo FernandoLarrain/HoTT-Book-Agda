@@ -150,8 +150,8 @@ module _ (univ : Univalence) (𝓤 : Universe) where
   open Slice-is-FibAlg univ
   open import Thesis.Inductive-Z-Algebras
   open import Thesis.Hinitial-Z-Algebras
-  open import Thesis.ZAlg-is-Cofiltered
-  open import Thesis.WildCats
+  open import Thesis.Cofiltered
+  open import Thesis.Naive-cats
     (𝓤 ⁺)
     𝓤
     (Alg 𝓤)
