@@ -81,11 +81,11 @@ path-space-inr {𝓤} {𝓥} A B b₀ x = encoder+ b₀ x , qinv-to-isequiv ((de
   β : (decoder+ b₀ x ∘ encoder+ b₀ x) ∼ id
   β = ℍ (inr b₀) (λ x p → decoder+ b₀ x (encoder+ b₀ x p) ≡ p) (refl (refl (inr b₀))) x
 
-+-is-disjoint : (A : 𝓤 ̇) (B : 𝓥 ̇) (a : A) (b : B) → ¬ (inl a ≡ inr b)
-+-is-disjoint A B a b p = lower (encodel+ a (inr b) p)
++-is-disjoint : {A : 𝓤 ̇} {B : 𝓥 ̇} (a : A) (b : B) → ¬ (inl a ≡ inr b)
++-is-disjoint a b p = lower (encodel+ a (inr b) p)
 
 
 -- Remark 2.12.6.
 
 ₀-is-not-₁ : ¬ (₀ ≡ ₁)
-₀-is-not-₁ p = +-is-disjoint 𝟙 𝟙 ⋆ ⋆ p
+₀-is-not-₁ p = +-is-disjoint ⋆ ⋆ p

@@ -334,7 +334,7 @@ module _ ⦃ fe : FunExt ⦄ where
 
 -- (v) + preserves equivalences
 
-+-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓥 ̇} {D : 𝓦 ̇} → A ≃ C → B ≃ D → A + B ≃ C + D
++-preserves-≃ : {A : 𝓤 ̇} {B : 𝓥 ̇} {C : 𝓦 ̇} {D : 𝓣 ̇} → A ≃ C → B ≃ D → A + B ≃ C + D
 +-preserves-≃ (f , i) (g , j) with isequiv-to-qinv i | isequiv-to-qinv j
 ... | (finv , α , β) | (ginv , γ , δ) = +-recursion (inl ∘ f) (inr ∘ g) , qinv-to-isequiv (+-recursion (inl ∘ finv) (inr ∘ ginv) , +-induction _ (λ c → ap inl (α c)) (λ d → ap inr (γ d)) , +-induction _ (λ a → ap inl (β a)) (λ b → ap inr (δ b)))
 

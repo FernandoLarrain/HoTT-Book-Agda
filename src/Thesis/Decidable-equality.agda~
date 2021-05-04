@@ -1,0 +1,13 @@
+{-# OPTIONS --without-K --exact-split --safe #-}
+
+open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
+open import Ch3.Sets-and-logic
+open import Ch4.Equivalences
+open import Thesis.Z-Algebras
+open import Thesis.Identity-types
+open import Thesis.Inductive-Z-Algebras
+
+module Thesis.Decidable-equality where
+
+ℤω-has-decidable-eq : decidable-equality ℤω 

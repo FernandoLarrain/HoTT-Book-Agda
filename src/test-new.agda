@@ -115,7 +115,7 @@ open import Thesis.Ind-iff-hinit public
 open import Thesis.Slice public
 
 
--- Chapter 6: Safe
+-- Chapter 6
 
 open import Ch6.4-Circles-and-spheres-safe public
 open import Ch6.5-Suspensions-safe public
@@ -133,10 +133,8 @@ open import Ch6.5-Suspensions public
 open import Ch6.8-Pushouts public
 open import Ch6.10-Quotients public
 
-open import Thesis.Z-as-HIT public
 
-
--- Chapter 7: Safe
+-- Chapter 7
 
 open import Ch7.1-Definition-of-n-types public
 open import Ch7.2-UIP-and-Hedberg's-theorem-safe public
@@ -144,5 +142,9 @@ open import Ch7.3-Truncations-safe public
 open import Ch7.5-Connectedness public
 open import Ch7.6-Orthogonal-factorization public
 
+open import Thesis.Decidable-equality public 
+
 open import Ch7.2-UIP-and-Hedberg's-theorem public
 open import Ch7.3-Truncations public
+
+open import Thesis.Z-as-HIT public

@@ -4,65 +4,20 @@ open import Ch1.Type-theory
 open import Ch2.Homotopy-type-theory
 open import Ch3.Sets-and-logic
 open import Ch4.Equivalences
-open import Ch5.8-Id-types-and-id-systems
 open import Thesis.Z-Algebras
 open import Thesis.Identity-types
 open import Thesis.Equivalence-preservation
 open import Thesis.Hinitial-Z-Algebras
 open import Thesis.Inductive-Z-Algebras
+open import Thesis.Cofiltered
 open import Thesis.Ind-iff-hinit
+open import Thesis.Decidable-equality
 open import Rewrite
 
 module Thesis.Z-as-HIT ⦃ fe : FunExt ⦄ where
 
 
--- I. The Integers as Signed Natural Numbers
-
-data ℤω : 𝓤₀ ̇ where
-  0ω : ℤω
-  pos : ℕ → ℤω
-  neg : ℕ → ℤω
-
--- ℤω is a ℤ-algebra
-
-succω : ℤω → ℤω
-succω 0ω = pos 0
-succω (pos n) = pos (succ n)
-succω (neg 0) = 0ω
-succω (neg (succ n)) = neg n
-
-predω : ℤω → ℤω
-predω 0ω = neg 0
-predω (pos 0) = 0ω
-predω (pos (succ n)) = pos n
-predω (neg n) = neg (succ n)
-
-secω : (z : ℤω) → predω (succω z) ≡ z
-secω 0ω = refl _
-secω (pos n) = refl _
-secω (neg 0) = refl _
-secω (neg (succ n)) = refl _
-
-retω : (z : ℤω) → succω (predω z) ≡ z
-retω 0ω = refl _
-retω (pos 0) = refl _
-retω (pos (succ n)) = refl _
-retω (neg n) = refl _
-
-cohω : (z : ℤω) → ap succω (secω z) ≡ retω (succω z)
-cohω 0ω = refl _
-cohω (pos n) = refl _
-cohω (neg 0) = refl _
-cohω (neg (succ n)) = refl _
-
-ℤω-≃ : ℤω ≃ ℤω
-ℤω-≃ = (succω , predω , secω , retω , cohω)
-
-ℤω-alg : Alg 𝓤₀
-ℤω-alg = ℤω , 0ω , ℤω-≃
-
-
--- II. ℤω is initial
+-- I. ℤω is initial
 
 ℤω-has-rec : hasrec 𝓤 ℤω-alg
 ℤω-has-rec (A , a₀ , s , p , σ , ρ , τ) = f , refl _ , f-s where
@@ -121,7 +76,7 @@ cohω (neg (succ n)) = refl _
 ℤω-is-init univ 𝓤 A = pr₂ isContr-iff-is-inhabited-Prop ((ℤω-has-rec A) , (ℤω-has-rec-unique univ A))
 
 
--- III. The Integers as HIT
+-- II. The Integers as HIT
 
 postulate
 
@@ -167,8 +122,21 @@ postulate
 ℤₕ-is-ind 𝓤 (E , e₀ , s' , j) = let f = ℤₕ-ind (E , e₀ , s' , j) in
   f , (refl _) , (λ z → refl _)
 
-ℤₕ-is-init : ishinit 𝓤₀ ℤₕ-alg
-ℤₕ-is-init = isind-to-ishinit ℤₕ-alg (ℤₕ-is-ind 𝓤₀)
+ℤₕ-is-hinit : ishinit 𝓤₀ ℤₕ-alg
+ℤₕ-is-hinit = isind-to-ishinit ℤₕ-alg (ℤₕ-is-ind 𝓤₀)
 
 ℤₕ-is-ℤω : (univ : Univalence) → ℤₕ-alg ≡ ℤω-alg
-ℤₕ-is-ℤω univ = ap pr₁ (InitAlg-is-Prop univ 𝓤₀ (ℤₕ-alg , ℤₕ-is-init) (ℤω-alg , ℤω-is-init univ 𝓤₀))
+ℤₕ-is-ℤω univ = ap pr₁ (InitAlg-is-Prop univ 𝓤₀ (ℤₕ-alg , ℤₕ-is-hinit) (ℤω-alg , ℤω-is-init univ 𝓤₀))
+
+
+-- III. ℤₕ has decidable equality
+
+ℤₕ-has-decidable-equality : (univ : Univalence) → decidable-equality ℤₕ
+ℤₕ-has-decidable-equality univ = transport decidable-equality (ap pr₁ ((ℤₕ-is-ℤω univ) ⁻¹) ) ℤω-has-decidable-equality
+
+{- It would be better to show the following avoiding univalence: -}
+
+ℤₕ-≃-ℤω : (univ : Univalence) → ℤₕ-alg ≅ ℤω-alg
+ℤₕ-≃-ℤω univ = pr₁ (≅-is-Contr (ℤₕ-alg , ℤₕ-is-hinit) (ℤω-alg , ℤω-is-init univ 𝓤₀))
+
+{- and then transport decidability along the resulting retraction. We have to prove initiality of ℕ without univalence. Or perhaps prove the equivalence-preservation result without univalence. -}

@@ -1,6 +1,7 @@
 {-# OPTIONS --without-K --exact-split --safe #-}
 
 open import Ch1.Type-theory
+open import Ch2.Homotopy-type-theory
 
 module Ch3.4-Classical-vs-intuitionistic-logic where
 

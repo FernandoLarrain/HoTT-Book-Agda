@@ -11,7 +11,53 @@ open import Thesis.Inductive-Z-Algebras
 module Thesis.Cofiltered where
 
 
--- I. Cones
+-- I. The Integers as Signed Natural Numbers
+
+data ℤω : 𝓤₀ ̇ where
+  0ω : ℤω
+  pos : ℕ → ℤω
+  neg : ℕ → ℤω
+
+-- ℤω is a ℤ-algebra
+
+succω : ℤω → ℤω
+succω 0ω = pos 0
+succω (pos n) = pos (succ n)
+succω (neg 0) = 0ω
+succω (neg (succ n)) = neg n
+
+predω : ℤω → ℤω
+predω 0ω = neg 0
+predω (pos 0) = 0ω
+predω (pos (succ n)) = pos n
+predω (neg n) = neg (succ n)
+
+secω : (z : ℤω) → predω (succω z) ≡ z
+secω 0ω = refl _
+secω (pos n) = refl _
+secω (neg 0) = refl _
+secω (neg (succ n)) = refl _
+
+retω : (z : ℤω) → succω (predω z) ≡ z
+retω 0ω = refl _
+retω (pos 0) = refl _
+retω (pos (succ n)) = refl _
+retω (neg n) = refl _
+
+cohω : (z : ℤω) → ap succω (secω z) ≡ retω (succω z)
+cohω 0ω = refl _
+cohω (pos n) = refl _
+cohω (neg 0) = refl _
+cohω (neg (succ n)) = refl _
+
+ℤω-≃ : ℤω ≃ ℤω
+ℤω-≃ = (succω , predω , secω , retω , cohω)
+
+ℤω-alg : Alg 𝓤₀
+ℤω-alg = ℤω , 0ω , ℤω-≃
+
+
+-- II. Cones
 
 -- Over pairs of objects.
 
