@@ -33,7 +33,7 @@ isProp P = (x y : P) → x ≡ y
 -- Lemma 3.3.2 (Inhabited propositions are 𝟙).
 
 inhabited-Prop-is-𝟙 : {P : 𝓤 ̇} → isProp P → (x₀ : P) → P ≃ 𝟙
-inhabited-Prop-is-𝟙 P-is-Prop x₀ = ⇔-to-≃ P-is-Prop 𝟙-is-Prop ((λ x → ⋆) , λ x → x₀)  where
+inhabited-Prop-is-𝟙 P-is-Prop x₀ = ⇔-to-≃ P-is-Prop 𝟙-is-Prop ((λ x → ⋆) , λ x → x₀)
 
 
 -- Lemma 3.3.4 (Propositions are sets).
